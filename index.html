@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GlassGodown v3 — IDE Edition</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>GlassGodown v3 — IDE Cloud Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
@@ -21,7 +21,7 @@
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;overflow:hidden;}
 
 /* LOGIN SCREEN */
 #login-screen { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
@@ -30,106 +30,123 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .login-box p { font-size: 14px; color: var(--text2); margin-bottom: 30px; line-height: 1.5; }
 .btn-google { background: #fff; border: 1px solid var(--border2); color: var(--text); padding: 12px 20px; border-radius: 8px; font-family: var(--font); font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; transition: all .15s; }
 .btn-google:hover { background: var(--bg3); border-color: var(--border2); }
-.loader-text { font-size: 13px; color: var(--text3); margin-top: 15px; font-family: var(--mono); display: none; }
 
 /* 3-COLUMN IDE LAYOUT */
-.layout{display:none;grid-template-columns:220px 1fr 340px;grid-template-rows:56px 1fr;height:100vh}
+.layout{display:none;grid-template-columns:220px 1fr 340px;grid-template-rows:56px 1fr;height:100vh;overflow:hidden;}
 .topbar{grid-column:1/-1;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;z-index:100}
 .logo{font-size:17px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;letter-spacing:-0.3px}
-.logo-icon{width:28px;height:28px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--accent-text);font-size:14px;font-weight:700}
+.logo-icon{width:26px;height:26px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--accent-text);font-size:13px;font-weight:700}
 .topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
 .user-badge{font-size:12px;color:var(--text2);background:var(--bg3);padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:6px;}
 .user-badge img { width: 16px; height: 16px; border-radius: 50%; }
-.api-status{font-size:11px;font-family:var(--mono);color:var(--text2);display:flex;align-items:center;gap:5px}
-.sdot{width:6px;height:6px;border-radius:50%;background:var(--text3)}
-.sdot.ok{background:var(--green)}.sdot.err{background:var(--red)}
-.tbtn{padding:5px 12px;border-radius:6px;font-size:12px;border:1px solid var(--border2);background:none;color:var(--text2);cursor:pointer;font-family:var(--font);transition:all .15s}
-.tbtn:hover{border-color:var(--accent);color:var(--text)}
 
-/* LEFT SIDEBAR */
-.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:12px 0;display:flex;flex-direction:column;gap:1px;overflow-y:auto}
-.nav-label{font-size:10px;letter-spacing:.1em;color:var(--text3);padding:10px 18px 4px;font-weight:600;text-transform:uppercase}
-.nav-btn{display:flex;align-items:center;gap:9px;padding:8px 18px;font-size:13px;font-family:var(--font);color:var(--text2);cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:all .15s;position:relative}
-.nav-btn:hover{color:var(--text);background:var(--bg3)}
-.nav-btn.active{color:var(--text);background:rgba(24,24,27,.05);font-weight:600}
-.nav-btn.active::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;background:var(--accent);border-radius:0 2px 2px 0}
-.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;font-family:var(--mono)}
-.nav-sep{height:1px;background:var(--border);margin:8px 18px}
-
-/* CENTER WORKSPACE */
-.main{background:var(--bg);overflow-y:auto;display:flex;flex-direction:column}
-.section{display:none;flex:1;flex-direction:column}
-.section.active{display:flex}
-.page-head{padding:20px 26px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0;background:var(--bg2)}
-.page-head h1{font-size:19px;font-weight:700}
-.page-head p{font-size:12px;color:var(--text2);margin-top:2px}
-.page-content{padding:18px 26px;flex:1;overflow-y:auto}
-
-/* BUTTONS & INPUTS */
-.btn{padding:7px 14px;border-radius:7px;font-size:12px;font-family:var(--font);cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:5px}
-.btn.primary{background:var(--accent);color:var(--accent-text);font-weight:600}
+/* BUTTONS */
+.btn{padding:7px 14px;border-radius:7px;font-size:13px;font-family:var(--font);font-weight:500;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.primary{background:var(--accent);color:var(--accent-text);}
 .btn.primary:hover{background:var(--accent2)}
 .btn.ghost{background:var(--bg2);border:1px solid var(--border2);color:var(--text2)}
 .btn.ghost:hover{border-color:var(--accent);color:var(--text)}
-.btn.danger{background:none;border:1px solid transparent;color:var(--red)}
-.btn.danger:hover{border-color:var(--red);background:rgba(220,38,38,.07)}
+.btn.danger{background:rgba(220,38,38,.1);color:var(--red)}
+.btn.danger:hover{background:rgba(220,38,38,.2)}
 .btn.sell{background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.25);color:var(--green);font-weight:600}
 .btn.sell:hover{background:rgba(22,163,74,.2)}
 
-.minput{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:7px;padding:10px 14px;font-size:14px;font-family:var(--font);margin-bottom:16px}
-.minput:focus{outline:none;border-color:var(--accent)}
+/* LEFT SIDEBAR */
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:12px 0;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.nav-label{font-size:10px;letter-spacing:.1em;color:var(--text3);padding:10px 18px 4px;font-weight:600;text-transform:uppercase}
+.nav-btn{display:flex;align-items:center;gap:9px;padding:9px 18px;font-size:13px;font-family:var(--font);color:var(--text2);cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:all .15s;position:relative}
+.nav-btn:hover{color:var(--text);background:var(--bg3)}
+.nav-btn.active{color:var(--text);background:rgba(24,24,27,.05);font-weight:600}
+.nav-btn.active::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;background:var(--accent);border-radius:0 2px 2px 0}
+.nav-icon{font-size:15px;width:18px;text-align:center}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;font-family:var(--mono)}
 
-/* RIGHT AI ASSISTANT PANEL */
-.ai-panel{background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;height:100%}
-.ai-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0;background:var(--bg3)}
-.ai-head .av{width:32px;height:32px;border-radius:8px;background:var(--accent);color:var(--accent-text);display:flex;align-items:center;justify-content:center;font-size:16px;}
-.chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
-.msg{display:flex;gap:8px;max-width:92%;animation:fu .2s ease}
-@keyframes fu{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+/* CENTER WORKSPACE */
+.main{background:var(--bg);overflow-y:auto;display:flex;flex-direction:column;position:relative;}
+.section{display:none;flex:1;flex-direction:column}
+.section.active{display:flex}
+.page-head{padding:24px 30px 16px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0}
+.page-head h1{font-size:20px;font-weight:700}
+.page-head p{font-size:13px;color:var(--text2);margin-top:4px}
+.page-content{padding:24px 30px;flex:1;overflow-y:auto}
+
+/* RIGHT SIDEBAR (RAJU AI) */
+.rightbar{background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;height:100%;}
+.chat-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--bg2)}
+.av{width:36px;height:36px;border-radius:9px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:16px}
+.msg{display:flex;gap:10px;max-width:92%;animation:fu .2s ease}
+@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .msg.user{align-self:flex-end;flex-direction:row-reverse}
-.msg-av{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;margin-top:2px;background:var(--bg4)}
+.msg-av{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:2px}
+.msg.user .msg-av{background:var(--bg4)}
 .msg.ai .msg-av{background:var(--accent);color:var(--accent-text)}
-.bubble{padding:10px 12px;border-radius:10px;font-size:13px;line-height:1.6;box-shadow:0 1px 2px rgba(0,0,0,0.02)}
-.msg.user .bubble{background:var(--accent);color:var(--accent-text);border-bottom-right-radius:2px}
-.msg.ai .bubble{background:var(--bg);border:1px solid var(--border);border-bottom-left-radius:2px}
-.bubble strong{color:inherit;font-weight:700}
-.chat-foot{padding:12px 16px;border-top:1px solid var(--border);background:var(--bg)}
-.input-row{display:flex;gap:8px;align-items:flex-end}
-.cinput{flex:1;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;font-size:13px;font-family:var(--font);resize:none;min-height:40px;max-height:100px;}
-.cinput:focus{outline:none;border-color:var(--accent)}
-.sbtn{background:var(--accent);color:var(--accent-text);border:none;border-radius:8px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;}
-.sbtn:disabled{opacity:0.5;cursor:not-allowed}
+.bubble{padding:10px 14px;border-radius:11px;font-size:13px;line-height:1.6;box-shadow:0 1px 2px rgba(0,0,0,0.02)}
+.msg.user .bubble{background:var(--accent);color:var(--accent-text);border-bottom-right-radius:3px}
+.msg.ai .bubble{background:var(--bg);border:1px solid var(--border);border-bottom-left-radius:3px}
+.bubble strong{color:inherit;font-weight:600}
+.typing{display:flex;gap:4px;padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:11px;border-bottom-left-radius:3px;width:fit-content}
+.td{width:5px;height:5px;border-radius:50%;background:var(--text3);animation:tb 1s infinite}
+.td:nth-child(2){animation-delay:.2s}.td:nth-child(3){animation-delay:.4s}
+@keyframes tb{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px);background:var(--text)}}
+.chat-foot{padding:14px 20px 18px;border-top:1px solid var(--border);background:var(--bg2)}
+.cinput{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:9px;padding:10px 14px;font-size:13px;font-family:var(--font);color:var(--text);resize:none;min-height:44px;outline:none;transition:border-color .15s;margin-bottom:8px;}
+.cinput:focus{border-color:var(--accent)}
+.sbtn{background:var(--accent);color:var(--accent-text);border:none;border-radius:7px;width:100%;padding:10px;font-weight:600;font-size:13px;cursor:pointer;display:flex;justify-content:center;gap:6px;}
 
-/* GLASS FINDER CARD */
-.finder-card { background: var(--bg2); border: 1px solid var(--border2); border-radius: 12px; padding: 24px; max-width: 500px; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center; }
-.fc-icon { font-size: 32px; margin-bottom: 12px; }
-.fc-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-.fc-sub { font-size: 14px; color: var(--text2); margin-bottom: 24px; }
-.fc-acts { display: flex; gap: 10px; justify-content: center; }
+/* FINDER CARD UI */
+.search-box{display:flex;gap:10px;margin-bottom:24px;}
+.finder-input{flex:1;background:var(--bg2);border:2px solid var(--border2);border-radius:11px;padding:14px 18px;font-size:16px;font-family:var(--font);outline:none;transition:border-color .2s}
+.finder-input:focus{border-color:var(--blue)}
+.finder-btn{background:var(--blue);color:#fff;border:none;border-radius:11px;padding:0 24px;font-weight:600;font-size:15px;cursor:pointer;}
+.result-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px;box-shadow:0 4px 15px rgba(0,0,0,0.03);display:none;animation:fu .3s ease;}
+.result-card.show{display:block;}
+.rc-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.rc-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.rc-icon.exact{background:rgba(22,163,74,.1);color:var(--green)}
+.rc-icon.compat{background:rgba(37,99,235,.1);color:var(--blue)}
+.rc-icon.none{background:rgba(220,38,38,.1);color:var(--red)}
+.rc-title{font-size:18px;font-weight:700;font-family:var(--mono)}
+.rc-subtitle{font-size:13px;color:var(--text2);margin-top:4px;}
+.rc-stock-box{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:12px 16px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;}
+.rc-qty{font-size:24px;font-weight:700;color:var(--text);font-family:var(--mono)}
+.rc-acts{display:flex;gap:10px;}
 
-/* WAREHOUSE GRID */
-.boxes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-.box-card{background:var(--bg2);border:1px solid var(--border);border-radius:11px;overflow:hidden;}
-.box-hdr{padding:12px 14px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.box-name{font-size:13px;font-weight:600;}
-.bitem{display:flex;align-items:center;padding:8px 14px;gap:8px;border-bottom:1px solid rgba(0,0,0,0.02)}
-.bitem-info{flex:1;min-width:0}
-.bitem-model{font-size:13.5px;font-weight:500;}
-.bitem-qty{font-size:13px;font-family:var(--mono);font-weight:600;text-align:right}
+/* BULK ADD UI */
+.bulk-area{width:100%;background:var(--bg2);border:2px solid var(--border2);border-radius:11px;padding:16px;font-size:15px;font-family:var(--font);line-height:1.6;resize:vertical;min-height:120px;outline:none;margin-bottom:14px;}
+.bulk-area:focus{border-color:var(--accent)}
 
-/* UTILS */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px 26px;border-bottom:1px solid var(--border);background:var(--bg2)}
-.stat{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px 14px}
-.stat-num{font-size:22px;font-weight:700;font-family:var(--mono);}
-.toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%, 16px);background:var(--text);border-radius:9px;padding:12px 18px;font-size:13.5px;color:var(--bg2);z-index:9999;opacity:0;transition:all .22s;display:flex;align-items:center;gap:8px;}
-.toast.show{transform:translate(-50%, 0);opacity:1}
+/* UTILS & TABLES */
+.boxes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.box-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.02);}
+.box-hdr{padding:14px 16px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;font-weight:600;}
+.bitem{display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);font-size:14px;}
+.bitem:last-child{border:bottom:none}
+.dataTable{width:100%;border-collapse:collapse;background:var(--bg2);border-radius:11px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.02)}
+.dataTable th{text-align:left;padding:12px 16px;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text3);background:var(--bg3);border-bottom:1px solid var(--border)}
+.dataTable td{padding:14px 16px;border-bottom:1px solid var(--border);font-size:14px;}
 
-/* MOBILE FIX */
-@media (max-width: 900px) {
-  .layout { grid-template-columns: 1fr; grid-template-rows: 56px auto 1fr 300px; overflow-y: auto;}
-  .sidebar { grid-row: 2; grid-column: 1; flex-direction: row; overflow-x: auto; padding: 0; }
-  .main { grid-row: 3; grid-column: 1; }
-  .ai-panel { grid-row: 4; grid-column: 1; border-left: none; border-top: 1px solid var(--border); }
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--bg);padding:12px 20px;border-radius:30px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:9999;box-shadow:0 10px 20px rgba(0,0,0,0.15)}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.error{background:var(--red);color:#fff}
+
+/* MOBILE RESPONSIVE (Slide Over AI) */
+.mobile-ai-toggle { display: none; position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px; border-radius: 50%; background: var(--accent); color: var(--bg); font-size: 24px; border: none; z-index: 1000; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+@media (max-width: 1024px) {
+  .layout { grid-template-columns: 200px 1fr; }
+  .rightbar { position: fixed; top: 56px; right: -360px; width: 340px; height: calc(100vh - 56px); z-index: 900; box-shadow: -10px 0 30px rgba(0,0,0,0.1); transition: right .3s ease; }
+  .rightbar.open { right: 0; }
+  .mobile-ai-toggle { display: flex; align-items: center; justify-content: center; }
+}
+@media (max-width: 768px) {
+  .layout { display: flex; flex-direction: column; }
+  .sidebar { flex-direction: row; overflow-x: auto; padding: 0; border-right: none; border-bottom: 1px solid var(--border); height: auto; flex-shrink: 0; }
+  .nav-btn { padding: 14px 16px; white-space: nowrap; width: auto; border-bottom: 2px solid transparent; }
+  .nav-btn.active { background: transparent; border-bottom: 2px solid var(--accent); }
+  .nav-btn.active::before { display: none; }
+  .nav-label, .nav-sep { display: none; }
+  .rightbar { top: 110px; height: calc(100vh - 110px); width: 100%; right: -100%; }
 }
 </style>
 </head>
@@ -138,110 +155,109 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 <div id="login-screen">
   <div class="login-box">
     <h1><div class="logo-icon">⬡</div>GlassGodown</h1>
-    <p>Sign in to your Cloud IDE.</p>
+    <p>Sign in to your Cloud Workspace.</p>
     <button class="btn-google" onclick="signInWithGoogle()">Sign in with Google</button>
-    <div id="login-loader" class="loader-text">Connecting...</div>
   </div>
 </div>
+
+<button class="mobile-ai-toggle" onclick="toggleAI()">🤖</button>
 
 <div class="layout" id="main-layout">
   
   <div class="topbar">
     <div class="logo"><div class="logo-icon">⬡</div>GlassGodown</div>
     <div class="topbar-right">
-      <div class="api-status"><div class="sdot ok" id="sdot"></div><span id="stxt">Cloud Sync On</span></div>
       <div class="user-badge" id="user-badge"></div>
-      <button class="tbtn warn" onclick="logOut()">Logout</button>
+      <button class="btn ghost" onclick="logOut()" style="padding: 4px 10px; font-size: 11px;">Logout</button>
     </div>
   </div>
 
   <nav class="sidebar">
-    <div class="nav-label">Tools</div>
+    <div class="nav-label">Workspace</div>
     <button class="nav-btn active" onclick="showSection('finder')" id="nav-finder"><span class="nav-icon">🔍</span>Glass Finder</button>
-    <button class="nav-btn" onclick="showSection('addmodels')" id="nav-addmodels"><span class="nav-icon">➕</span>Bulk Add Models</button>
-    <div class="nav-sep"></div>
-    <div class="nav-label">Database</div>
+    <button class="nav-btn" onclick="showSection('addmodels')" id="nav-addmodels"><span class="nav-icon">⚡</span>Bulk Add</button>
     <button class="nav-btn" onclick="showSection('warehouse')" id="nav-warehouse"><span class="nav-icon">📦</span>Warehouse</button>
     <button class="nav-btn" onclick="showSection('sales')" id="nav-sales"><span class="nav-icon">💰</span>Sales Log</button>
-    <button class="nav-btn" onclick="showSection('requirements')" id="nav-requirements"><span class="nav-icon">📋</span>Requirements</button>
     <div class="nav-sep"></div>
+    <div class="nav-label">Management</div>
+    <button class="nav-btn" onclick="showSection('requirements')" id="nav-requirements"><span class="nav-icon">📋</span>Requirements</button>
     <button class="nav-btn" onclick="showSection('settings')" id="nav-settings"><span class="nav-icon">⚙</span>Settings</button>
   </nav>
 
   <main class="main">
     
     <div class="section active" id="section-finder">
-      <div class="page-head">
-        <div><h1>🔍 Glass Finder</h1><p>Ask Raju to find exact or compatible models</p></div>
-      </div>
-      <div class="page-content" style="display:flex;align-items:center;justify-content:center;background:var(--bg)">
-        <div id="finder-results">
-          <div style="text-align:center;color:var(--text3);">
-            <div style="font-size:40px;margin-bottom:10px">🔎</div>
-            <p>Use the Raju AI panel on the right to search.<br>Example: "Find Vivo T4x"</p>
-          </div>
+      <div class="page-head"><h1>🔍 Glass Finder</h1><p>Search for a model. AI will find exact or compatible sizes.</p></div>
+      <div class="page-content">
+        <div class="search-box">
+          <input type="text" class="finder-input" id="finder-input" placeholder="e.g., Vivo T4x, Samsung A55..." onkeydown="if(event.key==='Enter')runFinder()">
+          <button class="finder-btn" onclick="runFinder()" id="fbtn">Find</button>
         </div>
+        
+        <div class="result-card" id="finder-result">
+          </div>
       </div>
     </div>
 
     <div class="section" id="section-addmodels">
-      <div class="page-head">
-        <div><h1>➕ Bulk Add Models</h1><p>Use commas for compatible models (e.g. Vivo T4x, iQOO Z10x)</p></div>
-      </div>
-      <div class="page-content">
-        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;max-width:600px">
-          <textarea class="minput" id="bulk-input" rows="4" placeholder="Example: add 10pcs for vivo t4x, igoo z10x, vivo t3x in box 1"></textarea>
-          <button class="btn primary" onclick="processBulkAdd()">Process Inventory Update</button>
-        </div>
+      <div class="page-head"><h1>⚡ Bulk Add Models</h1><p>Type naturally. Use commas for models that share the same glass.</p></div>
+      <div class="page-content" style="max-width: 800px;">
+        <textarea class="bulk-area" id="bulk-input" placeholder="Example: Add 10pcs vivo t4x, iqoo z10x, vivo t3x in box 1"></textarea>
+        <button class="btn primary" style="padding: 14px 24px; font-size: 15px;" onclick="runBulkAdd()" id="bbtn">Process & Add to Inventory</button>
       </div>
     </div>
 
     <div class="section" id="section-warehouse">
       <div class="page-head">
-        <div><h1>📦 Warehouse</h1></div>
-        <button class="btn primary" onclick="addBoxPrompt()">+ Add Box</button>
+        <div><h1>📦 Warehouse Overview</h1><p>Live cloud inventory</p></div>
+        <button class="btn primary" onclick="addBoxPrompt()">+ New Box</button>
       </div>
-      <div class="stats-row" id="stats-row"></div>
-      <div class="page-content"><div class="boxes-grid" id="boxes-grid"></div></div>
+      <div class="page-content" id="boxes-grid" class="boxes-grid" style="display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));"></div>
     </div>
 
-    <div class="section" id="section-sales"><div class="page-head"><h1>💰 Sales Log</h1><button class="btn danger" onclick="salesLog=[];save();renderAll()">Clear</button></div><div class="page-content" id="sales-container"></div></div>
-    <div class="section" id="section-requirements"><div class="page-head"><h1>📋 Requirements</h1><button class="btn danger" onclick="requirements=[];save();renderAll()">Clear</button></div><div class="page-content" id="req-container"></div></div>
+    <div class="section" id="section-sales">
+      <div class="page-head"><h1>💰 Sales Log</h1><p>Recent transactions</p></div>
+      <div class="page-content" id="sales-container"></div>
+    </div>
+
+    <div class="section" id="section-requirements">
+      <div class="page-head"><h1>📋 Requirements</h1><p>Items out of stock</p></div>
+      <div class="page-content" id="req-container"></div>
+    </div>
+
     <div class="section" id="section-settings">
-      <div class="page-head"><h1>⚙ Settings</h1></div>
+      <div class="page-head"><h1>⚙ Settings</h1><p>Configure Gemini API</p></div>
       <div class="page-content">
-        <div style="background:var(--bg2);padding:20px;border-radius:12px;border:1px solid var(--border);max-width:500px">
-          <b>Gemini API Key</b><br><br>
-          <input class="minput" id="settings-apikey" type="password" placeholder="AIzaSy...">
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:24px;max-width:500px;">
+          <div style="font-weight:700;margin-bottom:10px;">Gemini API Key</div>
+          <p style="font-size:13px;color:var(--text2);margin-bottom:16px;">Required for AI Glass Finder & Bulk Add. Saved locally.</p>
+          <input class="finder-input" id="settings-apikey" type="password" placeholder="AIzaSy..." style="width:100%;margin-bottom:12px;padding:10px;">
           <button class="btn primary" onclick="saveApiKey()">Save Key</button>
         </div>
       </div>
     </div>
+
   </main>
 
-  <aside class="ai-panel">
-    <div class="ai-head">
+  <aside class="rightbar" id="raju-sidebar">
+    <div class="chat-head">
       <div class="av">🤖</div>
-      <div>
-        <div style="font-size:14px;font-weight:700">Raju Assistant</div>
-        <div style="font-size:11px;color:var(--text2)">Ready to help</div>
-      </div>
+      <div><div style="font-size:14px;font-weight:700">Raju Assistant</div><div style="font-size:11px;color:var(--text2)">Online</div></div>
     </div>
     <div class="chat-msgs" id="chat-msgs"></div>
     <div class="chat-foot">
-      <div class="input-row">
-        <textarea class="cinput" id="cinput" placeholder="Type a command..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"></textarea>
-        <button class="sbtn" id="sbtn" onclick="sendMsg()">↑</button>
-      </div>
+      <textarea class="cinput" id="cinput" placeholder="Ask Raju anything..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"></textarea>
+      <button class="sbtn" onclick="sendChat()" id="cbtn">Send to Raju</button>
     </div>
   </aside>
 
 </div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 // ============================================================
-// FIREBASE CONFIG (PASTE YOURS HERE)
+// 1. FIREBASE CONFIGURATION (PASTE YOURS HERE)
 // ============================================================
 const firebaseConfig = {
   apiKey: "AIzaSyAW9dCjmcy5TYFvb1GNxuTqd1lNlE8rtOY",
@@ -259,200 +275,328 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 const provider = new firebase.auth.GoogleAuthProvider();
 
+// ============================================================
 // STATE
-let currentUser=null; let inventory={}; let boxes=["Box 1"]; let requirements=[]; let salesLog=[];
-let apiKey=''; let chatHistory=[];
+// ============================================================
+let currentUser = null;
+let inventory = {};   
+let boxes = ["Box 1", "Box 2"];
+let requirements = [];
+let salesLog = [];
+let apiKey = '';
+let chatHistory = [];
+let pendingSale = null; // Temp holder for finder sale
 
-// AUTH
-function signInWithGoogle() { auth.signInWithPopup(provider); }
+// ============================================================
+// AUTH & CLOUD SYNC
+// ============================================================
+function signInWithGoogle() { auth.signInWithPopup(provider).catch(e => alert(e.message)); }
 function logOut() { auth.signOut(); }
+
 auth.onAuthStateChanged(async (user) => {
   if (user) {
     currentUser = user;
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('main-layout').style.display = 'grid';
     document.getElementById('user-badge').innerHTML = `<img src="${user.photoURL}" alt=""> ${user.displayName.split(' ')[0]}`;
+    
     apiKey = localStorage.getItem('gg2_apikey') || '';
     if(document.getElementById('settings-apikey')) document.getElementById('settings-apikey').value = apiKey;
     
     await loadFromCloud();
     renderAll();
-    addAiMsg("Namaste! Workspace ready. To find glass, type 'Find [Model]'. To add stock, go to Bulk Add Models.", true);
+    addAiMsg("Namaste! Setup complete. Try searching for a model in the Glass Finder, or use Bulk Add.");
   } else {
+    currentUser = null;
     document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('main-layout').style.display = 'none';
   }
 });
 
 async function loadFromCloud() {
-  const doc = await db.collection("users").doc(currentUser.uid).get();
-  if (doc.exists) { const d=doc.data(); inventory=d.inventory||{}; boxes=d.boxes||["Box 1"]; requirements=d.requirements||[]; salesLog=d.salesLog||[]; }
+  try {
+    const doc = await db.collection("users").doc(currentUser.uid).get();
+    if (doc.exists) {
+      const d = doc.data();
+      inventory = d.inventory || {}; boxes = d.boxes || ["Box 1"]; requirements = d.requirements || []; salesLog = d.salesLog || [];
+    }
+  } catch(e) { toast('Cloud load error', 'error'); }
 }
-function save() { db.collection("users").doc(currentUser.uid).set({inventory,boxes,requirements,salesLog},{merge:true}); renderAll(); }
-function saveApiKey() { apiKey = document.getElementById('settings-apikey').value; localStorage.setItem('gg2_apikey', apiKey); toast('Key Saved'); }
 
-// UI
+async function save() {
+  if (!currentUser) return;
+  try { await db.collection("users").doc(currentUser.uid).set({ inventory, boxes, requirements, salesLog }, { merge: true }); renderAll(); } 
+  catch(e) { toast('Sync failed', 'error'); }
+}
+
+// ============================================================
+// UI NAVIGATION
+// ============================================================
 function showSection(name) {
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('section-'+name).classList.add('active');
   document.getElementById('nav-'+name).classList.add('active');
-}
-function toast(msg,type=''){ const el=document.getElementById('toast'); el.textContent=msg; el.className=`toast ${type} show`; setTimeout(()=>el.classList.remove('show'),2500); }
-
-// ============================================================
-// GEMINI AI & COMMAND PARSING (WITH TIMEOUT FIX)
-// ============================================================
-function addAiMsg(text, raw=false) {
-  const c=document.getElementById('chat-msgs');
-  c.innerHTML+=`<div class="msg ai"><div class="msg-av">🤖</div><div class="bubble">${raw?text:text.replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')}</div></div>`;
-  c.scrollTop=c.scrollHeight;
-}
-
-async function sendMsg(overrideText = null) {
-  const text = overrideText || document.getElementById('cinput').value.trim();
-  if(!text || !apiKey) return !apiKey ? toast('Set API Key in Settings') : null;
-  document.getElementById('cinput').value='';
   
-  const c=document.getElementById('chat-msgs');
-  c.innerHTML+=`<div class="msg user"><div class="msg-av">👤</div><div class="bubble">${text}</div></div>`;
-  c.innerHTML+=`<div class="msg ai" id="typing"><div class="msg-av">🤖</div><div class="bubble" style="color:var(--text3)">Thinking...</div></div>`;
-  c.scrollTop=c.scrollHeight;
-
-  const sys = `You are Raju, warehouse AI.
-  Data: ${JSON.stringify(inventory)}.
-  If user wants to FIND a model, return exactly this JSON and nothing else:
-  {"action":"FIND", "target":"Model Name", "exact": true/false, "box":"Box Name", "qty": 10, "alt":"Suggested Alt Model if exact not found"}
-  
-  If user is bulk adding (e.g. "add 10 vivo t4x, iqoo z10 in box 1"), format the compatible models connected with ' / '. Return JSON:
-  {"action":"ADD", "model":"Vivo T4x / iQOO Z10x", "box":"Box 1", "qty":10}
-  
-  If answering a general question, return JSON:
-  {"action":"CHAT", "message":"Your conversational response"}`;
-
-  chatHistory.push({role:'user', parts:[{text}]});
-
-  // ANTI-FREEZE ABORT CONTROLLER (15 Seconds)
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-  try {
-    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ systemInstruction:{parts:[{text:sys}]}, contents:chatHistory, generationConfig:{responseMimeType: "application/json"} }),
-      signal: controller.signal
-    });
-    
-    clearTimeout(timeoutId);
-    document.getElementById('typing').remove();
-    const d = await r.json();
-    const data = JSON.parse(d.candidates[0].content.parts[0].text);
-    
-    if(data.action === "FIND") {
-      addAiMsg(`Showing results for **${data.target}** in workspace.`);
-      renderFinderCard(data);
-      showSection('finder');
-    } else if (data.action === "ADD") {
-      if(!inventory[data.model]) inventory[data.model]={};
-      inventory[data.model][data.box] = (inventory[data.model][data.box]||0) + data.qty;
-      save();
-      addAiMsg(`Added ${data.qty}x **${data.model}** to ${data.box}.`);
-    } else {
-      addAiMsg(data.message);
-    }
-  } catch(e) {
-    clearTimeout(timeoutId);
-    document.getElementById('typing').remove();
-    if(e.name === 'AbortError') addAiMsg("❌ Timeout: The AI took too long to respond. Please try again.");
-    else addAiMsg("❌ Error parsing request. Try phrasing it differently.");
-  }
+  // Close mobile sidebar if open
+  document.getElementById('raju-sidebar').classList.remove('open');
 }
 
-// Bulk Add from Workspace button
-function processBulkAdd() {
-  const val = document.getElementById('bulk-input').value;
-  if(val) { showSection('finder'); sendMsg(val); document.getElementById('bulk-input').value=''; }
+function toggleAI() {
+  document.getElementById('raju-sidebar').classList.toggle('open');
 }
 
-// ============================================================
-// WORKSPACE: FINDER CARD
-// ============================================================
-function renderFinderCard(data) {
-  const res = document.getElementById('finder-results');
-  if(!data.exact && data.qty === 0 && !data.alt) {
-    res.innerHTML = `
-      <div class="finder-card">
-        <div class="fc-icon">❌</div>
-        <div class="fc-title">${data.target} Not Found</div>
-        <div class="fc-sub">We don't have this model or any compatible alternatives in stock.</div>
-        <button class="btn primary" onclick="addReq('${data.target}')">Add to Requirements List</button>
-      </div>`;
-  } else if (!data.exact && data.alt) {
-    res.innerHTML = `
-      <div class="finder-card" style="border-color:var(--amber)">
-        <div class="fc-icon">⚠️</div>
-        <div class="fc-title">Closest Match: ${data.alt}</div>
-        <div class="fc-sub">Exact model not found, but this fits. Located in <b>${data.box}</b> (${data.qty} pcs left).</div>
-        <div class="fc-acts">
-          <button class="btn ghost" onclick="res.innerHTML=''">Cancel</button>
-          <button class="btn sell" onclick="executeSell('${data.alt}', '${data.box}', 1)">Sell 1 Piece</button>
-        </div>
-      </div>`;
-  } else {
-    res.innerHTML = `
-      <div class="finder-card" style="border-color:var(--green)">
-        <div class="fc-icon">✅</div>
-        <div class="fc-title">${data.target}</div>
-        <div class="fc-sub">Located in <b>${data.box}</b>. You have ${data.qty} pieces available.</div>
-        <div class="fc-acts">
-          <button class="btn ghost" onclick="document.getElementById('finder-results').innerHTML=''">Cancel</button>
-          <button class="btn sell" onclick="executeSell('${data.target}', '${data.box}', 1)">Sold 1 Piece</button>
-        </div>
-      </div>`;
-  }
-}
-
-function executeSell(model, box, qty) {
-  if(inventory[model] && inventory[model][box]) {
-    inventory[model][box] -= qty;
-    if(inventory[model][box]<=0) delete inventory[model][box];
-    salesLog.push({model, box, qty, date:new Date().toLocaleDateString()});
-    save();
-    document.getElementById('finder-results').innerHTML = `<div style="text-align:center;color:var(--green);font-weight:700;font-size:18px">✅ Sale Recorded!</div>`;
-    addAiMsg(`Recorded sale of 1x **${model}**.`);
-  }
-}
-
-function addReq(model) {
-  requirements.push({model:model, qty:10, priority:'high'});
-  save();
-  document.getElementById('finder-results').innerHTML = `<div style="text-align:center;color:var(--blue);font-weight:700;font-size:18px">📋 Added to Requirements!</div>`;
-}
-
-// ============================================================
-// RENDERING WAREHOUSE & UTILS
-// ============================================================
 function renderAll() {
   // Warehouse
-  const grid = document.getElementById('boxes-grid'); let h='';
-  boxes.forEach(b=>{
-    let count=0; let items='';
-    Object.entries(inventory).forEach(([m,l])=>{
-      if(l[b]) { count+=l[b]; items+=`<div class="bitem"><div class="bitem-info"><div class="bitem-model">${m}</div></div><div class="bitem-qty">${l[b]}p</div></div>`; }
-    });
-    h+=`<div class="box-card"><div class="box-hdr"><div class="box-name">📦 ${b}</div><div style="font-size:10px">${count} pcs</div></div>${items||'<div class="box-empty">Empty</div>'}</div>`;
+  let wHtml = '';
+  boxes.forEach(b => {
+    let items = Object.entries(inventory).filter(([,locs])=>locs[b]);
+    wHtml += `<div class="box-card"><div class="box-hdr"><span>📦 ${b}</span><span>${items.reduce((a,[,l])=>a+l[b],0)} pcs</span></div>`;
+    items.forEach(([m,locs]) => wHtml += `<div class="bitem"><span><b>${m}</b></span><span style="font-family:var(--mono)">${locs[b]}p</span></div>`);
+    wHtml += `</div>`;
   });
-  grid.innerHTML=h;
-  
-  // Sales & Reqs
-  document.getElementById('sales-container').innerHTML = salesLog.map(s=>`<div style="padding:10px;border-bottom:1px solid var(--border)"><b>${s.model}</b> - ${s.qty} pcs (${s.date})</div>`).join('');
-  document.getElementById('req-container').innerHTML = requirements.map(r=>`<div style="padding:10px;border-bottom:1px solid var(--border)"><b>${r.model}</b> - Need ${r.qty}</div>`).join('');
+  document.getElementById('boxes-grid').innerHTML = wHtml;
+
+  // Sales
+  let sHtml = `<table class="dataTable"><tr><th>Model</th><th>Box</th><th>Qty</th><th>Date</th></tr>`;
+  [...salesLog].reverse().slice(0,50).forEach(s => sHtml+=`<tr><td><b>${s.model}</b></td><td>${s.box}</td><td style="color:var(--green)"><b>${s.qty}</b></td><td>${s.date}</td></tr>`);
+  document.getElementById('sales-container').innerHTML = sHtml + `</table>`;
+
+  // Reqs
+  let rHtml = `<table class="dataTable"><tr><th>Needed Model</th><th></th></tr>`;
+  requirements.forEach((r,i) => rHtml+=`<tr><td><b>${r}</b></td><td style="text-align:right"><button class="btn ghost" onclick="requirements.splice(${i},1); save();">Remove</button></td></tr>`);
+  document.getElementById('req-container').innerHTML = rHtml + `</table>`;
 }
 
 function addBoxPrompt() {
   const n = prompt("New Box Name:");
   if(n && !boxes.includes(n)) { boxes.push(n); save(); }
 }
+
+// ============================================================
+// GEMINI API CORE
+// ============================================================
+function saveApiKey() {
+  apiKey = document.getElementById('settings-apikey').value.trim();
+  localStorage.setItem('gg2_apikey', apiKey);
+  toast('API Key Saved');
+}
+
+async function callGemini(systemPrompt, userText, timeoutMs = 15000) {
+  if(!apiKey) throw new Error("Missing API Key. Please set it in Settings.");
+  
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{
+      method:'POST', 
+      headers:{'Content-Type':'application/json'},
+      signal: controller.signal,
+      body:JSON.stringify({ 
+        systemInstruction: {parts:[{text:systemPrompt}]}, 
+        contents: [{role:'user', parts:[{text:userText}]}], 
+        generationConfig: {maxOutputTokens: 800} 
+      })
+    });
+    clearTimeout(timeoutId);
+    if(!r.ok) throw new Error("API rate limit or connection error.");
+    const d = await r.json();
+    return d.candidates[0].content.parts[0].text;
+  } catch(e) {
+    clearTimeout(timeoutId);
+    if(e.name === 'AbortError') throw new Error("Gemini took too long. Try again.");
+    throw e;
+  }
+}
+
+// ============================================================
+// FEATURE: GLASS FINDER
+// ============================================================
+async function runFinder() {
+  const input = document.getElementById('finder-input').value.trim();
+  const btn = document.getElementById('fbtn');
+  const rc = document.getElementById('finder-result');
+  if(!input) return;
+
+  btn.innerText = "Searching..."; btn.disabled = true;
+  rc.classList.remove('show');
+
+  const sys = `You are a tempered glass compatibility expert. 
+  Current Inventory: ${JSON.stringify(inventory)}
+  User is looking for: "${input}"
+  
+  RULES:
+  1. Check if the exact model exists in inventory. If yes, output: [FOUND|exact|Model Name|Box Name|Qty]
+  2. If not exact, find a highly compatible model in inventory based on screen size (inches) and camera notch type. 
+     (e.g., Realme C55 & Realme C67 share 6.72" punch hole. Samsung A35 & A55 share 6.6").
+     If found, output: [FOUND|compat|Compatible Model in Inventory|Box Name|Qty|Reason for match]
+  3. If NO suitable glass is in inventory, output exactly: [NOTFOUND]
+  
+  Output ONLY the bracketed tag. Nothing else.`;
+
+  try {
+    const resp = await callGemini(sys, input);
+    
+    // Parse response
+    if(resp.includes('[NOTFOUND]')) {
+      rc.innerHTML = `
+        <div class="rc-header"><div class="rc-icon none">✕</div><div><div class="rc-title">Out of Stock</div><div class="rc-subtitle">No exact or compatible glass found for ${input}.</div></div></div>
+        <div class="rc-acts"><button class="btn primary" onclick="addToReq('${input}')">Add to Requirements List</button></div>`;
+      addAiMsg(`I checked everywhere, but we don't have glass for **${input}**. Use the button to add it to the order list.`);
+    } 
+    else {
+      const match = resp.match(/\[FOUND\|([^\|]+)\|([^\|]+)\|([^\|]+)\|([^\|]+)(?:\|([^\]]+))?\]/);
+      if(match) {
+        const type = match[1]; // exact or compat
+        const model = match[2];
+        const box = match[3];
+        const qty = match[4];
+        const reason = match[5] || '';
+        
+        pendingSale = {model, box};
+        
+        const isExact = type === 'exact';
+        rc.innerHTML = `
+          <div class="rc-header">
+            <div class="rc-icon ${isExact ? 'exact' : 'compat'}">${isExact ? '✓' : '💡'}</div>
+            <div>
+              <div class="rc-title">${model}</div>
+              <div class="rc-subtitle">${isExact ? 'Exact Match' : 'Compatible alternative ('+reason+')'}</div>
+            </div>
+          </div>
+          <div class="rc-stock-box">
+            <div><div style="font-size:12px;color:var(--text2)">Location</div><div style="font-weight:600">${box}</div></div>
+            <div style="text-align:right"><div style="font-size:12px;color:var(--text2)">Available Stock</div><div class="rc-qty">${qty}</div></div>
+          </div>
+          <div class="rc-acts">
+            <button class="btn sell" style="flex:1;padding:12px;font-size:15px;" onclick="executeSale()">💰 Mark 1 as Sold</button>
+            <button class="btn ghost" onclick="document.getElementById('finder-result').classList.remove('show')">Cancel</button>
+          </div>`;
+          
+          addAiMsg(`Found it! Check the Glass Finder screen. I found **${model}** in **${box}**. Ready to sell?`);
+      } else {
+        throw new Error("Could not understand AI response.");
+      }
+    }
+    rc.classList.add('show');
+  } catch(e) {
+    toast(e.message, 'error');
+  }
+  
+  btn.innerText = "Find"; btn.disabled = false;
+}
+
+function executeSale() {
+  if(!pendingSale) return;
+  const {model, box} = pendingSale;
+  
+  if(inventory[model] && inventory[model][box] > 0) {
+    inventory[model][box] -= 1;
+    if(inventory[model][box] <= 0) delete inventory[model][box];
+    if(Object.keys(inventory[model]).length === 0) delete inventory[model];
+    
+    salesLog.push({model, box, qty:1, date:new Date().toLocaleString()});
+    save();
+    document.getElementById('finder-result').classList.remove('show');
+    document.getElementById('finder-input').value = '';
+    toast(`1x ${model} Sold!`, 'success');
+    addAiMsg(`✅ Successfully recorded sale for 1x **${model}**. Inventory updated.`);
+  } else {
+    toast('Error: Item no longer in stock.', 'error');
+  }
+}
+
+function addToReq(model) {
+  if(!requirements.includes(model)) requirements.push(model);
+  save();
+  document.getElementById('finder-result').classList.remove('show');
+  toast('Added to requirements!', 'success');
+  addAiMsg(`📝 Added **${model}** to the requirements list. Don't forget to order it!`);
+}
+
+// ============================================================
+// FEATURE: BULK ADD MODELS
+// ============================================================
+async function runBulkAdd() {
+  const input = document.getElementById('bulk-input').value.trim();
+  const btn = document.getElementById('bbtn');
+  if(!input) return;
+
+  btn.innerText = "Processing via AI..."; btn.disabled = true;
+
+  const sys = `You process natural language warehouse additions.
+  Valid Boxes: ${boxes.join(', ')}. If user provides an unknown box, default to the first valid one.
+  
+  CRITICAL RULE: If the user lists multiple models separated by commas (e.g., "vivo t4x, iqoo z10x, vivo t3x"), they share the SAME glass. 
+  You MUST combine their names with slashes into a SINGLE model name string: "Vivo T4x / iQOO Z10x / Vivo T3x".
+  
+  Extract the data and output ONLY a JSON array of objects. Example format:
+  [{"combined_model_name": "Vivo T4x / iQOO Z10x", "box": "Box 1", "qty": 10}]
+  
+  Return ONLY the raw JSON array. No markdown, no backticks.`;
+
+  try {
+    const resp = await callGemini(sys, input);
+    const actions = JSON.parse(resp.replace(/```json/g,'').replace(/```/g,'').trim());
+    
+    let addedMsg = [];
+    actions.forEach(a => {
+      if(!inventory[a.combined_model_name]) inventory[a.combined_model_name] = {};
+      inventory[a.combined_model_name][a.box] = (inventory[a.combined_model_name][a.box] || 0) + a.qty;
+      addedMsg.push(`${a.qty}x ${a.combined_model_name} -> ${a.box}`);
+    });
+    
+    save();
+    document.getElementById('bulk-input').value = '';
+    toast('Models Bulk Added!', 'success');
+    addAiMsg(`⚡ Bulk addition complete!\n\nI added the following to inventory:\n${addedMsg.join('\n')}`, true);
+    
+  } catch(e) {
+    toast('Failed to process. Check text format or API key.', 'error');
+  }
+  
+  btn.innerText = "Process & Add to Inventory"; btn.disabled = false;
+}
+
+// ============================================================
+// GENERAL AI CHAT (Right Sidebar)
+// ============================================================
+function addAiMsg(text, raw=false) {
+  const c = document.getElementById('chat-msgs');
+  const fmt = raw ? text.replace(/\n/g,'<br>') : text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  c.innerHTML += `<div class="msg ai"><div class="msg-av">🤖</div><div class="bubble">${fmt}</div></div>`;
+  c.scrollTop = c.scrollHeight;
+}
+
+async function sendChat() {
+  const input = document.getElementById('cinput');
+  const text = input.value.trim();
+  if(!text) return;
+  
+  input.value = '';
+  const c = document.getElementById('chat-msgs');
+  c.innerHTML += `<div class="msg user"><div class="msg-av">👤</div><div class="bubble">${text}</div></div>`;
+  c.innerHTML += `<div class="msg ai" id="typing"><div class="msg-av">🤖</div><div class="typing"><div class="td"></div><div class="td"></div><div class="td"></div></div></div>`;
+  c.scrollTop = c.scrollHeight;
+
+  const sys = `You are Raju, warehouse assistant. 
+  Current Inventory: ${JSON.stringify(inventory)}
+  Total Sales Log length: ${salesLog.length}.
+  Answer questions directly. Be brief, conversational, and helpful in English/Hindi.`;
+
+  try {
+    const resp = await callGemini(sys, text);
+    document.getElementById('typing').remove();
+    addAiMsg(resp);
+  } catch(e) {
+    document.getElementById('typing').remove();
+    addAiMsg("❌ Network/API Error. Try asking again.");
+  }
+}
+
+// Utils
+let toastTimer; function toast(msg,type=''){ const el=document.getElementById('toast'); el.textContent=msg; el.className=`toast ${type} show`; clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),2800); }
 </script>
 </body>
 </html>
