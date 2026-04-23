@@ -36,12 +36,8 @@
 body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;overflow-x:hidden}
 
 /* LOGIN SCREEN */
-#login-screen {
-  position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999;
-}
-.login-box {
-  background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 40px; text-align: center; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.03);
-}
+#login-screen { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
+.login-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 40px; text-align: center; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); }
 .login-box h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; }
 .login-box p { font-size: 14px; color: var(--text2); margin-bottom: 30px; line-height: 1.5; }
 .btn-google { background: #fff; border: 1px solid var(--border2); color: var(--text); padding: 12px 20px; border-radius: 8px; font-family: var(--font); font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; transition: all .15s; }
@@ -60,21 +56,20 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .sdot{width:6px;height:6px;border-radius:50%;background:var(--text3)}
 .sdot.ok{background:var(--green)}.sdot.err{background:var(--red)}
 .tbtn{padding:5px 12px;border-radius:6px;font-size:12px;border:1px solid var(--border2);background:none;color:var(--text2);cursor:pointer;font-family:var(--font);transition:all .15s}
-.tbtn:hover{border-color:var(--accent);color:var(--accent)}
-.tbtn.warn{border-color:rgba(220,38,38,.3);color:var(--red)}
+.tbtn:hover{border-color:var(--accent);color:var(--text)}
 
-/* SIDEBAR & MAIN (Kept from previous version for brevity, imagine full CSS here) */
+/* SIDEBAR */
 .sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:12px 0;display:flex;flex-direction:column;gap:1px;position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto}
 .nav-label{font-size:10px;letter-spacing:.1em;color:var(--text3);padding:10px 18px 4px;font-weight:600;text-transform:uppercase}
 .nav-btn{display:flex;align-items:center;gap:9px;padding:8px 18px;font-size:13px;font-family:var(--font);color:var(--text2);cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:all .15s;position:relative}
 .nav-btn:hover{color:var(--text);background:var(--bg3)}
 .nav-btn.active{color:var(--text);background:rgba(24,24,27,.05);font-weight:600}
 .nav-btn.active::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;background:var(--accent);border-radius:0 2px 2px 0}
-.nav-icon{font-size:15px;width:18px;text-align:center}
 .nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;font-family:var(--mono)}
 .nav-badge.amber{background:var(--amber);color:#fff}
 .nav-sep{height:1px;background:var(--border);margin:8px 18px}
 
+/* MAIN */
 .main{overflow-y:auto;height:calc(100vh - 56px);display:flex;flex-direction:column}
 .section{display:none;flex:1;flex-direction:column}
 .section.active{display:flex}
@@ -85,15 +80,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .btn.primary{background:var(--accent);color:var(--accent-text);font-weight:600}
 .btn.primary:hover{background:var(--accent2)}
 .btn.ghost{background:var(--bg2);border:1px solid var(--border2);color:var(--text2)}
-.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--text)}
 .btn.danger{background:none;border:1px solid transparent;color:var(--red)}
 .btn.danger:hover{border-color:var(--red);background:rgba(220,38,38,.07)}
+.btn.sell{background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.25);color:var(--green);font-weight:600}
 .page-content{padding:18px 26px;flex:1;overflow-y:auto}
 
 /* STATS */
 .stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:14px 26px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--bg2)}
 .stat{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px 14px}
 .stat-num{font-size:22px;font-weight:700;font-family:var(--mono);color:var(--text)}
+.stat-num.red{color:var(--red)}.stat-num.green{color:var(--green)}.stat-num.amber{color:var(--amber)}
 .stat-label{font-size:11px;color:var(--text2);margin-top:2px}
 
 /* CHAT */
@@ -110,27 +107,66 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .bubble{padding:11px 14px;border-radius:11px;font-size:13.5px;line-height:1.65;box-shadow:0 1px 2px rgba(0,0,0,0.03)}
 .msg.user .bubble{background:var(--accent);color:var(--accent-text);border-bottom-right-radius:3px}
 .msg.ai .bubble{background:var(--bg2);border:1px solid var(--border);border-bottom-left-radius:3px}
+.bubble strong{color:inherit;font-weight:700}
+.msg.user .bubble strong{color:var(--accent-text)}
+.bubble .ok{color:var(--green)}.bubble .no{color:var(--red)}.bubble .warn{color:var(--amber)}
+.bubble .bt{display:inline-block;background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.2);color:var(--blue);padding:0 5px;border-radius:4px;font-size:11px;font-family:var(--mono)}
+.bubble .sell-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(22,163,74,.08);border:1px solid rgba(22,163,74,.2);color:var(--green);padding:3px 9px;border-radius:20px;font-size:12px;cursor:pointer;margin:2px;transition:all .15s}
+.bubble .sell-chip:hover{background:rgba(22,163,74,.18)}
+.typing{display:flex;gap:4px;padding:10px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:11px;border-bottom-left-radius:3px;width:fit-content}
+.td{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:tb 1.2s infinite}
+.td:nth-child(2){animation-delay:.2s}.td:nth-child(3){animation-delay:.4s}
+@keyframes tb{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px);background:var(--text)}}
 .chat-foot{padding:14px 24px 18px;border-top:1px solid var(--border);background:var(--bg2);flex-shrink:0}
 .quick-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
 .qb{font-size:11px;padding:4px 10px;background:var(--bg);border:1px solid var(--border2);color:var(--text2);border-radius:20px;cursor:pointer;font-family:var(--font);transition:all .15s;white-space:nowrap}
 .input-row{display:flex;gap:8px;align-items:flex-end}
 .cinput{flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:9px;padding:10px 14px;font-size:14px;font-family:var(--font);color:var(--text);resize:none;min-height:44px;max-height:110px;}
+.cinput:focus{outline:none;border-color:var(--accent)}
 .sbtn{background:var(--accent);color:var(--accent-text);border:none;border-radius:9px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;}
 
-/* WAREHOUSE GRID & MODALS & TOASTS (Abridged for spacing, relies on previous UI logic) */
+/* WAREHOUSE GRID & MODALS & TOASTS */
+.wh-toolbar{display:flex;gap:8px;margin-bottom:14px}
+.sinput{flex:1;background:var(--bg2);border:1px solid var(--border2);border-radius:7px;padding:8px 12px;font-size:13px;font-family:var(--font);color:var(--text)}
+.fsel{background:var(--bg2);border:1px solid var(--border2);border-radius:7px;padding:8px 10px;font-size:12px;font-family:var(--font);color:var(--text2);cursor:pointer}
 .boxes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:14px}
 .box-card{background:var(--bg2);border:1px solid var(--border);border-radius:11px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.02);}
 .box-hdr{padding:12px 14px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .box-name{font-size:13px;font-weight:600;color:var(--text);font-family:var(--mono);}
 .box-empty{padding:16px;font-size:12px;color:var(--text3);text-align:center;font-style:italic}
-.add-box-tile{background:none;border:1px dashed var(--border2);border-radius:11px;height:72px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--text3);gap:5px;}
+.bitem{display:flex;align-items:center;padding:8px 14px;gap:8px;border-bottom:1px solid rgba(0,0,0,0.02)}
+.bitem-info{flex:1;min-width:0}
+.bitem-model{font-size:13.5px;color:var(--text);font-weight:500;}
+.bitem-brand{font-size:10px;color:var(--text3);margin-top:2px}
+.bitem-qty{font-size:13px;font-family:var(--mono);font-weight:600;text-align:right}
+.bitem-qty.low{color:var(--red)}.bitem-qty.mid{color:var(--amber)}.bitem-qty.ok{color:var(--green)}
+.bitem-acts{display:flex;gap:4px;opacity:0;}
+.bitem:hover .bitem-acts{opacity:1}
+.iab{width:26px;height:26px;border-radius:5px;border:1px solid var(--border2);cursor:pointer;background:var(--bg2);color:var(--text2);}
+.add-box-tile{background:none;border:1px dashed var(--border2);border-radius:11px;height:72px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--text3);}
 
+/* TABLES */
+.req-table, .sales-table{width:100%;border-collapse:collapse;font-size:13px;background:var(--bg2);border-radius:9px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.02)}
+.req-table th, .sales-table th{text-align:left;padding:10px 14px;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);background:var(--bg3)}
+.req-table td, .sales-table td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+.sale-tag{display:inline-block;padding:3px 8px;border-radius:4px;font-size:11px;font-family:var(--mono);background:var(--bg3);border:1px solid var(--border);color:var(--text2)}
+.qc{display:flex;align-items:center;gap:6px}
+.qbtn{width:24px;height:24px;border-radius:5px;border:1px solid var(--border2);background:var(--bg2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.qval{font-family:var(--mono);font-size:13px;font-weight:600;min-width:26px;text-align:center}
+
+/* MODALS */
 .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .2s}
 .modal-ov.open{opacity:1;pointer-events:all}
 .modal{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:26px;width:440px;max-width:92vw;transform:translateY(10px);transition:transform .2s;box-shadow:0 10px 25px rgba(0,0,0,0.1)}
 .modal-ov.open .modal{transform:translateY(0)}
+.modal h3{font-size:17px;font-weight:700;margin-bottom:6px;}
+.mlabel{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.minput{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:7px;padding:10px 14px;font-size:14px;font-family:var(--font);margin-bottom:16px}
+.modal-acts{display:flex;gap:8px;justify-content:flex-end}
+.sell-preview{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:18px;}
 
-.toast{position:fixed;bottom:22px;right:22px;background:var(--text);border:1px solid var(--text);border-radius:9px;padding:12px 18px;font-size:13.5px;color:var(--bg2);z-index:9999;transform:translateY(16px);opacity:0;transition:all .22s;display:flex;align-items:center;gap:8px;max-width:300px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--text);border:1px solid var(--text);border-radius:9px;padding:12px 18px;font-size:13.5px;color:var(--bg2);z-index:9999;transform:translateY(16px);opacity:0;transition:all .22s;display:flex;align-items:center;gap:8px;}
 .toast.show{transform:translateY(0);opacity:1}
 .toast.success{background:var(--green);border-color:var(--green);color:#fff}
 .toast.error{background:var(--red);border-color:var(--red);color:#fff}
@@ -141,7 +177,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   .nav-label, .nav-sep { display: none; }
   .nav-btn { padding: 12px 16px; white-space: nowrap; width: auto; border-bottom: 2px solid transparent; }
   .nav-btn.active { background: transparent; border-bottom: 2px solid var(--accent); }
+  .nav-btn.active::before { display: none; }
   .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .wh-toolbar { flex-direction: column; }
+  .boxes-grid { grid-template-columns: 1fr; }
+  .req-table, .sales-table { display: block; overflow-x: auto; white-space: nowrap; }
 }
 </style>
 </head>
@@ -163,44 +203,170 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   <div class="topbar">
     <div class="logo"><div class="logo-icon">⬡</div>GlassGodown</div>
     <div class="topbar-right">
-      <div class="api-status"><div class="sdot ok" id="sdot"></div><span>Cloud Sync On</span></div>
+      <div class="api-status"><div class="sdot ok" id="sdot"></div><span id="stxt">Cloud Sync On</span></div>
+      <button class="tbtn" onclick="openModal('api-modal')">⚙ API Key</button>
       <div class="user-badge" id="user-badge"></div>
       <button class="tbtn warn" onclick="logOut()">Logout</button>
     </div>
   </div>
 
   <nav class="sidebar">
-    <button class="nav-btn active" onclick="showSection('manager')" id="nav-manager">🤖 AI Manager</button>
-    <button class="nav-btn" onclick="showSection('warehouse')" id="nav-warehouse">📦 Warehouse</button>
-    <button class="nav-btn" onclick="showSection('sales')" id="nav-sales">💰 Sales Log</button>
-    <button class="nav-btn" onclick="showSection('settings')" id="nav-settings">⚙ Settings</button>
+    <div class="nav-label">Workspace</div>
+    <button class="nav-btn active" onclick="showSection('manager')" id="nav-manager"><span class="nav-icon">🤖</span>AI Manager</button>
+    <button class="nav-btn" onclick="showSection('warehouse')" id="nav-warehouse"><span class="nav-icon">📦</span>Warehouse<span class="nav-badge amber" id="low-badge" style="display:none">!</span></button>
+    <button class="nav-btn" onclick="showSection('sales')" id="nav-sales"><span class="nav-icon">💰</span>Sales Log</button>
+    <div class="nav-sep"></div>
+    <div class="nav-label">Orders</div>
+    <button class="nav-btn" onclick="showSection('requirements')" id="nav-requirements"><span class="nav-icon">📋</span>Requirements<span class="nav-badge" id="req-badge" style="display:none">0</span></button>
+    <div class="nav-sep"></div>
+    <div class="nav-label">Data</div>
+    <button class="nav-btn" onclick="showSection('settings')" id="nav-settings"><span class="nav-icon">⚙</span>Settings</button>
   </nav>
 
   <main class="main">
-    <div class="section active" id="section-warehouse">
+    
+    <div class="section active" id="section-manager">
+      <div class="chat-layout">
+        <div class="chat-head">
+          <div class="av">🤖</div>
+          <div>
+            <div style="font-size:15px;font-weight:700">Raju — Cloud Manager</div>
+            <div style="font-size:12px;color:var(--text2)">Powered by Google Gemini · Hindi / English</div>
+          </div>
+          <button class="btn ghost" style="margin-left:auto;font-size:11px" onclick="clearChat()">Clear Chat</button>
+        </div>
+        <div class="chat-msgs" id="chat-msgs"></div>
+        <div class="chat-foot">
+          <div class="quick-btns">
+            <button class="qb" onclick="qs('Samsung A35 ka tempered hai?')">Find Samsung A35</button>
+            <button class="qb" onclick="qs('10 pcs Vivo T4x Box 3 mein add karo')">Add Vivo T4x</button>
+            <button class="qb" onclick="qs('Aaj kitna bika?')">Today sales</button>
+            <button class="qb" onclick="qs('Kaunse models low stock mein hain?')">Low stock check</button>
+          </div>
+          <div class="input-row">
+            <textarea class="cinput" id="cinput" placeholder="Kuch bhi poochho..." rows="1" onkeydown="handleKey(event)"></textarea>
+            <button class="sbtn" id="sbtn" onclick="sendMsg()">↑</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="section-warehouse">
       <div class="page-head">
-        <div><h1>📦 Cloud Warehouse</h1><p>Data synced securely to your Google Account</p></div>
+        <div><h1>📦 Warehouse</h1><p>All boxes and stock (Synced to Cloud)</p></div>
         <div><button class="btn primary" onclick="openModal('addbox-modal')">+ Add Box</button></div>
       </div>
       <div class="stats-row" id="stats-row"></div>
       <div class="page-content">
+        <div class="wh-toolbar">
+          <input class="sinput" id="wh-search" type="text" placeholder="Search model or brand..." oninput="renderWH()">
+          <select class="fsel" id="wh-box-filter" onchange="renderWH()"><option value="">All Boxes</option></select>
+        </div>
         <div class="boxes-grid" id="boxes-grid"></div>
       </div>
     </div>
-    
-    <div class="modal-ov" id="addbox-modal">
-      <div class="modal">
-        <h3>📦 Add New Box</h3>
-        <input class="minput" id="newbox-in" placeholder="e.g. Box 6">
-        <div class="modal-acts">
-          <button class="btn ghost" onclick="closeModal('addbox-modal')">Cancel</button>
-          <button class="btn primary" onclick="confirmAddBox()">Add Box</button>
+
+    <div class="section" id="section-sales">
+      <div class="page-head">
+        <div><h1>💰 Sales Log</h1><p>Every sale recorded in the cloud</p></div>
+        <div><button class="btn danger" onclick="clearSales()">Clear Log</button></div>
+      </div>
+      <div class="stats-row" id="sales-stats"></div>
+      <div class="page-content">
+        <div id="sales-container"></div>
+      </div>
+    </div>
+
+    <div class="section" id="section-requirements">
+      <div class="page-head">
+        <div><h1>📋 Requirements</h1><p>Items to order from supplier</p></div>
+        <div><button class="btn ghost" onclick="clearReqs()">Clear All</button></div>
+      </div>
+      <div class="page-content">
+        <div id="req-container"></div>
+      </div>
+    </div>
+
+    <div class="section" id="section-settings">
+      <div class="page-head"><div><h1>⚙ Settings</h1><p>Account & Configuration</p></div></div>
+      <div class="page-content">
+        <div style="max-width:600px;display:flex;flex-direction:column;gap:16px">
+          
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:20px;">
+            <div style="font-weight:700;margin-bottom:10px;">🔑 AI Configuration (Google Gemini)</div>
+            <p style="font-size:13px;color:var(--text2);margin-bottom:14px;">Your API key is saved locally on this device for security.</p>
+            <div style="display:flex;gap:8px">
+              <input class="minput" id="settings-apikey" type="password" placeholder="AIzaSy..." style="margin:0;flex:1">
+              <button class="btn primary" onclick="saveApiKeyFromSettings()">Save Key</button>
+            </div>
+          </div>
+
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:20px;">
+            <div style="font-weight:700;margin-bottom:10px;">⚠️ Low Stock Threshold</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input class="minput" id="low-threshold-input" type="number" min="1" max="50" style="margin:0;width:100px">
+              <span style="font-size:13px;color:var(--text2)">pieces</span>
+              <button class="btn primary" onclick="saveLowThreshold()">Save</button>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
 
   </main>
 </div>
+
+<div class="modal-ov" id="api-modal">
+  <div class="modal">
+    <h3>🔑 Google Gemini API Key</h3>
+    <p>Saved securely on this device.</p>
+    <input class="minput" id="api-key-in" type="password" placeholder="AIzaSy...">
+    <div class="modal-acts">
+      <button class="btn ghost" onclick="closeModal('api-modal')">Cancel</button>
+      <button class="btn primary" onclick="saveApiKey()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-ov" id="addbox-modal">
+  <div class="modal">
+    <h3>📦 Add New Box / Shelf</h3>
+    <input class="minput" id="newbox-in" placeholder="e.g. Box 6" onkeydown="if(event.key==='Enter')confirmAddBox()">
+    <div class="modal-acts">
+      <button class="btn ghost" onclick="closeModal('addbox-modal')">Cancel</button>
+      <button class="btn primary" onclick="confirmAddBox()">Add Box</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-ov" id="edit-modal">
+  <div class="modal">
+    <h3 id="edit-title">✎ Edit Item</h3>
+    <div class="mlabel">Model</div><input class="minput" id="edit-model" readonly style="opacity:.6">
+    <div class="mlabel">Box</div><input class="minput" id="edit-box" readonly style="opacity:.6">
+    <div class="mlabel">New Quantity</div><input class="minput" id="edit-qty" type="number" min="0">
+    <div class="modal-acts">
+      <button class="btn danger" onclick="deleteItem()">Delete</button>
+      <button class="btn ghost" onclick="closeModal('edit-modal')">Cancel</button>
+      <button class="btn primary" onclick="saveEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-ov" id="sell-modal">
+  <div class="modal">
+    <h3>💰 Record Sale</h3>
+    <div class="sell-preview" id="sell-preview"></div>
+    <div class="mlabel">Quantity Sold</div><input class="minput" id="sell-qty" type="number" min="1" value="1">
+    <div class="mlabel">Note (optional)</div><input class="minput" id="sell-note" placeholder="Walk-in customer">
+    <div class="modal-acts">
+      <button class="btn ghost" onclick="closeModal('sell-modal')">Cancel</button>
+      <button class="btn sell" onclick="confirmSell()">✓ Confirm Sale</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -218,7 +384,7 @@ const firebaseConfig = {
 };
 
 
-// Initialize Firebase
+
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
@@ -230,36 +396,39 @@ const provider = new firebase.auth.GoogleAuthProvider();
 let currentUser = null;
 let inventory = {};   
 let boxes = ["Box 1", "Box 2"];
+let requirements = [];
+let salesLog = [];
+let lowThreshold = 5;
+let apiKey = '';
+let chatHistory = [];
+let editingItem = null;
+let sellingItem = null;
 
 // ============================================================
-// AUTHENTICATION LOGIC
+// AUTH & CLOUD SYNC
 // ============================================================
 function signInWithGoogle() {
   document.getElementById('login-loader').style.display = 'block';
-  auth.signInWithPopup(provider).catch(error => {
-    console.error(error);
-    toast(error.message, 'error');
-    document.getElementById('login-loader').style.display = 'none';
-  });
+  auth.signInWithPopup(provider).catch(e => { toast(e.message, 'error'); document.getElementById('login-loader').style.display = 'none'; });
 }
 
-function logOut() {
-  auth.signOut();
-}
+function logOut() { auth.signOut(); }
 
-// Listen for Login/Logout State Changes
 auth.onAuthStateChanged(async (user) => {
   if (user) {
     currentUser = user;
-    // UI Updates
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('main-layout').style.display = 'grid';
     document.getElementById('user-badge').innerHTML = `<img src="${user.photoURL}" alt=""> ${user.displayName.split(' ')[0]}`;
     
-    // Load Data from Cloud
+    // Load Local API Key
+    apiKey = localStorage.getItem('gg2_apikey') || '';
+    if(document.getElementById('settings-apikey')) document.getElementById('settings-apikey').value = apiKey;
+    
     await loadFromCloud();
     renderAll();
-    toast('Welcome back, ' + user.displayName, 'success');
+    injectWelcome();
+    toast('Cloud Sync Active', 'success');
   } else {
     currentUser = null;
     document.getElementById('login-screen').style.display = 'flex';
@@ -268,93 +437,250 @@ auth.onAuthStateChanged(async (user) => {
   }
 });
 
-// ============================================================
-// CLOUD DATABASE LOGIC (Replacing localStorage)
-// ============================================================
 async function loadFromCloud() {
-  if (!currentUser) return;
   try {
-    const docRef = db.collection("users").doc(currentUser.uid);
-    const docSnap = await docRef.get();
-    
-    if (docSnap.exists) {
-      const data = docSnap.data();
-      inventory = data.inventory || {};
-      boxes = data.boxes || ["Box 1", "Box 2"];
+    const doc = await db.collection("users").doc(currentUser.uid).get();
+    if (doc.exists) {
+      const d = doc.data();
+      inventory = d.inventory || {};
+      boxes = d.boxes || ["Box 1", "Box 2"];
+      requirements = d.requirements || [];
+      salesLog = d.salesLog || [];
+      lowThreshold = d.lowThreshold || 5;
     } else {
-      // First time user - set up empty template
-      await saveToCloud(); 
+      await saveToCloud();
     }
-  } catch (e) {
-    toast('Error loading cloud data', 'error');
-  }
+  } catch (e) { toast('Error loading data', 'error'); }
 }
 
 async function saveToCloud() {
   if (!currentUser) return;
   try {
-    const docRef = db.collection("users").doc(currentUser.uid);
-    // Push data to Firebase
-    await docRef.set({
-      inventory: inventory,
-      boxes: boxes
-    }, { merge: true }); // merge ensures we don't accidentally overwrite other fields
-  } catch (e) {
-    console.error(e);
-    toast('Failed to save to cloud', 'error');
-  }
+    await db.collection("users").doc(currentUser.uid).set({
+      inventory, boxes, requirements, salesLog, lowThreshold
+    }, { merge: true });
+  } catch (e) { toast('Sync failed', 'error'); }
 }
+
+// Wrapper for saving (replaces old localStorage method)
+function save() { saveToCloud(); }
 
 // ============================================================
-// WAREHOUSE UI LOGIC (Minimal version to prove Cloud works)
+// UI NAVIGATION & RENDERING
 // ============================================================
-function renderAll() {
-  const grid = document.getElementById('boxes-grid');
-  let html = '';
-  boxes.forEach(box => {
-    let count = 0;
-    Object.keys(inventory).forEach(m => { if(inventory[m][box]) count += inventory[m][box]; });
-    
-    html += `<div class="box-card">
-      <div class="box-hdr"><div class="box-name">📦 ${box}</div><div style="font-size:10px;color:var(--text3)">${count} pcs</div></div>
-      <div style="padding:14px;font-size:12px;color:var(--text3);text-align:center">Cloud synced!</div>
-    </div>`;
-  });
-  html += `<div class="add-box-tile" onclick="openModal('addbox-modal')">+ Add New Box</div>`;
-  grid.innerHTML = html;
-  
-  document.getElementById('stats-row').innerHTML = `<div class="stat"><div class="stat-num">${boxes.length}</div><div class="stat-label">Cloud Boxes</div></div>`;
-}
-
-function confirmAddBox() {
-  const name = document.getElementById('newbox-in').value.trim();
-  if(!name || boxes.includes(name)) return;
-  
-  boxes.push(name);
-  renderAll();
-  closeModal('addbox-modal');
-  
-  // Save to Firebase immediately!
-  saveToCloud().then(() => toast(`${name} synced to cloud!`, 'success'));
-}
-
-// UI Helpers
 function showSection(name) {
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('section-'+name).classList.add('active');
   document.getElementById('nav-'+name).classList.add('active');
+  if(name==='warehouse') renderWH();
+  if(name==='sales') renderSales();
+  if(name==='requirements') renderReqs();
 }
+
+function renderAll() {
+  document.getElementById('low-threshold-input').value = lowThreshold;
+  renderWH(); renderSales(); renderReqs(); updateBadges();
+}
+
+// ============================================================
+// GEMINI AI & CHAT
+// ============================================================
+function saveApiKey() {
+  apiKey = document.getElementById('api-key-in').value.trim();
+  localStorage.setItem('gg2_apikey', apiKey);
+  closeModal('api-modal'); toast('API key saved locally!', 'success');
+}
+function saveApiKeyFromSettings() {
+  apiKey = document.getElementById('settings-apikey').value.trim();
+  localStorage.setItem('gg2_apikey', apiKey);
+  toast('API key saved locally!', 'success');
+}
+
+function injectWelcome() {
+  document.getElementById('chat-msgs').innerHTML = '';
+  chatHistory = [];
+  addAiMsg(`Namaste! 🙏 Main hoon **Raju** — aapka Cloud Warehouse Manager.\n\nGodown mein **${Object.keys(inventory).length}** models aur **${getTotalPcs()}** pieces hain.\n\nBolo kya karna hai! ("Add 10 Vivo T4x to Box 1")`, true);
+}
+
+function qs(t){document.getElementById('cinput').value=t;sendMsg();}
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
+function clearChat(){injectWelcome();}
+
+function addUserMsg(text) {
+  const c=document.getElementById('chat-msgs');
+  c.innerHTML+=`<div class="msg user"><div class="msg-av">👤</div><div class="bubble">${text}</div></div>`;
+  c.scrollTop=c.scrollHeight;
+}
+function addAiMsg(text, raw=false) {
+  const c=document.getElementById('chat-msgs');
+  const fmt = raw ? text.replace(/\n/g,'<br>') : text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\[BOX:(.*?)\]/g,'<span class="bt">$1</span>').replace(/\[SELL:(.*?)\|(.*?)\]/g, (m,mod,box)=>`<span class="sell-chip" onclick="openSellModal('${mod}','${box}', inventory['${mod}']['${box}'])">💰 Sell ${mod}</span>`).replace(/\n/g,'<br>');
+  c.innerHTML+=`<div class="msg ai"><div class="msg-av">🤖</div><div class="bubble">${fmt}</div></div>`;
+  c.scrollTop=c.scrollHeight;
+}
+
+async function sendMsg() {
+  const input=document.getElementById('cinput'); const text=input.value.trim();
+  if(!text) return;
+  if(!apiKey){toast('Please set Gemini API key in Settings!','error'); return;}
+  input.value=''; addUserMsg(text); chatHistory.push({role:'user', parts:[{text}]});
+  
+  const c=document.getElementById('chat-msgs');
+  c.innerHTML+=`<div class="msg ai" id="typing"><div class="msg-av">🤖</div><div class="typing"><div class="td"></div><div class="td"></div><div class="td"></div></div></div>`;
+  c.scrollTop=c.scrollHeight;
+
+  try {
+    const sys = `You are Raju, warehouse manager. 
+    Boxes: ${boxes.join(', ')}. Inventory JSON: ${JSON.stringify(inventory)}. 
+    Return actions like [ACTION:ADD|model:Brand Model|box:Box 1|qty:5], [ACTION:SELL|model:Brand Model|box:Box 1|qty:1]. 
+    If asking to sell, output [SELL:Model|Box] chip in text. Keep answers short.`;
+
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ systemInstruction: {parts:[{text:sys}]}, contents: chatHistory, generationConfig: {maxOutputTokens: 800} })
+    });
+    
+    document.getElementById('typing').remove();
+    if(!r.ok) throw new Error("API Error");
+    const d = await r.json();
+    const resp = d.candidates[0].content.parts[0].text;
+    
+    if(executeActions(resp)) { save(); renderAll(); }
+    const clean = resp.replace(/\[ACTION:[^\]]+\]/g,'').trim();
+    addAiMsg(clean);
+    chatHistory.push({role:'model', parts:[{text:clean}]});
+  } catch(e) {
+    document.getElementById('typing').remove();
+    addAiMsg(`❌ Error connecting to Gemini. Check API Key in settings.`);
+  }
+}
+
+function executeActions(resp) {
+  let changed=false;
+  const regex=/\[ACTION:([^\]]+)\]/g; let m;
+  while((m=regex.exec(resp))!==null){
+    const parts=m[1].split('|'); const type=parts[0]; const p={};
+    parts.slice(1).forEach(x=>{const[k,...v]=x.split(':');p[k]=v.join(':');});
+    
+    if(type==='ADD' && p.model && p.box){
+      if(!inventory[p.model]) inventory[p.model]={};
+      inventory[p.model][p.box] = (inventory[p.model][p.box]||0) + parseInt(p.qty||1);
+      changed=true;
+    }
+    else if(type==='SELL' && p.model && p.box && inventory[p.model] && inventory[p.model][p.box]){
+      inventory[p.model][p.box] -= parseInt(p.qty||1);
+      if(inventory[p.model][p.box]<=0) delete inventory[p.model][p.box];
+      salesLog.push({model:p.model, box:p.box, qty:parseInt(p.qty||1), date:new Date().toLocaleDateString()});
+      changed=true;
+    }
+    else if(type==='REQADD' && p.model){
+      requirements.push({model:p.model, qty:parseInt(p.qty||1), priority:'medium'});
+      changed=true;
+    }
+  }
+  return changed;
+}
+
+// ============================================================
+// WAREHOUSE
+// ============================================================
+function getTotalPcs(){ return Object.values(inventory).reduce((a,b)=>a+Object.values(b).reduce((x,y)=>x+y,0),0); }
+function getLow(){ return Object.entries(inventory).map(([m,l])=>({m, t:Object.values(l).reduce((a,b)=>a+b,0)})).filter(x=>x.t<=lowThreshold); }
+
+function renderWH() {
+  const grid = document.getElementById('boxes-grid');
+  const filter = document.getElementById('wh-box-filter').value;
+  const search = document.getElementById('wh-search').value.toLowerCase();
+  
+  // Update Filter Dropdown
+  const sel = document.getElementById('wh-box-filter');
+  sel.innerHTML = '<option value="">All Boxes</option>' + boxes.map(b=>`<option value="${b}" ${b===filter?'selected':''}>${b}</option>`).join('');
+
+  // Stats
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat"><div class="stat-num">${Object.keys(inventory).length}</div><div class="stat-label">Models</div></div>
+    <div class="stat"><div class="stat-num">${getTotalPcs()}</div><div class="stat-label">Total Pcs</div></div>
+    <div class="stat"><div class="stat-num">${boxes.length}</div><div class="stat-label">Boxes</div></div>
+    <div class="stat"><div class="stat-num ${getLow().length?'red':'green'}">${getLow().length}</div><div class="stat-label">Low Stock</div></div>
+  `;
+
+  // Grid
+  let html = '';
+  (filter ? [filter] : boxes).forEach(box => {
+    let items = Object.entries(inventory).filter(([m,l])=>l[box]).filter(([m])=>!search||m.toLowerCase().includes(search));
+    let t = items.reduce((a,[,l])=>a+l[box],0);
+    
+    html += `<div class="box-card"><div class="box-hdr"><div class="box-name">📦 ${box}</div><div style="font-size:10px;color:var(--text3)">${t} pcs</div></div>`;
+    if(!items.length) html += `<div class="box-empty">Empty</div>`;
+    items.forEach(([m,l]) => {
+      let q = l[box], c = q<=3?'low':q<=lowThreshold?'mid':'ok';
+      html += `<div class="bitem"><div class="bitem-info"><div class="bitem-model">${m}</div></div><div class="bitem-qty ${c}">${q}p</div>
+      <div class="bitem-acts"><button class="iab" style="color:var(--green)" onclick="openSellModal('${m}','${box}',${q})">💰</button><button class="iab" onclick="openEditModal('${m}','${box}',${q})">✎</button></div></div>`;
+    });
+    html += `</div>`;
+  });
+  grid.innerHTML = html + `<div class="add-box-tile" onclick="openModal('addbox-modal')">+ Add New Box</div>`;
+}
+
+// ============================================================
+// ACTIONS (ADD, EDIT, SELL)
+// ============================================================
+function confirmAddBox() {
+  const n = document.getElementById('newbox-in').value.trim();
+  if(n && !boxes.includes(n)) { boxes.push(n); save(); renderWH(); closeModal('addbox-modal'); toast('Box Added','success'); }
+}
+
+function openEditModal(m, b, q) {
+  editingItem = {m,b}; document.getElementById('edit-model').value=m; document.getElementById('edit-box').value=b; document.getElementById('edit-qty').value=q; openModal('edit-modal');
+}
+function saveEdit() {
+  const q = parseInt(document.getElementById('edit-qty').value);
+  if(q===0) delete inventory[editingItem.m][editingItem.b];
+  else inventory[editingItem.m][editingItem.b] = q;
+  save(); renderWH(); closeModal('edit-modal');
+}
+function deleteItem() { delete inventory[editingItem.m][editingItem.b]; save(); renderWH(); closeModal('edit-modal'); }
+
+function openSellModal(m, b, q) {
+  sellingItem = {m,b,q}; document.getElementById('sell-preview').innerHTML = `<b>${m}</b><br><small>${b} (In stock: ${q})</small>`; document.getElementById('sell-qty').max=q; openModal('sell-modal');
+}
+function confirmSell() {
+  const q = parseInt(document.getElementById('sell-qty').value);
+  if(q > sellingItem.q) return toast('Not enough stock', 'error');
+  inventory[sellingItem.m][sellingItem.b] -= q;
+  if(inventory[sellingItem.m][sellingItem.b]<=0) delete inventory[sellingItem.m][sellingItem.b];
+  salesLog.push({model:sellingItem.m, box:sellingItem.b, qty:q, date:new Date().toLocaleDateString()});
+  save(); renderAll(); closeModal('sell-modal'); toast('Sold!', 'success');
+}
+
+// ============================================================
+// SALES & REQS & UTILS
+// ============================================================
+function renderSales() {
+  document.getElementById('sales-stats').innerHTML = `<div class="stat"><div class="stat-num">${salesLog.length}</div><div class="stat-label">Total Sales</div></div>`;
+  let h = `<table class="sales-table"><tr><th>Model</th><th>Box</th><th>Qty</th><th>Date</th></tr>`;
+  [...salesLog].reverse().forEach(s => h+=`<tr><td><b>${s.model}</b></td><td><span class="sale-tag">${s.box}</span></td><td style="color:var(--green)"><b>${s.qty}</b></td><td>${s.date}</td></tr>`);
+  document.getElementById('sales-container').innerHTML = h + `</table>`;
+}
+function clearSales() { if(confirm("Clear log?")) { salesLog=[]; save(); renderSales(); } }
+
+function renderReqs() {
+  let h = `<table class="req-table"><tr><th>Model</th><th>Qty</th><th>Priority</th><th></th></tr>`;
+  requirements.forEach((r,i) => h+=`<tr><td><b>${r.model}</b></td><td><b>${r.qty}</b></td><td>${r.priority}</td><td><button class="iab" onclick="requirements.splice(${i},1); save(); renderAll();">✕</button></td></tr>`);
+  document.getElementById('req-container').innerHTML = h + `</table>`;
+}
+function clearReqs() { if(confirm("Clear reqs?")) { requirements=[]; save(); renderAll(); } }
+
+function saveLowThreshold() { lowThreshold = parseInt(document.getElementById('low-threshold-input').value); save(); renderWH(); toast('Saved','success'); }
+function updateBadges() { 
+  const rb=document.getElementById('req-badge'), lb=document.getElementById('low-badge');
+  rb.textContent=requirements.length; rb.style.display=requirements.length?'inline':'none';
+  lb.style.display=getLow().length?'inline':'none';
+}
+
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
-let toastTimer;
-function toast(msg,type=''){
-  const el=document.getElementById('toast');
-  el.textContent=(type==='success'?'✓ ':type==='error'?'✕ ':'')+msg;
-  el.className=`toast ${type} show`;
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>el.classList.remove('show'),2800);
-}
+let toastTimer; function toast(msg,type=''){ const el=document.getElementById('toast'); el.textContent=msg; el.className=`toast ${type} show`; clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),2800); }
 </script>
 </body>
 </html>
