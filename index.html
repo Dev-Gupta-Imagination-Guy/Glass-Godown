@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GlassGodown v3.1 — Fast Cloud IDE</title>
+<title>GlassGodown v3.2 — Fast Cloud IDE</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
@@ -118,8 +118,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 /* UTILS & TABLES */
 .boxes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
 .box-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.02);}
-.box-hdr{padding:14px 16px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;font-weight:600;}
-.bitem{display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);font-size:14px;}
+.box-hdr{padding:14px 16px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-weight:600;}
+.bitem{display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);font-size:14px;align-items:center;}
 .dataTable{width:100%;border-collapse:collapse;background:var(--bg2);border-radius:11px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.02)}
 .dataTable th{text-align:left;padding:12px 16px;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text3);background:var(--bg3);border-bottom:1px solid var(--border)}
 .dataTable td{padding:14px 16px;border-bottom:1px solid var(--border);font-size:14px;}
@@ -315,12 +315,13 @@ auth.onAuthStateChanged(async (user) => {
     document.getElementById('main-layout').style.display = 'grid';
     document.getElementById('user-badge').innerHTML = `<img src="${user.photoURL}" alt=""> ${user.displayName.split(' ')[0]}`;
     
-    apiKey = localStorage.getItem('gg2_apikey') || '';
+    // CHANGED TO gg3_gemini_key TO AVOID CLAUDE KEY CONFLICTS
+    apiKey = localStorage.getItem('gg3_gemini_key') || '';
     if(document.getElementById('settings-apikey')) document.getElementById('settings-apikey').value = apiKey;
     
     await loadFromCloud();
     renderAll();
-    addAiMsg("Namaste! Cloud sync complete. I am running on `gemini-1.5-flash` for maximum speed. Try the Finder or say 'Remove 5 expired items'.");
+    addAiMsg("Namaste! Cloud sync complete. Please make sure your Gemini API key is saved in Settings.");
   } else {
     currentUser = null;
     document.getElementById('login-screen').style.display = 'flex';
@@ -361,7 +362,9 @@ function renderAll() {
   let wHtml = '';
   boxes.forEach(b => {
     let items = Object.entries(inventory).filter(([,locs])=>locs[b]);
-    wHtml += `<div class="box-card"><div class="box-hdr"><span>📦 ${b}</span><span>${items.reduce((a,[,l])=>a+l[b],0)} pcs</span></div>`;
+    wHtml += `<div class="box-card"><div class="box-hdr"><span>📦 ${b}</span>
+      <div><span style="font-size:11px;margin-right:10px;color:var(--text3)">${items.reduce((a,[,l])=>a+l[b],0)} pcs</span>
+      <button style="border:none;background:none;color:var(--red);cursor:pointer;font-size:14px;" title="Delete entire box" onclick="deleteBox('${b}')">✕</button></div></div>`;
     items.forEach(([m,locs]) => wHtml += `<div class="bitem"><span><b>${m}</b></span><div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono)">${locs[b]}p</span><button style="border:none;background:none;cursor:pointer;color:var(--text3)" onclick="openEditModal('${m}','${b}',${locs[b]})">✎</button></div></div>`);
     wHtml += `</div>`;
   });
@@ -378,6 +381,19 @@ function renderAll() {
 
 function addBoxPrompt() { const n = prompt("New Box Name:"); if(n && !boxes.includes(n)) { boxes.push(n); save(); } }
 
+function deleteBox(boxName) {
+  if(!confirm(`Delete ${boxName} and ALL items inside it? This cannot be undone.`)) return;
+  boxes = boxes.filter(b => b !== boxName);
+  Object.keys(inventory).forEach(m => {
+    if(inventory[m][boxName] !== undefined) {
+      delete inventory[m][boxName];
+      if(Object.keys(inventory[m]).length === 0) delete inventory[m];
+    }
+  });
+  save();
+  toast('Box deleted');
+}
+
 function openEditModal(m, b, q) {
   editingItem = {m,b}; document.getElementById('edit-model').value=m; document.getElementById('edit-box').value=b; document.getElementById('edit-qty').value=q; openModal('edit-modal');
 }
@@ -393,22 +409,28 @@ function deleteItem() {
 }
 
 // ============================================================
-// GEMINI API (Speed Optimized)
+// GEMINI API (Real Error Handling Added)
 // ============================================================
-function saveApiKey() { apiKey = document.getElementById('settings-apikey').value.trim(); localStorage.setItem('gg2_apikey', apiKey); toast('API Key Saved'); }
+function saveApiKey() { apiKey = document.getElementById('settings-apikey').value.trim(); localStorage.setItem('gg3_gemini_key', apiKey); toast('API Key Saved'); }
 
 async function callGemini(sys, userText) {
-  if(!apiKey) throw new Error("Missing API Key in Settings.");
-  // Using 1.5-flash for max speed
+  if(!apiKey) throw new Error("Missing API Key. Please save your Gemini Key in Settings.");
+  if(apiKey.startsWith('sk-ant')) throw new Error("You are using a Claude key! Please get a Google Gemini key (starts with AIzaSy) and save it in Settings.");
+
   const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,{
     method:'POST', headers:{'Content-Type':'application/json'},
     body:JSON.stringify({ 
       systemInstruction: {parts:[{text:sys}]}, 
       contents: [{role:'user', parts:[{text:userText}]}], 
-      generationConfig: {maxOutputTokens: 250} // Kept small for fast response
+      generationConfig: {maxOutputTokens: 250} 
     })
   });
-  if(!r.ok) throw new Error("API limits or offline.");
+  
+  if(!r.ok) {
+    const errData = await r.json();
+    throw new Error(errData.error?.message || "API connection failed. Check your API key.");
+  }
+  
   const d = await r.json(); return d.candidates[0].content.parts[0].text;
 }
 
@@ -474,12 +496,12 @@ async function runBulkAdd() {
       inventory[a.combined_model_name][a.box] = (inventory[a.combined_model_name][a.box] || 0) + a.qty;
     });
     save(); document.getElementById('bulk-input').value = ''; toast('Models Bulk Added!', 'success');
-  } catch(e) { toast('Format error. Try again.', 'error'); }
+  } catch(e) { toast('Error: ' + e.message, 'error'); }
   btn.innerText = "Process & Add to Inventory"; btn.disabled = false;
 }
 
 // ============================================================
-// RAJU CHAT (Now with Remove Action)
+// RAJU CHAT
 // ============================================================
 function addAiMsg(text) {
   const c = document.getElementById('chat-msgs');
@@ -515,17 +537,19 @@ async function sendChat() {
         changed=true;
       }
       else if(type==='REMOVE' && inventory[p.model] && inventory[p.model][p.box]){
-        inventory[p.model][p.box] -= parseInt(p.qty||1); // Deducts stock, but no sales log
+        inventory[p.model][p.box] -= parseInt(p.qty||1);
         changed=true;
       }
       
-      // Cleanup empty inventory
       if(changed && inventory[p.model][p.box] <= 0) { delete inventory[p.model][p.box]; if(Object.keys(inventory[p.model]).length===0) delete inventory[p.model]; }
     }
     
     if(changed) save();
     addAiMsg(resp.replace(/\[ACTION:[^\]]+\]/g,'').trim());
-  } catch(e) { document.getElementById('typing').remove(); addAiMsg("❌ Fast Mode timeout. Try again."); }
+  } catch(e) { 
+    document.getElementById('typing').remove(); 
+    addAiMsg("❌ Error: " + (e.message || "Something went wrong.")); 
+  }
 }
 
 function openModal(id){document.getElementById(id).classList.add('open');}
