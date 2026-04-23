@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GlassGodown v3.2 — Fast Cloud IDE</title>
+<title>GlassGodown v3.3 — Fast Cloud IDE</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
@@ -245,7 +245,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   <aside class="rightbar" id="raju-sidebar">
     <div class="chat-head">
       <div class="av">🤖</div>
-      <div><div style="font-size:14px;font-weight:700">Raju Assistant</div><div style="font-size:11px;color:var(--text2)">Online (Fast Mode)</div></div>
+      <div><div style="font-size:14px;font-weight:700">Raju Assistant</div><div style="font-size:11px;color:var(--text2)">Online (Gemini 2.5)</div></div>
     </div>
     <div class="chat-msgs" id="chat-msgs"></div>
     <div class="chat-foot">
@@ -315,13 +315,12 @@ auth.onAuthStateChanged(async (user) => {
     document.getElementById('main-layout').style.display = 'grid';
     document.getElementById('user-badge').innerHTML = `<img src="${user.photoURL}" alt=""> ${user.displayName.split(' ')[0]}`;
     
-    // Using a new local storage key to avoid Claude conflicts
     apiKey = localStorage.getItem('gg3_gemini_key') || '';
     if(document.getElementById('settings-apikey')) document.getElementById('settings-apikey').value = apiKey;
     
     await loadFromCloud();
     renderAll();
-    addAiMsg("Namaste! Cloud sync complete. Please make sure your Gemini API key is saved in Settings.");
+    addAiMsg("Namaste! Cloud sync complete. Running on the latest Gemini 2.5 Flash model.");
   } else {
     currentUser = null;
     document.getElementById('login-screen').style.display = 'flex';
@@ -409,7 +408,7 @@ function deleteItem() {
 }
 
 // ============================================================
-// GEMINI API (Fixed Model Name & Error Handling)
+// GEMINI API (Fixed Model to gemini-2.5-flash)
 // ============================================================
 function saveApiKey() { apiKey = document.getElementById('settings-apikey').value.trim(); localStorage.setItem('gg3_gemini_key', apiKey); toast('API Key Saved'); }
 
@@ -417,7 +416,8 @@ async function callGemini(sys, userText) {
   if(!apiKey) throw new Error("Missing API Key. Please save your Gemini Key in Settings.");
   if(apiKey.startsWith('sk-ant')) throw new Error("You are using a Claude key! Please get a Google Gemini key (starts with AIzaSy) and save it in Settings.");
 
-  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`,{
+  // UPDATED to the officially supported gemini-2.5-flash
+  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{
     method:'POST', headers:{'Content-Type':'application/json'},
     body:JSON.stringify({ 
       systemInstruction: {parts:[{text:sys}]}, 
