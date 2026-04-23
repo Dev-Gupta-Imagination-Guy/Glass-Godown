@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GlassGodown v2 — Cloud Edition</title>
+<title>GlassGodown v3 — IDE Edition</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
@@ -12,28 +12,16 @@
 <style>
 /* LIGHT & MINIMAL THEME */
 :root {
-  --bg: #fafafa;
-  --bg2: #ffffff;
-  --bg3: #f4f5f7;
-  --bg4: #e2e8f0;
-  --border: #e4e4e7;
-  --border2: #d4d4d8;
-  --text: #09090b;
-  --text2: #52525b;
-  --text3: #a1a1aa;
-  --accent: #18181b;
-  --accent2: #27272a;
-  --accent-text: #ffffff;
-  --green: #16a34a;
-  --red: #dc2626;
-  --amber: #d97706;
-  --blue: #2563eb;
-  --font: 'Syne', sans-serif;
-  --mono: 'JetBrains Mono', monospace;
+  --bg: #fafafa; --bg2: #ffffff; --bg3: #f4f5f7; --bg4: #e2e8f0;
+  --border: #e4e4e7; --border2: #d4d4d8;
+  --text: #09090b; --text2: #52525b; --text3: #a1a1aa;
+  --accent: #18181b; --accent2: #27272a; --accent-text: #ffffff;
+  --green: #16a34a; --red: #dc2626; --amber: #d97706; --blue: #2563eb;
+  --font: 'Syne', sans-serif; --mono: 'JetBrains Mono', monospace;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;overflow:hidden}
 
 /* LOGIN SCREEN */
 #login-screen { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
@@ -44,9 +32,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .btn-google:hover { background: var(--bg3); border-color: var(--border2); }
 .loader-text { font-size: 13px; color: var(--text3); margin-top: 15px; font-family: var(--mono); display: none; }
 
-/* LAYOUT */
-.layout{display:none;grid-template-columns:230px 1fr;grid-template-rows:56px 1fr;min-height:100vh}
-.topbar{grid-column:1/-1;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;position:sticky;top:0;z-index:100}
+/* 3-COLUMN IDE LAYOUT */
+.layout{display:none;grid-template-columns:220px 1fr 340px;grid-template-rows:56px 1fr;height:100vh}
+.topbar{grid-column:1/-1;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;z-index:100}
 .logo{font-size:17px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;letter-spacing:-0.3px}
 .logo-icon{width:28px;height:28px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--accent-text);font-size:14px;font-weight:700}
 .topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
@@ -58,24 +46,26 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .tbtn{padding:5px 12px;border-radius:6px;font-size:12px;border:1px solid var(--border2);background:none;color:var(--text2);cursor:pointer;font-family:var(--font);transition:all .15s}
 .tbtn:hover{border-color:var(--accent);color:var(--text)}
 
-/* SIDEBAR */
-.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:12px 0;display:flex;flex-direction:column;gap:1px;position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto}
+/* LEFT SIDEBAR */
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:12px 0;display:flex;flex-direction:column;gap:1px;overflow-y:auto}
 .nav-label{font-size:10px;letter-spacing:.1em;color:var(--text3);padding:10px 18px 4px;font-weight:600;text-transform:uppercase}
 .nav-btn{display:flex;align-items:center;gap:9px;padding:8px 18px;font-size:13px;font-family:var(--font);color:var(--text2);cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:all .15s;position:relative}
 .nav-btn:hover{color:var(--text);background:var(--bg3)}
 .nav-btn.active{color:var(--text);background:rgba(24,24,27,.05);font-weight:600}
 .nav-btn.active::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;background:var(--accent);border-radius:0 2px 2px 0}
 .nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;font-family:var(--mono)}
-.nav-badge.amber{background:var(--amber);color:#fff}
 .nav-sep{height:1px;background:var(--border);margin:8px 18px}
 
-/* MAIN */
-.main{overflow-y:auto;height:calc(100vh - 56px);display:flex;flex-direction:column}
+/* CENTER WORKSPACE */
+.main{background:var(--bg);overflow-y:auto;display:flex;flex-direction:column}
 .section{display:none;flex:1;flex-direction:column}
 .section.active{display:flex}
 .page-head{padding:20px 26px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0;background:var(--bg2)}
 .page-head h1{font-size:19px;font-weight:700}
 .page-head p{font-size:12px;color:var(--text2);margin-top:2px}
+.page-content{padding:18px 26px;flex:1;overflow-y:auto}
+
+/* BUTTONS & INPUTS */
 .btn{padding:7px 14px;border-radius:7px;font-size:12px;font-family:var(--font);cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:5px}
 .btn.primary{background:var(--accent);color:var(--accent-text);font-weight:600}
 .btn.primary:hover{background:var(--accent2)}
@@ -84,104 +74,62 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .btn.danger{background:none;border:1px solid transparent;color:var(--red)}
 .btn.danger:hover{border-color:var(--red);background:rgba(220,38,38,.07)}
 .btn.sell{background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.25);color:var(--green);font-weight:600}
-.page-content{padding:18px 26px;flex:1;overflow-y:auto}
+.btn.sell:hover{background:rgba(22,163,74,.2)}
 
-/* STATS */
-.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:14px 26px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--bg2)}
-.stat{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px 14px}
-.stat-num{font-size:22px;font-weight:700;font-family:var(--mono);color:var(--text)}
-.stat-num.red{color:var(--red)}.stat-num.green{color:var(--green)}.stat-num.amber{color:var(--amber)}
-.stat-label{font-size:11px;color:var(--text2);margin-top:2px}
+.minput{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:7px;padding:10px 14px;font-size:14px;font-family:var(--font);margin-bottom:16px}
+.minput:focus{outline:none;border-color:var(--accent)}
 
-/* CHAT */
-.chat-layout{display:flex;flex-direction:column;height:100%}
-.chat-head{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0;background:var(--bg2)}
-.av{width:38px;height:38px;border-radius:9px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.chat-msgs{flex:1;overflow-y:auto;padding:18px 24px;display:flex;flex-direction:column;gap:14px}
-.msg{display:flex;gap:9px;max-width:88%;animation:fu .22s ease}
-@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+/* RIGHT AI ASSISTANT PANEL */
+.ai-panel{background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;height:100%}
+.ai-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0;background:var(--bg3)}
+.ai-head .av{width:32px;height:32px;border-radius:8px;background:var(--accent);color:var(--accent-text);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.msg{display:flex;gap:8px;max-width:92%;animation:fu .2s ease}
+@keyframes fu{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 .msg.user{align-self:flex-end;flex-direction:row-reverse}
-.msg-av{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:2px}
-.msg.user .msg-av{background:var(--bg4)}
+.msg-av{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;margin-top:2px;background:var(--bg4)}
 .msg.ai .msg-av{background:var(--accent);color:var(--accent-text)}
-.bubble{padding:11px 14px;border-radius:11px;font-size:13.5px;line-height:1.65;box-shadow:0 1px 2px rgba(0,0,0,0.03)}
-.msg.user .bubble{background:var(--accent);color:var(--accent-text);border-bottom-right-radius:3px}
-.msg.ai .bubble{background:var(--bg2);border:1px solid var(--border);border-bottom-left-radius:3px}
+.bubble{padding:10px 12px;border-radius:10px;font-size:13px;line-height:1.6;box-shadow:0 1px 2px rgba(0,0,0,0.02)}
+.msg.user .bubble{background:var(--accent);color:var(--accent-text);border-bottom-right-radius:2px}
+.msg.ai .bubble{background:var(--bg);border:1px solid var(--border);border-bottom-left-radius:2px}
 .bubble strong{color:inherit;font-weight:700}
-.msg.user .bubble strong{color:var(--accent-text)}
-.bubble .ok{color:var(--green)}.bubble .no{color:var(--red)}.bubble .warn{color:var(--amber)}
-.bubble .bt{display:inline-block;background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.2);color:var(--blue);padding:0 5px;border-radius:4px;font-size:11px;font-family:var(--mono)}
-.bubble .sell-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(22,163,74,.08);border:1px solid rgba(22,163,74,.2);color:var(--green);padding:3px 9px;border-radius:20px;font-size:12px;cursor:pointer;margin:2px;transition:all .15s}
-.bubble .sell-chip:hover{background:rgba(22,163,74,.18)}
-.typing{display:flex;gap:4px;padding:10px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:11px;border-bottom-left-radius:3px;width:fit-content}
-.td{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:tb 1.2s infinite}
-.td:nth-child(2){animation-delay:.2s}.td:nth-child(3){animation-delay:.4s}
-@keyframes tb{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px);background:var(--text)}}
-.chat-foot{padding:14px 24px 18px;border-top:1px solid var(--border);background:var(--bg2);flex-shrink:0}
-.quick-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.qb{font-size:11px;padding:4px 10px;background:var(--bg);border:1px solid var(--border2);color:var(--text2);border-radius:20px;cursor:pointer;font-family:var(--font);transition:all .15s;white-space:nowrap}
+.chat-foot{padding:12px 16px;border-top:1px solid var(--border);background:var(--bg)}
 .input-row{display:flex;gap:8px;align-items:flex-end}
-.cinput{flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:9px;padding:10px 14px;font-size:14px;font-family:var(--font);color:var(--text);resize:none;min-height:44px;max-height:110px;}
+.cinput{flex:1;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;font-size:13px;font-family:var(--font);resize:none;min-height:40px;max-height:100px;}
 .cinput:focus{outline:none;border-color:var(--accent)}
-.sbtn{background:var(--accent);color:var(--accent-text);border:none;border-radius:9px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;}
+.sbtn{background:var(--accent);color:var(--accent-text);border:none;border-radius:8px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;}
+.sbtn:disabled{opacity:0.5;cursor:not-allowed}
 
-/* WAREHOUSE GRID & MODALS & TOASTS */
-.wh-toolbar{display:flex;gap:8px;margin-bottom:14px}
-.sinput{flex:1;background:var(--bg2);border:1px solid var(--border2);border-radius:7px;padding:8px 12px;font-size:13px;font-family:var(--font);color:var(--text)}
-.fsel{background:var(--bg2);border:1px solid var(--border2);border-radius:7px;padding:8px 10px;font-size:12px;font-family:var(--font);color:var(--text2);cursor:pointer}
-.boxes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:14px}
-.box-card{background:var(--bg2);border:1px solid var(--border);border-radius:11px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.02);}
+/* GLASS FINDER CARD */
+.finder-card { background: var(--bg2); border: 1px solid var(--border2); border-radius: 12px; padding: 24px; max-width: 500px; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center; }
+.fc-icon { font-size: 32px; margin-bottom: 12px; }
+.fc-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.fc-sub { font-size: 14px; color: var(--text2); margin-bottom: 24px; }
+.fc-acts { display: flex; gap: 10px; justify-content: center; }
+
+/* WAREHOUSE GRID */
+.boxes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.box-card{background:var(--bg2);border:1px solid var(--border);border-radius:11px;overflow:hidden;}
 .box-hdr{padding:12px 14px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.box-name{font-size:13px;font-weight:600;color:var(--text);font-family:var(--mono);}
-.box-empty{padding:16px;font-size:12px;color:var(--text3);text-align:center;font-style:italic}
+.box-name{font-size:13px;font-weight:600;}
 .bitem{display:flex;align-items:center;padding:8px 14px;gap:8px;border-bottom:1px solid rgba(0,0,0,0.02)}
 .bitem-info{flex:1;min-width:0}
-.bitem-model{font-size:13.5px;color:var(--text);font-weight:500;}
-.bitem-brand{font-size:10px;color:var(--text3);margin-top:2px}
+.bitem-model{font-size:13.5px;font-weight:500;}
 .bitem-qty{font-size:13px;font-family:var(--mono);font-weight:600;text-align:right}
-.bitem-qty.low{color:var(--red)}.bitem-qty.mid{color:var(--amber)}.bitem-qty.ok{color:var(--green)}
-.bitem-acts{display:flex;gap:4px;opacity:0;}
-.bitem:hover .bitem-acts{opacity:1}
-.iab{width:26px;height:26px;border-radius:5px;border:1px solid var(--border2);cursor:pointer;background:var(--bg2);color:var(--text2);}
-.add-box-tile{background:none;border:1px dashed var(--border2);border-radius:11px;height:72px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--text3);}
 
-/* TABLES */
-.req-table, .sales-table{width:100%;border-collapse:collapse;font-size:13px;background:var(--bg2);border-radius:9px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.02)}
-.req-table th, .sales-table th{text-align:left;padding:10px 14px;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);background:var(--bg3)}
-.req-table td, .sales-table td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
-.sale-tag{display:inline-block;padding:3px 8px;border-radius:4px;font-size:11px;font-family:var(--mono);background:var(--bg3);border:1px solid var(--border);color:var(--text2)}
-.qc{display:flex;align-items:center;gap:6px}
-.qbtn{width:24px;height:24px;border-radius:5px;border:1px solid var(--border2);background:var(--bg2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
-.qval{font-family:var(--mono);font-size:13px;font-weight:600;min-width:26px;text-align:center}
+/* UTILS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px 26px;border-bottom:1px solid var(--border);background:var(--bg2)}
+.stat{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px 14px}
+.stat-num{font-size:22px;font-weight:700;font-family:var(--mono);}
+.toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%, 16px);background:var(--text);border-radius:9px;padding:12px 18px;font-size:13.5px;color:var(--bg2);z-index:9999;opacity:0;transition:all .22s;display:flex;align-items:center;gap:8px;}
+.toast.show{transform:translate(-50%, 0);opacity:1}
 
-/* MODALS */
-.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .2s}
-.modal-ov.open{opacity:1;pointer-events:all}
-.modal{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:26px;width:440px;max-width:92vw;transform:translateY(10px);transition:transform .2s;box-shadow:0 10px 25px rgba(0,0,0,0.1)}
-.modal-ov.open .modal{transform:translateY(0)}
-.modal h3{font-size:17px;font-weight:700;margin-bottom:6px;}
-.mlabel{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px}
-.minput{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:7px;padding:10px 14px;font-size:14px;font-family:var(--font);margin-bottom:16px}
-.modal-acts{display:flex;gap:8px;justify-content:flex-end}
-.sell-preview{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:18px;}
-
-/* TOAST */
-.toast{position:fixed;bottom:22px;right:22px;background:var(--text);border:1px solid var(--text);border-radius:9px;padding:12px 18px;font-size:13.5px;color:var(--bg2);z-index:9999;transform:translateY(16px);opacity:0;transition:all .22s;display:flex;align-items:center;gap:8px;}
-.toast.show{transform:translateY(0);opacity:1}
-.toast.success{background:var(--green);border-color:var(--green);color:#fff}
-.toast.error{background:var(--red);border-color:var(--red);color:#fff}
-
-@media (max-width: 768px) {
-  .layout { grid-template-columns: 1fr; grid-template-rows: 56px auto 1fr; }
-  .sidebar { grid-row: 2; grid-column: 1; height: auto; flex-direction: row; overflow-x: auto; padding: 0; position: static; border-right: none; border-bottom: 1px solid var(--border); }
-  .nav-label, .nav-sep { display: none; }
-  .nav-btn { padding: 12px 16px; white-space: nowrap; width: auto; border-bottom: 2px solid transparent; }
-  .nav-btn.active { background: transparent; border-bottom: 2px solid var(--accent); }
-  .nav-btn.active::before { display: none; }
-  .stats-row { grid-template-columns: repeat(2, 1fr); }
-  .wh-toolbar { flex-direction: column; }
-  .boxes-grid { grid-template-columns: 1fr; }
-  .req-table, .sales-table { display: block; overflow-x: auto; white-space: nowrap; }
+/* MOBILE FIX */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; grid-template-rows: 56px auto 1fr 300px; overflow-y: auto;}
+  .sidebar { grid-row: 2; grid-column: 1; flex-direction: row; overflow-x: auto; padding: 0; }
+  .main { grid-row: 3; grid-column: 1; }
+  .ai-panel { grid-row: 4; grid-column: 1; border-left: none; border-top: 1px solid var(--border); }
 }
 </style>
 </head>
@@ -190,188 +138,110 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 <div id="login-screen">
   <div class="login-box">
     <h1><div class="logo-icon">⬡</div>GlassGodown</h1>
-    <p>Sign in to access your cloud warehouse and start managing inventory.</p>
-    <button class="btn-google" onclick="signInWithGoogle()">
-      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-      Sign in with Google
-    </button>
-    <div id="login-loader" class="loader-text">Connecting to Cloud...</div>
+    <p>Sign in to your Cloud IDE.</p>
+    <button class="btn-google" onclick="signInWithGoogle()">Sign in with Google</button>
+    <div id="login-loader" class="loader-text">Connecting...</div>
   </div>
 </div>
 
 <div class="layout" id="main-layout">
+  
   <div class="topbar">
     <div class="logo"><div class="logo-icon">⬡</div>GlassGodown</div>
     <div class="topbar-right">
       <div class="api-status"><div class="sdot ok" id="sdot"></div><span id="stxt">Cloud Sync On</span></div>
-      <button class="tbtn" onclick="openModal('api-modal')">⚙ API Key</button>
       <div class="user-badge" id="user-badge"></div>
       <button class="tbtn warn" onclick="logOut()">Logout</button>
     </div>
   </div>
 
   <nav class="sidebar">
-    <div class="nav-label">Workspace</div>
-    <button class="nav-btn active" onclick="showSection('manager')" id="nav-manager"><span class="nav-icon">🤖</span>AI Manager</button>
-    <button class="nav-btn" onclick="showSection('warehouse')" id="nav-warehouse"><span class="nav-icon">📦</span>Warehouse<span class="nav-badge amber" id="low-badge" style="display:none">!</span></button>
+    <div class="nav-label">Tools</div>
+    <button class="nav-btn active" onclick="showSection('finder')" id="nav-finder"><span class="nav-icon">🔍</span>Glass Finder</button>
+    <button class="nav-btn" onclick="showSection('addmodels')" id="nav-addmodels"><span class="nav-icon">➕</span>Bulk Add Models</button>
+    <div class="nav-sep"></div>
+    <div class="nav-label">Database</div>
+    <button class="nav-btn" onclick="showSection('warehouse')" id="nav-warehouse"><span class="nav-icon">📦</span>Warehouse</button>
     <button class="nav-btn" onclick="showSection('sales')" id="nav-sales"><span class="nav-icon">💰</span>Sales Log</button>
+    <button class="nav-btn" onclick="showSection('requirements')" id="nav-requirements"><span class="nav-icon">📋</span>Requirements</button>
     <div class="nav-sep"></div>
-    <div class="nav-label">Orders</div>
-    <button class="nav-btn" onclick="showSection('requirements')" id="nav-requirements"><span class="nav-icon">📋</span>Requirements<span class="nav-badge" id="req-badge" style="display:none">0</span></button>
-    <div class="nav-sep"></div>
-    <div class="nav-label">Data</div>
     <button class="nav-btn" onclick="showSection('settings')" id="nav-settings"><span class="nav-icon">⚙</span>Settings</button>
   </nav>
 
   <main class="main">
     
-    <div class="section active" id="section-manager">
-      <div class="chat-layout">
-        <div class="chat-head">
-          <div class="av">🤖</div>
-          <div>
-            <div style="font-size:15px;font-weight:700">Raju — Cloud Manager</div>
-            <div style="font-size:12px;color:var(--text2)">Powered by Google Gemini · Hindi / English</div>
+    <div class="section active" id="section-finder">
+      <div class="page-head">
+        <div><h1>🔍 Glass Finder</h1><p>Ask Raju to find exact or compatible models</p></div>
+      </div>
+      <div class="page-content" style="display:flex;align-items:center;justify-content:center;background:var(--bg)">
+        <div id="finder-results">
+          <div style="text-align:center;color:var(--text3);">
+            <div style="font-size:40px;margin-bottom:10px">🔎</div>
+            <p>Use the Raju AI panel on the right to search.<br>Example: "Find Vivo T4x"</p>
           </div>
-          <button class="btn ghost" style="margin-left:auto;font-size:11px" onclick="clearChat()">Clear Chat</button>
         </div>
-        <div class="chat-msgs" id="chat-msgs"></div>
-        <div class="chat-foot">
-          <div class="quick-btns">
-            <button class="qb" onclick="qs('Samsung A35 ka tempered hai?')">Find Samsung A35</button>
-            <button class="qb" onclick="qs('10 pcs Vivo T4x Box 3 mein add karo')">Add Vivo T4x</button>
-            <button class="qb" onclick="qs('Aaj kitna bika?')">Today sales</button>
-            <button class="qb" onclick="qs('Kaunse models low stock mein hain?')">Low stock check</button>
-          </div>
-          <div class="input-row">
-            <textarea class="cinput" id="cinput" placeholder="Kuch bhi poochho..." rows="1" onkeydown="handleKey(event)"></textarea>
-            <button class="sbtn" id="sbtn" onclick="sendMsg()">↑</button>
-          </div>
+      </div>
+    </div>
+
+    <div class="section" id="section-addmodels">
+      <div class="page-head">
+        <div><h1>➕ Bulk Add Models</h1><p>Use commas for compatible models (e.g. Vivo T4x, iQOO Z10x)</p></div>
+      </div>
+      <div class="page-content">
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;max-width:600px">
+          <textarea class="minput" id="bulk-input" rows="4" placeholder="Example: add 10pcs for vivo t4x, igoo z10x, vivo t3x in box 1"></textarea>
+          <button class="btn primary" onclick="processBulkAdd()">Process Inventory Update</button>
         </div>
       </div>
     </div>
 
     <div class="section" id="section-warehouse">
       <div class="page-head">
-        <div><h1>📦 Warehouse</h1><p>All boxes and stock (Synced to Cloud)</p></div>
-        <div><button class="btn primary" onclick="openModal('addbox-modal')">+ Add Box</button></div>
+        <div><h1>📦 Warehouse</h1></div>
+        <button class="btn primary" onclick="addBoxPrompt()">+ Add Box</button>
       </div>
       <div class="stats-row" id="stats-row"></div>
-      <div class="page-content">
-        <div class="wh-toolbar">
-          <input class="sinput" id="wh-search" type="text" placeholder="Search model or brand..." oninput="renderWH()">
-          <select class="fsel" id="wh-box-filter" onchange="renderWH()"><option value="">All Boxes</option></select>
-        </div>
-        <div class="boxes-grid" id="boxes-grid"></div>
-      </div>
+      <div class="page-content"><div class="boxes-grid" id="boxes-grid"></div></div>
     </div>
 
-    <div class="section" id="section-sales">
-      <div class="page-head">
-        <div><h1>💰 Sales Log</h1><p>Every sale recorded in the cloud</p></div>
-        <div><button class="btn danger" onclick="clearSales()">Clear Log</button></div>
-      </div>
-      <div class="stats-row" id="sales-stats"></div>
-      <div class="page-content">
-        <div id="sales-container"></div>
-      </div>
-    </div>
-
-    <div class="section" id="section-requirements">
-      <div class="page-head">
-        <div><h1>📋 Requirements</h1><p>Items to order from supplier</p></div>
-        <div><button class="btn ghost" onclick="clearReqs()">Clear All</button></div>
-      </div>
-      <div class="page-content">
-        <div id="req-container"></div>
-      </div>
-    </div>
-
+    <div class="section" id="section-sales"><div class="page-head"><h1>💰 Sales Log</h1><button class="btn danger" onclick="salesLog=[];save();renderAll()">Clear</button></div><div class="page-content" id="sales-container"></div></div>
+    <div class="section" id="section-requirements"><div class="page-head"><h1>📋 Requirements</h1><button class="btn danger" onclick="requirements=[];save();renderAll()">Clear</button></div><div class="page-content" id="req-container"></div></div>
     <div class="section" id="section-settings">
-      <div class="page-head"><div><h1>⚙ Settings</h1><p>Account & Configuration</p></div></div>
+      <div class="page-head"><h1>⚙ Settings</h1></div>
       <div class="page-content">
-        <div style="max-width:600px;display:flex;flex-direction:column;gap:16px">
-          
-          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:20px;">
-            <div style="font-weight:700;margin-bottom:10px;">🔑 AI Configuration (Google Gemini)</div>
-            <p style="font-size:13px;color:var(--text2);margin-bottom:14px;">Your API key is saved locally on this device for security.</p>
-            <div style="display:flex;gap:8px">
-              <input class="minput" id="settings-apikey" type="password" placeholder="AIzaSy..." style="margin:0;flex:1">
-              <button class="btn primary" onclick="saveApiKeyFromSettings()">Save Key</button>
-            </div>
-          </div>
-
-          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:20px;">
-            <div style="font-weight:700;margin-bottom:10px;">⚠️ Low Stock Threshold</div>
-            <div style="display:flex;gap:8px;align-items:center">
-              <input class="minput" id="low-threshold-input" type="number" min="1" max="50" style="margin:0;width:100px">
-              <span style="font-size:13px;color:var(--text2)">pieces</span>
-              <button class="btn primary" onclick="saveLowThreshold()">Save</button>
-            </div>
-          </div>
-
+        <div style="background:var(--bg2);padding:20px;border-radius:12px;border:1px solid var(--border);max-width:500px">
+          <b>Gemini API Key</b><br><br>
+          <input class="minput" id="settings-apikey" type="password" placeholder="AIzaSy...">
+          <button class="btn primary" onclick="saveApiKey()">Save Key</button>
         </div>
       </div>
     </div>
-
   </main>
-</div>
 
-<div class="modal-ov" id="api-modal">
-  <div class="modal">
-    <h3>🔑 Google Gemini API Key</h3>
-    <p>Saved securely on this device.</p>
-    <input class="minput" id="api-key-in" type="password" placeholder="AIzaSy...">
-    <div class="modal-acts">
-      <button class="btn ghost" onclick="closeModal('api-modal')">Cancel</button>
-      <button class="btn primary" onclick="saveApiKey()">Save</button>
+  <aside class="ai-panel">
+    <div class="ai-head">
+      <div class="av">🤖</div>
+      <div>
+        <div style="font-size:14px;font-weight:700">Raju Assistant</div>
+        <div style="font-size:11px;color:var(--text2)">Ready to help</div>
+      </div>
     </div>
-  </div>
-</div>
-
-<div class="modal-ov" id="addbox-modal">
-  <div class="modal">
-    <h3>📦 Add New Box / Shelf</h3>
-    <input class="minput" id="newbox-in" placeholder="e.g. Box 6" onkeydown="if(event.key==='Enter')confirmAddBox()">
-    <div class="modal-acts">
-      <button class="btn ghost" onclick="closeModal('addbox-modal')">Cancel</button>
-      <button class="btn primary" onclick="confirmAddBox()">Add Box</button>
+    <div class="chat-msgs" id="chat-msgs"></div>
+    <div class="chat-foot">
+      <div class="input-row">
+        <textarea class="cinput" id="cinput" placeholder="Type a command..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"></textarea>
+        <button class="sbtn" id="sbtn" onclick="sendMsg()">↑</button>
+      </div>
     </div>
-  </div>
-</div>
+  </aside>
 
-<div class="modal-ov" id="edit-modal">
-  <div class="modal">
-    <h3 id="edit-title">✎ Edit Item</h3>
-    <div class="mlabel">Model</div><input class="minput" id="edit-model" readonly style="opacity:.6">
-    <div class="mlabel">Box</div><input class="minput" id="edit-box" readonly style="opacity:.6">
-    <div class="mlabel">New Quantity</div><input class="minput" id="edit-qty" type="number" min="0">
-    <div class="modal-acts">
-      <button class="btn danger" onclick="deleteItem()">Delete</button>
-      <button class="btn ghost" onclick="closeModal('edit-modal')">Cancel</button>
-      <button class="btn primary" onclick="saveEdit()">Save</button>
-    </div>
-  </div>
 </div>
-
-<div class="modal-ov" id="sell-modal">
-  <div class="modal">
-    <h3>💰 Record Sale</h3>
-    <div class="sell-preview" id="sell-preview"></div>
-    <div class="mlabel">Quantity Sold</div><input class="minput" id="sell-qty" type="number" min="1" value="1">
-    <div class="mlabel">Note (optional)</div><input class="minput" id="sell-note" placeholder="Walk-in customer">
-    <div class="modal-acts">
-      <button class="btn ghost" onclick="closeModal('sell-modal')">Cancel</button>
-      <button class="btn sell" onclick="confirmSell()">✓ Confirm Sale</button>
-    </div>
-  </div>
-</div>
-
 <div class="toast" id="toast"></div>
 
 <script>
 // ============================================================
-// 1. FIREBASE CONFIGURATION (PASTE YOURS HERE)
+// FIREBASE CONFIG (PASTE YOURS HERE)
 // ============================================================
 const firebaseConfig = {
   apiKey: "AIzaSyAW9dCjmcy5TYFvb1GNxuTqd1lNlE8rtOY",
@@ -384,303 +254,205 @@ const firebaseConfig = {
 };
 
 
-
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 const provider = new firebase.auth.GoogleAuthProvider();
 
-// ============================================================
 // STATE
-// ============================================================
-let currentUser = null;
-let inventory = {};   
-let boxes = ["Box 1", "Box 2"];
-let requirements = [];
-let salesLog = [];
-let lowThreshold = 5;
-let apiKey = '';
-let chatHistory = [];
-let editingItem = null;
-let sellingItem = null;
+let currentUser=null; let inventory={}; let boxes=["Box 1"]; let requirements=[]; let salesLog=[];
+let apiKey=''; let chatHistory=[];
 
-// ============================================================
-// AUTH & CLOUD SYNC
-// ============================================================
-function signInWithGoogle() {
-  document.getElementById('login-loader').style.display = 'block';
-  auth.signInWithPopup(provider).catch(e => { toast(e.message, 'error'); document.getElementById('login-loader').style.display = 'none'; });
-}
-
+// AUTH
+function signInWithGoogle() { auth.signInWithPopup(provider); }
 function logOut() { auth.signOut(); }
-
 auth.onAuthStateChanged(async (user) => {
   if (user) {
     currentUser = user;
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('main-layout').style.display = 'grid';
     document.getElementById('user-badge').innerHTML = `<img src="${user.photoURL}" alt=""> ${user.displayName.split(' ')[0]}`;
-    
-    // Load Local API Key
     apiKey = localStorage.getItem('gg2_apikey') || '';
     if(document.getElementById('settings-apikey')) document.getElementById('settings-apikey').value = apiKey;
     
     await loadFromCloud();
     renderAll();
-    injectWelcome();
-    toast('Cloud Sync Active', 'success');
+    addAiMsg("Namaste! Workspace ready. To find glass, type 'Find [Model]'. To add stock, go to Bulk Add Models.", true);
   } else {
-    currentUser = null;
     document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('main-layout').style.display = 'none';
-    document.getElementById('login-loader').style.display = 'none';
   }
 });
 
 async function loadFromCloud() {
-  try {
-    const doc = await db.collection("users").doc(currentUser.uid).get();
-    if (doc.exists) {
-      const d = doc.data();
-      inventory = d.inventory || {};
-      boxes = d.boxes || ["Box 1", "Box 2"];
-      requirements = d.requirements || [];
-      salesLog = d.salesLog || [];
-      lowThreshold = d.lowThreshold || 5;
-    } else {
-      await saveToCloud();
-    }
-  } catch (e) { toast('Error loading data', 'error'); }
+  const doc = await db.collection("users").doc(currentUser.uid).get();
+  if (doc.exists) { const d=doc.data(); inventory=d.inventory||{}; boxes=d.boxes||["Box 1"]; requirements=d.requirements||[]; salesLog=d.salesLog||[]; }
 }
+function save() { db.collection("users").doc(currentUser.uid).set({inventory,boxes,requirements,salesLog},{merge:true}); renderAll(); }
+function saveApiKey() { apiKey = document.getElementById('settings-apikey').value; localStorage.setItem('gg2_apikey', apiKey); toast('Key Saved'); }
 
-async function saveToCloud() {
-  if (!currentUser) return;
-  try {
-    await db.collection("users").doc(currentUser.uid).set({
-      inventory, boxes, requirements, salesLog, lowThreshold
-    }, { merge: true });
-  } catch (e) { toast('Sync failed', 'error'); }
-}
-
-// Wrapper for saving (replaces old localStorage method)
-function save() { saveToCloud(); }
-
-// ============================================================
-// UI NAVIGATION & RENDERING
-// ============================================================
+// UI
 function showSection(name) {
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('section-'+name).classList.add('active');
   document.getElementById('nav-'+name).classList.add('active');
-  if(name==='warehouse') renderWH();
-  if(name==='sales') renderSales();
-  if(name==='requirements') renderReqs();
 }
-
-function renderAll() {
-  document.getElementById('low-threshold-input').value = lowThreshold;
-  renderWH(); renderSales(); renderReqs(); updateBadges();
-}
+function toast(msg,type=''){ const el=document.getElementById('toast'); el.textContent=msg; el.className=`toast ${type} show`; setTimeout(()=>el.classList.remove('show'),2500); }
 
 // ============================================================
-// GEMINI AI & CHAT
+// GEMINI AI & COMMAND PARSING (WITH TIMEOUT FIX)
 // ============================================================
-function saveApiKey() {
-  apiKey = document.getElementById('api-key-in').value.trim();
-  localStorage.setItem('gg2_apikey', apiKey);
-  closeModal('api-modal'); toast('API key saved locally!', 'success');
-}
-function saveApiKeyFromSettings() {
-  apiKey = document.getElementById('settings-apikey').value.trim();
-  localStorage.setItem('gg2_apikey', apiKey);
-  toast('API key saved locally!', 'success');
-}
-
-function injectWelcome() {
-  document.getElementById('chat-msgs').innerHTML = '';
-  chatHistory = [];
-  addAiMsg(`Namaste! 🙏 Main hoon **Raju** — aapka Cloud Warehouse Manager.\n\nGodown mein **${Object.keys(inventory).length}** models aur **${getTotalPcs()}** pieces hain.\n\nBolo kya karna hai! ("Add 10 Vivo T4x to Box 1")`, true);
-}
-
-function qs(t){document.getElementById('cinput').value=t;sendMsg();}
-function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
-function clearChat(){injectWelcome();}
-
-function addUserMsg(text) {
-  const c=document.getElementById('chat-msgs');
-  c.innerHTML+=`<div class="msg user"><div class="msg-av">👤</div><div class="bubble">${text}</div></div>`;
-  c.scrollTop=c.scrollHeight;
-}
 function addAiMsg(text, raw=false) {
   const c=document.getElementById('chat-msgs');
-  const fmt = raw ? text.replace(/\n/g,'<br>') : text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\[BOX:(.*?)\]/g,'<span class="bt">$1</span>').replace(/\[SELL:(.*?)\|(.*?)\]/g, (m,mod,box)=>`<span class="sell-chip" onclick="openSellModal('${mod}','${box}', inventory['${mod}']['${box}'])">💰 Sell ${mod}</span>`).replace(/\n/g,'<br>');
-  c.innerHTML+=`<div class="msg ai"><div class="msg-av">🤖</div><div class="bubble">${fmt}</div></div>`;
+  c.innerHTML+=`<div class="msg ai"><div class="msg-av">🤖</div><div class="bubble">${raw?text:text.replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')}</div></div>`;
   c.scrollTop=c.scrollHeight;
 }
 
-async function sendMsg() {
-  const input=document.getElementById('cinput'); const text=input.value.trim();
-  if(!text) return;
-  if(!apiKey){toast('Please set Gemini API key in Settings!','error'); return;}
-  input.value=''; addUserMsg(text); chatHistory.push({role:'user', parts:[{text}]});
+async function sendMsg(overrideText = null) {
+  const text = overrideText || document.getElementById('cinput').value.trim();
+  if(!text || !apiKey) return !apiKey ? toast('Set API Key in Settings') : null;
+  document.getElementById('cinput').value='';
   
   const c=document.getElementById('chat-msgs');
-  c.innerHTML+=`<div class="msg ai" id="typing"><div class="msg-av">🤖</div><div class="typing"><div class="td"></div><div class="td"></div><div class="td"></div></div></div>`;
+  c.innerHTML+=`<div class="msg user"><div class="msg-av">👤</div><div class="bubble">${text}</div></div>`;
+  c.innerHTML+=`<div class="msg ai" id="typing"><div class="msg-av">🤖</div><div class="bubble" style="color:var(--text3)">Thinking...</div></div>`;
   c.scrollTop=c.scrollHeight;
 
-  try {
-    const sys = `You are Raju, warehouse manager. 
-    Boxes: ${boxes.join(', ')}. Inventory JSON: ${JSON.stringify(inventory)}. 
-    Return actions like [ACTION:ADD|model:Brand Model|box:Box 1|qty:5], [ACTION:SELL|model:Brand Model|box:Box 1|qty:1]. 
-    If asking to sell, output [SELL:Model|Box] chip in text. Keep answers short.`;
+  const sys = `You are Raju, warehouse AI.
+  Data: ${JSON.stringify(inventory)}.
+  If user wants to FIND a model, return exactly this JSON and nothing else:
+  {"action":"FIND", "target":"Model Name", "exact": true/false, "box":"Box Name", "qty": 10, "alt":"Suggested Alt Model if exact not found"}
+  
+  If user is bulk adding (e.g. "add 10 vivo t4x, iqoo z10 in box 1"), format the compatible models connected with ' / '. Return JSON:
+  {"action":"ADD", "model":"Vivo T4x / iQOO Z10x", "box":"Box 1", "qty":10}
+  
+  If answering a general question, return JSON:
+  {"action":"CHAT", "message":"Your conversational response"}`;
 
+  chatHistory.push({role:'user', parts:[{text}]});
+
+  // ANTI-FREEZE ABORT CONTROLLER (15 Seconds)
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+  try {
     const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{
       method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ systemInstruction: {parts:[{text:sys}]}, contents: chatHistory, generationConfig: {maxOutputTokens: 800} })
+      body:JSON.stringify({ systemInstruction:{parts:[{text:sys}]}, contents:chatHistory, generationConfig:{responseMimeType: "application/json"} }),
+      signal: controller.signal
     });
     
+    clearTimeout(timeoutId);
     document.getElementById('typing').remove();
-    if(!r.ok) throw new Error("API Error");
     const d = await r.json();
-    const resp = d.candidates[0].content.parts[0].text;
+    const data = JSON.parse(d.candidates[0].content.parts[0].text);
     
-    if(executeActions(resp)) { save(); renderAll(); }
-    const clean = resp.replace(/\[ACTION:[^\]]+\]/g,'').trim();
-    addAiMsg(clean);
-    chatHistory.push({role:'model', parts:[{text:clean}]});
+    if(data.action === "FIND") {
+      addAiMsg(`Showing results for **${data.target}** in workspace.`);
+      renderFinderCard(data);
+      showSection('finder');
+    } else if (data.action === "ADD") {
+      if(!inventory[data.model]) inventory[data.model]={};
+      inventory[data.model][data.box] = (inventory[data.model][data.box]||0) + data.qty;
+      save();
+      addAiMsg(`Added ${data.qty}x **${data.model}** to ${data.box}.`);
+    } else {
+      addAiMsg(data.message);
+    }
   } catch(e) {
+    clearTimeout(timeoutId);
     document.getElementById('typing').remove();
-    addAiMsg(`❌ Error connecting to Gemini. Check API Key in settings.`);
+    if(e.name === 'AbortError') addAiMsg("❌ Timeout: The AI took too long to respond. Please try again.");
+    else addAiMsg("❌ Error parsing request. Try phrasing it differently.");
   }
 }
 
-function executeActions(resp) {
-  let changed=false;
-  const regex=/\[ACTION:([^\]]+)\]/g; let m;
-  while((m=regex.exec(resp))!==null){
-    const parts=m[1].split('|'); const type=parts[0]; const p={};
-    parts.slice(1).forEach(x=>{const[k,...v]=x.split(':');p[k]=v.join(':');});
-    
-    if(type==='ADD' && p.model && p.box){
-      if(!inventory[p.model]) inventory[p.model]={};
-      inventory[p.model][p.box] = (inventory[p.model][p.box]||0) + parseInt(p.qty||1);
-      changed=true;
-    }
-    else if(type==='SELL' && p.model && p.box && inventory[p.model] && inventory[p.model][p.box]){
-      inventory[p.model][p.box] -= parseInt(p.qty||1);
-      if(inventory[p.model][p.box]<=0) delete inventory[p.model][p.box];
-      salesLog.push({model:p.model, box:p.box, qty:parseInt(p.qty||1), date:new Date().toLocaleDateString()});
-      changed=true;
-    }
-    else if(type==='REQADD' && p.model){
-      requirements.push({model:p.model, qty:parseInt(p.qty||1), priority:'medium'});
-      changed=true;
-    }
-  }
-  return changed;
+// Bulk Add from Workspace button
+function processBulkAdd() {
+  const val = document.getElementById('bulk-input').value;
+  if(val) { showSection('finder'); sendMsg(val); document.getElementById('bulk-input').value=''; }
 }
 
 // ============================================================
-// WAREHOUSE
+// WORKSPACE: FINDER CARD
 // ============================================================
-function getTotalPcs(){ return Object.values(inventory).reduce((a,b)=>a+Object.values(b).reduce((x,y)=>x+y,0),0); }
-function getLow(){ return Object.entries(inventory).map(([m,l])=>({m, t:Object.values(l).reduce((a,b)=>a+b,0)})).filter(x=>x.t<=lowThreshold); }
+function renderFinderCard(data) {
+  const res = document.getElementById('finder-results');
+  if(!data.exact && data.qty === 0 && !data.alt) {
+    res.innerHTML = `
+      <div class="finder-card">
+        <div class="fc-icon">❌</div>
+        <div class="fc-title">${data.target} Not Found</div>
+        <div class="fc-sub">We don't have this model or any compatible alternatives in stock.</div>
+        <button class="btn primary" onclick="addReq('${data.target}')">Add to Requirements List</button>
+      </div>`;
+  } else if (!data.exact && data.alt) {
+    res.innerHTML = `
+      <div class="finder-card" style="border-color:var(--amber)">
+        <div class="fc-icon">⚠️</div>
+        <div class="fc-title">Closest Match: ${data.alt}</div>
+        <div class="fc-sub">Exact model not found, but this fits. Located in <b>${data.box}</b> (${data.qty} pcs left).</div>
+        <div class="fc-acts">
+          <button class="btn ghost" onclick="res.innerHTML=''">Cancel</button>
+          <button class="btn sell" onclick="executeSell('${data.alt}', '${data.box}', 1)">Sell 1 Piece</button>
+        </div>
+      </div>`;
+  } else {
+    res.innerHTML = `
+      <div class="finder-card" style="border-color:var(--green)">
+        <div class="fc-icon">✅</div>
+        <div class="fc-title">${data.target}</div>
+        <div class="fc-sub">Located in <b>${data.box}</b>. You have ${data.qty} pieces available.</div>
+        <div class="fc-acts">
+          <button class="btn ghost" onclick="document.getElementById('finder-results').innerHTML=''">Cancel</button>
+          <button class="btn sell" onclick="executeSell('${data.target}', '${data.box}', 1)">Sold 1 Piece</button>
+        </div>
+      </div>`;
+  }
+}
 
-function renderWH() {
-  const grid = document.getElementById('boxes-grid');
-  const filter = document.getElementById('wh-box-filter').value;
-  const search = document.getElementById('wh-search').value.toLowerCase();
-  
-  // Update Filter Dropdown
-  const sel = document.getElementById('wh-box-filter');
-  sel.innerHTML = '<option value="">All Boxes</option>' + boxes.map(b=>`<option value="${b}" ${b===filter?'selected':''}>${b}</option>`).join('');
+function executeSell(model, box, qty) {
+  if(inventory[model] && inventory[model][box]) {
+    inventory[model][box] -= qty;
+    if(inventory[model][box]<=0) delete inventory[model][box];
+    salesLog.push({model, box, qty, date:new Date().toLocaleDateString()});
+    save();
+    document.getElementById('finder-results').innerHTML = `<div style="text-align:center;color:var(--green);font-weight:700;font-size:18px">✅ Sale Recorded!</div>`;
+    addAiMsg(`Recorded sale of 1x **${model}**.`);
+  }
+}
 
-  // Stats
-  document.getElementById('stats-row').innerHTML = `
-    <div class="stat"><div class="stat-num">${Object.keys(inventory).length}</div><div class="stat-label">Models</div></div>
-    <div class="stat"><div class="stat-num">${getTotalPcs()}</div><div class="stat-label">Total Pcs</div></div>
-    <div class="stat"><div class="stat-num">${boxes.length}</div><div class="stat-label">Boxes</div></div>
-    <div class="stat"><div class="stat-num ${getLow().length?'red':'green'}">${getLow().length}</div><div class="stat-label">Low Stock</div></div>
-  `;
+function addReq(model) {
+  requirements.push({model:model, qty:10, priority:'high'});
+  save();
+  document.getElementById('finder-results').innerHTML = `<div style="text-align:center;color:var(--blue);font-weight:700;font-size:18px">📋 Added to Requirements!</div>`;
+}
 
-  // Grid
-  let html = '';
-  (filter ? [filter] : boxes).forEach(box => {
-    let items = Object.entries(inventory).filter(([m,l])=>l[box]).filter(([m])=>!search||m.toLowerCase().includes(search));
-    let t = items.reduce((a,[,l])=>a+l[box],0);
-    
-    html += `<div class="box-card"><div class="box-hdr"><div class="box-name">📦 ${box}</div><div style="font-size:10px;color:var(--text3)">${t} pcs</div></div>`;
-    if(!items.length) html += `<div class="box-empty">Empty</div>`;
-    items.forEach(([m,l]) => {
-      let q = l[box], c = q<=3?'low':q<=lowThreshold?'mid':'ok';
-      html += `<div class="bitem"><div class="bitem-info"><div class="bitem-model">${m}</div></div><div class="bitem-qty ${c}">${q}p</div>
-      <div class="bitem-acts"><button class="iab" style="color:var(--green)" onclick="openSellModal('${m}','${box}',${q})">💰</button><button class="iab" onclick="openEditModal('${m}','${box}',${q})">✎</button></div></div>`;
+// ============================================================
+// RENDERING WAREHOUSE & UTILS
+// ============================================================
+function renderAll() {
+  // Warehouse
+  const grid = document.getElementById('boxes-grid'); let h='';
+  boxes.forEach(b=>{
+    let count=0; let items='';
+    Object.entries(inventory).forEach(([m,l])=>{
+      if(l[b]) { count+=l[b]; items+=`<div class="bitem"><div class="bitem-info"><div class="bitem-model">${m}</div></div><div class="bitem-qty">${l[b]}p</div></div>`; }
     });
-    html += `</div>`;
+    h+=`<div class="box-card"><div class="box-hdr"><div class="box-name">📦 ${b}</div><div style="font-size:10px">${count} pcs</div></div>${items||'<div class="box-empty">Empty</div>'}</div>`;
   });
-  grid.innerHTML = html + `<div class="add-box-tile" onclick="openModal('addbox-modal')">+ Add New Box</div>`;
+  grid.innerHTML=h;
+  
+  // Sales & Reqs
+  document.getElementById('sales-container').innerHTML = salesLog.map(s=>`<div style="padding:10px;border-bottom:1px solid var(--border)"><b>${s.model}</b> - ${s.qty} pcs (${s.date})</div>`).join('');
+  document.getElementById('req-container').innerHTML = requirements.map(r=>`<div style="padding:10px;border-bottom:1px solid var(--border)"><b>${r.model}</b> - Need ${r.qty}</div>`).join('');
 }
 
-// ============================================================
-// ACTIONS (ADD, EDIT, SELL)
-// ============================================================
-function confirmAddBox() {
-  const n = document.getElementById('newbox-in').value.trim();
-  if(n && !boxes.includes(n)) { boxes.push(n); save(); renderWH(); closeModal('addbox-modal'); toast('Box Added','success'); }
+function addBoxPrompt() {
+  const n = prompt("New Box Name:");
+  if(n && !boxes.includes(n)) { boxes.push(n); save(); }
 }
-
-function openEditModal(m, b, q) {
-  editingItem = {m,b}; document.getElementById('edit-model').value=m; document.getElementById('edit-box').value=b; document.getElementById('edit-qty').value=q; openModal('edit-modal');
-}
-function saveEdit() {
-  const q = parseInt(document.getElementById('edit-qty').value);
-  if(q===0) delete inventory[editingItem.m][editingItem.b];
-  else inventory[editingItem.m][editingItem.b] = q;
-  save(); renderWH(); closeModal('edit-modal');
-}
-function deleteItem() { delete inventory[editingItem.m][editingItem.b]; save(); renderWH(); closeModal('edit-modal'); }
-
-function openSellModal(m, b, q) {
-  sellingItem = {m,b,q}; document.getElementById('sell-preview').innerHTML = `<b>${m}</b><br><small>${b} (In stock: ${q})</small>`; document.getElementById('sell-qty').max=q; openModal('sell-modal');
-}
-function confirmSell() {
-  const q = parseInt(document.getElementById('sell-qty').value);
-  if(q > sellingItem.q) return toast('Not enough stock', 'error');
-  inventory[sellingItem.m][sellingItem.b] -= q;
-  if(inventory[sellingItem.m][sellingItem.b]<=0) delete inventory[sellingItem.m][sellingItem.b];
-  salesLog.push({model:sellingItem.m, box:sellingItem.b, qty:q, date:new Date().toLocaleDateString()});
-  save(); renderAll(); closeModal('sell-modal'); toast('Sold!', 'success');
-}
-
-// ============================================================
-// SALES & REQS & UTILS
-// ============================================================
-function renderSales() {
-  document.getElementById('sales-stats').innerHTML = `<div class="stat"><div class="stat-num">${salesLog.length}</div><div class="stat-label">Total Sales</div></div>`;
-  let h = `<table class="sales-table"><tr><th>Model</th><th>Box</th><th>Qty</th><th>Date</th></tr>`;
-  [...salesLog].reverse().forEach(s => h+=`<tr><td><b>${s.model}</b></td><td><span class="sale-tag">${s.box}</span></td><td style="color:var(--green)"><b>${s.qty}</b></td><td>${s.date}</td></tr>`);
-  document.getElementById('sales-container').innerHTML = h + `</table>`;
-}
-function clearSales() { if(confirm("Clear log?")) { salesLog=[]; save(); renderSales(); } }
-
-function renderReqs() {
-  let h = `<table class="req-table"><tr><th>Model</th><th>Qty</th><th>Priority</th><th></th></tr>`;
-  requirements.forEach((r,i) => h+=`<tr><td><b>${r.model}</b></td><td><b>${r.qty}</b></td><td>${r.priority}</td><td><button class="iab" onclick="requirements.splice(${i},1); save(); renderAll();">✕</button></td></tr>`);
-  document.getElementById('req-container').innerHTML = h + `</table>`;
-}
-function clearReqs() { if(confirm("Clear reqs?")) { requirements=[]; save(); renderAll(); } }
-
-function saveLowThreshold() { lowThreshold = parseInt(document.getElementById('low-threshold-input').value); save(); renderWH(); toast('Saved','success'); }
-function updateBadges() { 
-  const rb=document.getElementById('req-badge'), lb=document.getElementById('low-badge');
-  rb.textContent=requirements.length; rb.style.display=requirements.length?'inline':'none';
-  lb.style.display=getLow().length?'inline':'none';
-}
-
-function openModal(id){document.getElementById(id).classList.add('open');}
-function closeModal(id){document.getElementById(id).classList.remove('open');}
-let toastTimer; function toast(msg,type=''){ const el=document.getElementById('toast'); el.textContent=msg; el.className=`toast ${type} show`; clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),2800); }
 </script>
 </body>
 </html>
