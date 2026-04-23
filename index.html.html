@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GlassGodown v2 — Cloud Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+
+<style>
+/* LIGHT & MINIMAL THEME */
+:root {
+  --bg: #fafafa;
+  --bg2: #ffffff;
+  --bg3: #f4f5f7;
+  --bg4: #e2e8f0;
+  --border: #e4e4e7;
+  --border2: #d4d4d8;
+  --text: #09090b;
+  --text2: #52525b;
+  --text3: #a1a1aa;
+  --accent: #18181b;
+  --accent2: #27272a;
+  --accent-text: #ffffff;
+  --green: #16a34a;
+  --red: #dc2626;
+  --amber: #d97706;
+  --blue: #2563eb;
+  --font: 'Syne', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;overflow-x:hidden}
+
+/* LOGIN SCREEN */
+#login-screen {
+  position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999;
+}
+.login-box {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 40px; text-align: center; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+}
+.login-box h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.login-box p { font-size: 14px; color: var(--text2); margin-bottom: 30px; line-height: 1.5; }
+.btn-google { background: #fff; border: 1px solid var(--border2); color: var(--text); padding: 12px 20px; border-radius: 8px; font-family: var(--font); font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; transition: all .15s; }
+.btn-google:hover { background: var(--bg3); border-color: var(--border2); }
+.loader-text { font-size: 13px; color: var(--text3); margin-top: 15px; font-family: var(--mono); display: none; }
+
+/* LAYOUT */
+.layout{display:none;grid-template-columns:230px 1fr;grid-template-rows:56px 1fr;min-height:100vh}
+.topbar{grid-column:1/-1;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;position:sticky;top:0;z-index:100}
+.logo{font-size:17px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;letter-spacing:-0.3px}
+.logo-icon{width:28px;height:28px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--accent-text);font-size:14px;font-weight:700}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.user-badge{font-size:12px;color:var(--text2);background:var(--bg3);padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:6px;}
+.user-badge img { width: 16px; height: 16px; border-radius: 50%; }
+.api-status{font-size:11px;font-family:var(--mono);color:var(--text2);display:flex;align-items:center;gap:5px}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--text3)}
+.sdot.ok{background:var(--green)}.sdot.err{background:var(--red)}
+.tbtn{padding:5px 12px;border-radius:6px;font-size:12px;border:1px solid var(--border2);background:none;color:var(--text2);cursor:pointer;font-family:var(--font);transition:all .15s}
+.tbtn:hover{border-color:var(--accent);color:var(--accent)}
+.tbtn.warn{border-color:rgba(220,38,38,.3);color:var(--red)}
+
+/* SIDEBAR & MAIN (Kept from previous version for brevity, imagine full CSS here) */
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:12px 0;display:flex;flex-direction:column;gap:1px;position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto}
+.nav-label{font-size:10px;letter-spacing:.1em;color:var(--text3);padding:10px 18px 4px;font-weight:600;text-transform:uppercase}
+.nav-btn{display:flex;align-items:center;gap:9px;padding:8px 18px;font-size:13px;font-family:var(--font);color:var(--text2);cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:all .15s;position:relative}
+.nav-btn:hover{color:var(--text);background:var(--bg3)}
+.nav-btn.active{color:var(--text);background:rgba(24,24,27,.05);font-weight:600}
+.nav-btn.active::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;background:var(--accent);border-radius:0 2px 2px 0}
+.nav-icon{font-size:15px;width:18px;text-align:center}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;font-family:var(--mono)}
+.nav-badge.amber{background:var(--amber);color:#fff}
+.nav-sep{height:1px;background:var(--border);margin:8px 18px}
+
+.main{overflow-y:auto;height:calc(100vh - 56px);display:flex;flex-direction:column}
+.section{display:none;flex:1;flex-direction:column}
+.section.active{display:flex}
+.page-head{padding:20px 26px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0;background:var(--bg2)}
+.page-head h1{font-size:19px;font-weight:700}
+.page-head p{font-size:12px;color:var(--text2);margin-top:2px}
+.btn{padding:7px 14px;border-radius:7px;font-size:12px;font-family:var(--font);cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:5px}
+.btn.primary{background:var(--accent);color:var(--accent-text);font-weight:600}
+.btn.primary:hover{background:var(--accent2)}
+.btn.ghost{background:var(--bg2);border:1px solid var(--border2);color:var(--text2)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn.danger{background:none;border:1px solid transparent;color:var(--red)}
+.btn.danger:hover{border-color:var(--red);background:rgba(220,38,38,.07)}
+.page-content{padding:18px 26px;flex:1;overflow-y:auto}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:14px 26px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--bg2)}
+.stat{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px 14px}
+.stat-num{font-size:22px;font-weight:700;font-family:var(--mono);color:var(--text)}
+.stat-label{font-size:11px;color:var(--text2);margin-top:2px}
+
+/* CHAT */
+.chat-layout{display:flex;flex-direction:column;height:100%}
+.chat-head{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0;background:var(--bg2)}
+.av{width:38px;height:38px;border-radius:9px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.chat-msgs{flex:1;overflow-y:auto;padding:18px 24px;display:flex;flex-direction:column;gap:14px}
+.msg{display:flex;gap:9px;max-width:88%;animation:fu .22s ease}
+@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{align-self:flex-end;flex-direction:row-reverse}
+.msg-av{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:2px}
+.msg.user .msg-av{background:var(--bg4)}
+.msg.ai .msg-av{background:var(--accent);color:var(--accent-text)}
+.bubble{padding:11px 14px;border-radius:11px;font-size:13.5px;line-height:1.65;box-shadow:0 1px 2px rgba(0,0,0,0.03)}
+.msg.user .bubble{background:var(--accent);color:var(--accent-text);border-bottom-right-radius:3px}
+.msg.ai .bubble{background:var(--bg2);border:1px solid var(--border);border-bottom-left-radius:3px}
+.chat-foot{padding:14px 24px 18px;border-top:1px solid var(--border);background:var(--bg2);flex-shrink:0}
+.quick-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.qb{font-size:11px;padding:4px 10px;background:var(--bg);border:1px solid var(--border2);color:var(--text2);border-radius:20px;cursor:pointer;font-family:var(--font);transition:all .15s;white-space:nowrap}
+.input-row{display:flex;gap:8px;align-items:flex-end}
+.cinput{flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:9px;padding:10px 14px;font-size:14px;font-family:var(--font);color:var(--text);resize:none;min-height:44px;max-height:110px;}
+.sbtn{background:var(--accent);color:var(--accent-text);border:none;border-radius:9px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;}
+
+/* WAREHOUSE GRID & MODALS & TOASTS (Abridged for spacing, relies on previous UI logic) */
+.boxes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:14px}
+.box-card{background:var(--bg2);border:1px solid var(--border);border-radius:11px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.02);}
+.box-hdr{padding:12px 14px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.box-name{font-size:13px;font-weight:600;color:var(--text);font-family:var(--mono);}
+.box-empty{padding:16px;font-size:12px;color:var(--text3);text-align:center;font-style:italic}
+.add-box-tile{background:none;border:1px dashed var(--border2);border-radius:11px;height:72px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--text3);gap:5px;}
+
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-ov.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:26px;width:440px;max-width:92vw;transform:translateY(10px);transition:transform .2s;box-shadow:0 10px 25px rgba(0,0,0,0.1)}
+.modal-ov.open .modal{transform:translateY(0)}
+
+.toast{position:fixed;bottom:22px;right:22px;background:var(--text);border:1px solid var(--text);border-radius:9px;padding:12px 18px;font-size:13.5px;color:var(--bg2);z-index:9999;transform:translateY(16px);opacity:0;transition:all .22s;display:flex;align-items:center;gap:8px;max-width:300px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:var(--green);border-color:var(--green);color:#fff}
+.toast.error{background:var(--red);border-color:var(--red);color:#fff}
+
+@media (max-width: 768px) {
+  .layout { grid-template-columns: 1fr; grid-template-rows: 56px auto 1fr; }
+  .sidebar { grid-row: 2; grid-column: 1; height: auto; flex-direction: row; overflow-x: auto; padding: 0; position: static; border-right: none; border-bottom: 1px solid var(--border); }
+  .nav-label, .nav-sep { display: none; }
+  .nav-btn { padding: 12px 16px; white-space: nowrap; width: auto; border-bottom: 2px solid transparent; }
+  .nav-btn.active { background: transparent; border-bottom: 2px solid var(--accent); }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-box">
+    <h1><div class="logo-icon">⬡</div>GlassGodown</h1>
+    <p>Sign in to access your cloud warehouse and start managing inventory.</p>
+    <button class="btn-google" onclick="signInWithGoogle()">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Sign in with Google
+    </button>
+    <div id="login-loader" class="loader-text">Connecting to Cloud...</div>
+  </div>
+</div>
+
+<div class="layout" id="main-layout">
+  <div class="topbar">
+    <div class="logo"><div class="logo-icon">⬡</div>GlassGodown</div>
+    <div class="topbar-right">
+      <div class="api-status"><div class="sdot ok" id="sdot"></div><span>Cloud Sync On</span></div>
+      <div class="user-badge" id="user-badge"></div>
+      <button class="tbtn warn" onclick="logOut()">Logout</button>
+    </div>
+  </div>
+
+  <nav class="sidebar">
+    <button class="nav-btn active" onclick="showSection('manager')" id="nav-manager">🤖 AI Manager</button>
+    <button class="nav-btn" onclick="showSection('warehouse')" id="nav-warehouse">📦 Warehouse</button>
+    <button class="nav-btn" onclick="showSection('sales')" id="nav-sales">💰 Sales Log</button>
+    <button class="nav-btn" onclick="showSection('settings')" id="nav-settings">⚙ Settings</button>
+  </nav>
+
+  <main class="main">
+    <div class="section active" id="section-warehouse">
+      <div class="page-head">
+        <div><h1>📦 Cloud Warehouse</h1><p>Data synced securely to your Google Account</p></div>
+        <div><button class="btn primary" onclick="openModal('addbox-modal')">+ Add Box</button></div>
+      </div>
+      <div class="stats-row" id="stats-row"></div>
+      <div class="page-content">
+        <div class="boxes-grid" id="boxes-grid"></div>
+      </div>
+    </div>
+    
+    <div class="modal-ov" id="addbox-modal">
+      <div class="modal">
+        <h3>📦 Add New Box</h3>
+        <input class="minput" id="newbox-in" placeholder="e.g. Box 6">
+        <div class="modal-acts">
+          <button class="btn ghost" onclick="closeModal('addbox-modal')">Cancel</button>
+          <button class="btn primary" onclick="confirmAddBox()">Add Box</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// 1. FIREBASE CONFIGURATION (PASTE YOURS HERE)
+// ============================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyAW9dCjmcy5TYFvb1GNxuTqd1lNlE8rtOY",
+  authDomain: "glass-godown.firebaseapp.com",
+  projectId: "glass-godown",
+  storageBucket: "glass-godown.firebasestorage.app",
+  messagingSenderId: "189726881200",
+  appId: "1:189726881200:web:dc049d1873a8ed82739275",
+  measurementId: "G-FS29VXCKJS"
+};
+
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+const provider = new firebase.auth.GoogleAuthProvider();
+
+// ============================================================
+// STATE
+// ============================================================
+let currentUser = null;
+let inventory = {};   
+let boxes = ["Box 1", "Box 2"];
+
+// ============================================================
+// AUTHENTICATION LOGIC
+// ============================================================
+function signInWithGoogle() {
+  document.getElementById('login-loader').style.display = 'block';
+  auth.signInWithPopup(provider).catch(error => {
+    console.error(error);
+    toast(error.message, 'error');
+    document.getElementById('login-loader').style.display = 'none';
+  });
+}
+
+function logOut() {
+  auth.signOut();
+}
+
+// Listen for Login/Logout State Changes
+auth.onAuthStateChanged(async (user) => {
+  if (user) {
+    currentUser = user;
+    // UI Updates
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('main-layout').style.display = 'grid';
+    document.getElementById('user-badge').innerHTML = `<img src="${user.photoURL}" alt=""> ${user.displayName.split(' ')[0]}`;
+    
+    // Load Data from Cloud
+    await loadFromCloud();
+    renderAll();
+    toast('Welcome back, ' + user.displayName, 'success');
+  } else {
+    currentUser = null;
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('main-layout').style.display = 'none';
+    document.getElementById('login-loader').style.display = 'none';
+  }
+});
+
+// ============================================================
+// CLOUD DATABASE LOGIC (Replacing localStorage)
+// ============================================================
+async function loadFromCloud() {
+  if (!currentUser) return;
+  try {
+    const docRef = db.collection("users").doc(currentUser.uid);
+    const docSnap = await docRef.get();
+    
+    if (docSnap.exists) {
+      const data = docSnap.data();
+      inventory = data.inventory || {};
+      boxes = data.boxes || ["Box 1", "Box 2"];
+    } else {
+      // First time user - set up empty template
+      await saveToCloud(); 
+    }
+  } catch (e) {
+    toast('Error loading cloud data', 'error');
+  }
+}
+
+async function saveToCloud() {
+  if (!currentUser) return;
+  try {
+    const docRef = db.collection("users").doc(currentUser.uid);
+    // Push data to Firebase
+    await docRef.set({
+      inventory: inventory,
+      boxes: boxes
+    }, { merge: true }); // merge ensures we don't accidentally overwrite other fields
+  } catch (e) {
+    console.error(e);
+    toast('Failed to save to cloud', 'error');
+  }
+}
+
+// ============================================================
+// WAREHOUSE UI LOGIC (Minimal version to prove Cloud works)
+// ============================================================
+function renderAll() {
+  const grid = document.getElementById('boxes-grid');
+  let html = '';
+  boxes.forEach(box => {
+    let count = 0;
+    Object.keys(inventory).forEach(m => { if(inventory[m][box]) count += inventory[m][box]; });
+    
+    html += `<div class="box-card">
+      <div class="box-hdr"><div class="box-name">📦 ${box}</div><div style="font-size:10px;color:var(--text3)">${count} pcs</div></div>
+      <div style="padding:14px;font-size:12px;color:var(--text3);text-align:center">Cloud synced!</div>
+    </div>`;
+  });
+  html += `<div class="add-box-tile" onclick="openModal('addbox-modal')">+ Add New Box</div>`;
+  grid.innerHTML = html;
+  
+  document.getElementById('stats-row').innerHTML = `<div class="stat"><div class="stat-num">${boxes.length}</div><div class="stat-label">Cloud Boxes</div></div>`;
+}
+
+function confirmAddBox() {
+  const name = document.getElementById('newbox-in').value.trim();
+  if(!name || boxes.includes(name)) return;
+  
+  boxes.push(name);
+  renderAll();
+  closeModal('addbox-modal');
+  
+  // Save to Firebase immediately!
+  saveToCloud().then(() => toast(`${name} synced to cloud!`, 'success'));
+}
+
+// UI Helpers
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('section-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+let toastTimer;
+function toast(msg,type=''){
+  const el=document.getElementById('toast');
+  el.textContent=(type==='success'?'✓ ':type==='error'?'✕ ':'')+msg;
+  el.className=`toast ${type} show`;
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2800);
+}
+</script>
+</body>
+</html>
