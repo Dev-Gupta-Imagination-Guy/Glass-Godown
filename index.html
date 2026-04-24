@@ -3,259 +3,181 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GlassGodown v4.1 — Fixed</title>
+<title>GlassGodown v4.0 — Stable Cloud IDE</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
 <style>
+/* LIGHT & MINIMAL THEME */
 :root {
-  --bg:#fafafa;--bg2:#ffffff;--bg3:#f4f5f7;--bg4:#e2e8f0;
-  --border:#e4e4e7;--border2:#d4d4d8;
-  --text:#09090b;--text2:#52525b;--text3:#a1a1aa;
-  --accent:#18181b;--accent2:#27272a;--accent-text:#ffffff;
-  --green:#16a34a;--red:#dc2626;--amber:#d97706;--blue:#2563eb;
-  --font:'Syne',sans-serif;--mono:'JetBrains Mono',monospace;
+  --bg: #fafafa; --bg2: #ffffff; --bg3: #f4f5f7; --bg4: #e2e8f0;
+  --border: #e4e4e7; --border2: #d4d4d8;
+  --text: #09090b; --text2: #52525b; --text3: #a1a1aa;
+  --accent: #18181b; --accent2: #27272a; --accent-text: #ffffff;
+  --green: #16a34a; --red: #dc2626; --amber: #d97706; --blue: #2563eb;
+  --font: 'Syne', sans-serif; --mono: 'JetBrains Mono', monospace;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:var(--font);height:100vh;overflow:hidden;}
 
-/* LOGIN */
-#login-screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;}
-.login-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:40px;text-align:center;width:100%;max-width:400px;box-shadow:0 10px 25px rgba(0,0,0,0.05);}
-.login-box h1{font-size:24px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:10px;}
-.login-box p{font-size:14px;color:var(--text2);margin-bottom:30px;line-height:1.5;}
-.btn-google{background:#fff;border:1px solid var(--border2);color:var(--text);padding:12px 20px;border-radius:8px;font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;transition:all .15s;}
-.btn-google:hover{background:var(--bg3);}
-.login-error{color:var(--red);font-size:13px;margin-top:12px;display:none;}
+/* LOGIN SCREEN */
+#login-screen { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
+.login-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 40px; text-align: center; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); }
+.login-box h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.login-box p { font-size: 14px; color: var(--text2); margin-bottom: 30px; line-height: 1.5; }
+.btn-google { background: #fff; border: 1px solid var(--border2); color: var(--text); padding: 12px 20px; border-radius: 8px; font-family: var(--font); font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; transition: all .15s; }
+.btn-google:hover { background: var(--bg3); border-color: var(--border2); }
 
-/* LAYOUT */
+/* 3-COLUMN IDE LAYOUT */
 .layout{display:none;grid-template-columns:220px 1fr 340px;grid-template-rows:56px 1fr;height:100vh;overflow:hidden;}
-.topbar{grid-column:1/-1;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;z-index:100;flex-shrink:0;}
-.logo{font-size:17px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;letter-spacing:-0.3px;}
-.logo-icon{width:26px;height:26px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--accent-text);font-size:13px;font-weight:700;}
-.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.topbar{grid-column:1/-1;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;z-index:100}
+.logo{font-size:17px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;letter-spacing:-0.3px}
+.logo-icon{width:26px;height:26px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--accent-text);font-size:13px;font-weight:700}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
 .user-badge{font-size:12px;color:var(--text2);background:var(--bg3);padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:6px;}
-.user-badge img{width:16px;height:16px;border-radius:50%;}
+.user-badge img { width: 16px; height: 16px; border-radius: 50%; }
 
 /* BUTTONS */
-.btn{padding:7px 14px;border-radius:7px;font-size:13px;font-family:var(--font);font-weight:500;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+.btn{padding:7px 14px;border-radius:7px;font-size:13px;font-family:var(--font);font-weight:500;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .btn.primary{background:var(--accent);color:var(--accent-text);}
-.btn.primary:hover{background:var(--accent2);}
-.btn.primary:disabled{opacity:.5;cursor:not-allowed;}
-.btn.ghost{background:var(--bg2);border:1px solid var(--border2);color:var(--text2);}
-.btn.ghost:hover{border-color:var(--accent);color:var(--text);}
-.btn.danger{background:rgba(220,38,38,.1);color:var(--red);}
-.btn.danger:hover{background:rgba(220,38,38,.2);}
-.btn.sell{background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.25);color:var(--green);font-weight:600;}
-.btn.sell:hover{background:rgba(22,163,74,.2);}
+.btn.primary:hover{background:var(--accent2)}
+.btn.ghost{background:var(--bg2);border:1px solid var(--border2);color:var(--text2)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--text)}
+.btn.danger{background:rgba(220,38,38,.1);color:var(--red)}
+.btn.danger:hover{background:rgba(220,38,38,.2)}
+.btn.sell{background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.25);color:var(--green);font-weight:600}
+.btn.sell:hover{background:rgba(22,163,74,.2)}
 
-/* SIDEBAR */
-.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:12px 0;display:flex;flex-direction:column;gap:2px;overflow-y:auto;}
-.nav-label{font-size:10px;letter-spacing:.1em;color:var(--text3);padding:10px 18px 4px;font-weight:600;text-transform:uppercase;}
-.nav-sep{height:1px;background:var(--border);margin:6px 18px;}
-.nav-btn{display:flex;align-items:center;gap:9px;padding:9px 18px;font-size:13px;font-family:var(--font);color:var(--text2);cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:all .15s;position:relative;}
-.nav-btn:hover{color:var(--text);background:var(--bg3);}
-.nav-btn.active{color:var(--text);background:rgba(24,24,27,.05);font-weight:600;}
-.nav-btn.active::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;background:var(--accent);border-radius:0 2px 2px 0;}
-.nav-icon{font-size:15px;width:18px;text-align:center;}
-.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;font-family:var(--mono);}
+/* LEFT SIDEBAR */
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:12px 0;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.nav-label{font-size:10px;letter-spacing:.1em;color:var(--text3);padding:10px 18px 4px;font-weight:600;text-transform:uppercase}
+.nav-btn{display:flex;align-items:center;gap:9px;padding:9px 18px;font-size:13px;font-family:var(--font);color:var(--text2);cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:all .15s;position:relative}
+.nav-btn:hover{color:var(--text);background:var(--bg3)}
+.nav-btn.active{color:var(--text);background:rgba(24,24,27,.05);font-weight:600}
+.nav-btn.active::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;background:var(--accent);border-radius:0 2px 2px 0}
+.nav-icon{font-size:15px;width:18px;text-align:center}
 
-/* MAIN */
-.main{background:var(--bg);display:flex;flex-direction:column;overflow:hidden;}
-.section{display:none;flex-direction:column;flex:1;min-height:0;overflow:hidden;}
-.section.active{display:flex;}
-.page-head{padding:20px 28px 16px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
-.page-head-left h1{font-size:19px;font-weight:700;}
-.page-head-left p{font-size:13px;color:var(--text2);margin-top:4px;}
-.page-content{padding:22px 28px;flex:1;overflow-y:auto;}
-.page-content::-webkit-scrollbar{width:4px;}
-.page-content::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+/* CENTER WORKSPACE */
+.main{background:var(--bg);display:flex;flex-direction:column;position:relative;flex:1;min-height:0;height:100%;}
+.section{display:none;flex-direction:column;flex:1;min-height:0;height:100%;}
+.section.active{display:flex}
+.page-head{padding:24px 30px 16px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0}
+.page-head h1{font-size:20px;font-weight:700}
+.page-head p{font-size:13px;color:var(--text2);margin-top:4px}
+.page-content{padding:24px 30px;flex:1;overflow-y:auto;min-height:0;}
 
-/* RIGHT SIDEBAR — RAJU */
-.rightbar{background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
-.chat-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0;}
-.av{width:34px;height:34px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:17px;}
-.chat-msgs{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:14px;}
-.chat-msgs::-webkit-scrollbar{width:3px;}
-.chat-msgs::-webkit-scrollbar-thumb{background:var(--border2);}
-.msg{display:flex;gap:8px;max-width:94%;animation:fu .2s ease;flex-shrink:0;}
-@keyframes fu{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-.msg.user{align-self:flex-end;flex-direction:row-reverse;}
-.msg-av{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;margin-top:2px;}
-.msg.user .msg-av{background:var(--bg4);}
-.msg.ai .msg-av{background:var(--accent);color:var(--accent-text);}
-.bubble{padding:9px 13px;border-radius:10px;font-size:13px;line-height:1.6;}
-.msg.user .bubble{background:var(--accent);color:var(--accent-text);border-bottom-right-radius:3px;}
-.msg.ai .bubble{background:var(--bg);border:1px solid var(--border);border-bottom-left-radius:3px;color:var(--text);}
-.bubble strong{font-weight:600;}
-.bubble a{color:var(--blue);cursor:pointer;text-decoration:underline;}
-.typing{display:flex;gap:4px;padding:10px 13px;background:var(--bg);border:1px solid var(--border);border-radius:10px;border-bottom-left-radius:3px;width:fit-content;flex-shrink:0;}
-.td{width:5px;height:5px;border-radius:50%;background:var(--text3);animation:tb 1s infinite;}
-.td:nth-child(2){animation-delay:.2s;}.td:nth-child(3){animation-delay:.4s;}
-@keyframes tb{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px);background:var(--text);}}
-.chat-foot{padding:12px 16px 16px;border-top:1px solid var(--border);background:var(--bg2);flex-shrink:0;}
-.quick-chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;}
-.qc{font-size:11px;padding:3px 8px;background:none;border:1px solid var(--border2);color:var(--text2);border-radius:20px;cursor:pointer;font-family:var(--font);transition:all .15s;white-space:nowrap;}
-.qc:hover{border-color:var(--accent);color:var(--text);}
-.cinput{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:9px 13px;font-size:13px;font-family:var(--font);color:var(--text);resize:none;min-height:42px;outline:none;transition:border-color .15s;margin-bottom:8px;}
-.cinput:focus{border-color:var(--accent);}
-.sbtn{background:var(--accent);color:var(--accent-text);border:none;border-radius:7px;width:100%;padding:9px;font-weight:600;font-size:13px;cursor:pointer;font-family:var(--font);transition:all .15s;}
-.sbtn:hover{background:var(--accent2);}
-.sbtn:disabled{opacity:.5;cursor:not-allowed;}
+/* RIGHT SIDEBAR (RAJU AI) */
+.rightbar{background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;height:100%;min-height:0;}
+.chat-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--bg2);flex-shrink:0;}
+.av{width:36px;height:36px;border-radius:9px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:16px;min-height:0;}
+.msg{display:flex;gap:10px;max-width:92%;animation:fu .2s ease;flex-shrink:0;}
+@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{align-self:flex-end;flex-direction:row-reverse}
+.msg-av{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:2px}
+.msg.user .msg-av{background:var(--bg4)}
+.msg.ai .msg-av{background:var(--accent);color:var(--accent-text)}
+.bubble{padding:10px 14px;border-radius:11px;font-size:13px;line-height:1.6;box-shadow:0 1px 2px rgba(0,0,0,0.02)}
+.msg.user .bubble{background:var(--accent);color:var(--accent-text);border-bottom-right-radius:3px}
+.msg.ai .bubble{background:var(--bg);border:1px solid var(--border);border-bottom-left-radius:3px}
+.bubble strong{color:inherit;font-weight:600}
+.typing{display:flex;gap:4px;padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:11px;border-bottom-left-radius:3px;width:fit-content;flex-shrink:0;}
+.td{width:5px;height:5px;border-radius:50%;background:var(--text3);animation:tb 1s infinite}
+.td:nth-child(2){animation-delay:.2s}.td:nth-child(3){animation-delay:.4s}
+@keyframes tb{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px);background:var(--text)}}
+.chat-foot{padding:14px 20px 18px;border-top:1px solid var(--border);background:var(--bg2);flex-shrink:0;}
+.cinput{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:9px;padding:10px 14px;font-size:13px;font-family:var(--font);color:var(--text);resize:none;min-height:44px;outline:none;transition:border-color .15s;margin-bottom:8px;}
+.cinput:focus{border-color:var(--accent)}
+.sbtn{background:var(--accent);color:var(--accent-text);border:none;border-radius:7px;width:100%;padding:10px;font-weight:600;font-size:13px;cursor:pointer;display:flex;justify-content:center;gap:6px;}
 
-/* FINDER */
-.search-box{display:flex;gap:10px;margin-bottom:22px;}
-.finder-input{flex:1;background:var(--bg2);border:2px solid var(--border2);border-radius:10px;padding:12px 16px;font-size:15px;font-family:var(--font);outline:none;transition:border-color .2s;color:var(--text);}
-.finder-input:focus{border-color:var(--blue);}
-.finder-btn{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:0 22px;font-weight:600;font-size:14px;cursor:pointer;font-family:var(--font);transition:all .15s;white-space:nowrap;}
-.finder-btn:hover{background:#1d4ed8;}
-.finder-btn:disabled{opacity:.5;cursor:not-allowed;}
-.result-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px;display:none;animation:fu .3s ease;}
+/* BULK ADD UI */
+.bulk-row { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.bulk-input-col { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 6px; }
+.bulk-label { font-size: 12px; font-weight: 600; color: var(--text2); }
+
+/* UTILS & TABLES */
+.boxes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.box-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.02);}
+.box-hdr{padding:14px 16px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-weight:600;}
+.bitem{display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);font-size:14px;align-items:center;}
+.dataTable{width:100%;border-collapse:collapse;background:var(--bg2);border-radius:11px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.02)}
+.dataTable th{text-align:left;padding:12px 16px;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text3);background:var(--bg3);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
+.dataTable td{padding:14px 16px;border-bottom:1px solid var(--border);font-size:14px;}
+
+/* FINDER CARD UI */
+.search-box{display:flex;gap:10px;margin-bottom:24px;}
+.finder-input{flex:1;background:var(--bg2);border:2px solid var(--border2);border-radius:11px;padding:14px 18px;font-size:16px;font-family:var(--font);outline:none;transition:border-color .2s}
+.finder-input:focus{border-color:var(--blue)}
+.finder-btn{background:var(--blue);color:#fff;border:none;border-radius:11px;padding:0 24px;font-weight:600;font-size:15px;cursor:pointer;}
+.result-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px;box-shadow:0 4px 15px rgba(0,0,0,0.03);display:none;animation:fu .3s ease;flex-shrink:0;}
 .result-card.show{display:block;}
-.rc-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;}
-.rc-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
-.rc-icon.exact{background:rgba(22,163,74,.1);}
-.rc-icon.compat{background:rgba(37,99,235,.1);}
-.rc-icon.none{background:rgba(220,38,38,.1);}
-.rc-title{font-size:17px;font-weight:700;}
-.rc-subtitle{font-size:13px;color:var(--text2);margin-top:4px;line-height:1.5;}
-.rc-stock-box{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:12px 16px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;}
-.rc-qty{font-size:26px;font-weight:700;font-family:var(--mono);}
-.sell-qty-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
-.sell-qty-row label{font-size:13px;color:var(--text2);}
-.sell-qty-input{width:70px;border:1px solid var(--border2);border-radius:7px;padding:6px 10px;font-size:14px;font-family:var(--mono);text-align:center;}
+.rc-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.rc-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.rc-icon.exact{background:rgba(22,163,74,.1);color:var(--green)}
+.rc-icon.compat{background:rgba(37,99,235,.1);color:var(--blue)}
+.rc-icon.none{background:rgba(220,38,38,.1);color:var(--red)}
+.rc-title{font-size:18px;font-weight:700;font-family:var(--mono)}
+.rc-subtitle{font-size:13px;color:var(--text2);margin-top:4px;}
+.rc-stock-box{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:12px 16px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;}
+.rc-qty{font-size:24px;font-weight:700;color:var(--text);font-family:var(--mono)}
 .rc-acts{display:flex;gap:10px;}
 
-/* BULK ADD */
-.bulk-row{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
-.bulk-input-col{flex:1;min-width:160px;display:flex;flex-direction:column;gap:6px;}
-.bulk-label{font-size:12px;font-weight:600;color:var(--text2);}
-.bulk-tip{font-size:12px;color:var(--text3);background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:16px;line-height:1.7;}
+/* MODALS & TOASTS */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-ov.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:26px;width:440px;max-width:92vw;transform:translateY(10px);transition:transform .2s;box-shadow:0 10px 25px rgba(0,0,0,0.1)}
+.modal-ov.open .modal{transform:translateY(0)}
+.modal h3{font-size:17px;font-weight:700;margin-bottom:6px;}
+.mlabel{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.minput{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:7px;padding:10px 14px;font-size:14px;font-family:var(--font);margin-bottom:16px}
+.modal-acts{display:flex;gap:8px;justify-content:flex-end}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--bg);padding:12px 20px;border-radius:30px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:9999;box-shadow:0 10px 20px rgba(0,0,0,0.15)}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.error{background:var(--red);color:#fff}
 
-/* WAREHOUSE */
-.wh-toolbar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
-.wh-search{flex:1;min-width:160px;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;font-size:13px;font-family:var(--font);color:var(--text);outline:none;}
-.wh-search:focus{border-color:var(--accent);}
-.wh-filter{background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:8px 10px;font-size:12px;font-family:var(--font);color:var(--text2);cursor:pointer;outline:none;}
-.boxes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
-.box-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
-.box-hdr{padding:12px 16px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
-.box-hdr-name{font-weight:600;font-size:14px;display:flex;align-items:center;gap:6px;}
-.box-hdr-right{display:flex;align-items:center;gap:8px;}
-.bitem{display:flex;justify-content:space-between;padding:9px 16px;border-bottom:1px solid var(--border);font-size:13px;align-items:center;transition:background .1s;}
-.bitem:last-child{border-bottom:none;}
-.bitem:hover{background:var(--bg3);}
-.bitem-name{font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.bitem-qty{font-family:var(--mono);font-weight:600;font-size:13px;margin-left:8px;}
-.bitem-qty.low{color:var(--red);}
-.bitem-qty.mid{color:var(--amber);}
-.bitem-qty.ok{color:var(--green);}
-.bitem-acts{display:flex;gap:4px;margin-left:8px;}
-.ib{width:24px;height:24px;border:none;background:none;cursor:pointer;border-radius:5px;font-size:13px;color:var(--text3);display:flex;align-items:center;justify-content:center;transition:all .1s;}
-.ib:hover{background:var(--bg4);color:var(--text);}
-.ib.sell:hover{background:rgba(22,163,74,.1);color:var(--green);}
-.ib.del:hover{background:rgba(220,38,38,.1);color:var(--red);}
-.box-empty{padding:16px;font-size:12px;color:var(--text3);text-align:center;font-style:italic;}
-.add-box-tile{border:1px dashed var(--border2);border-radius:12px;padding:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--text3);gap:6px;transition:all .15s;background:none;}
-.add-box-tile:hover{border-color:var(--blue);color:var(--blue);}
-
-/* STATS BAR */
-.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
-.stat{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:14px 16px;}
-.stat-num{font-size:22px;font-weight:700;font-family:var(--mono);}
-.stat-num.g{color:var(--green);}.stat-num.r{color:var(--red);}.stat-num.a{color:var(--amber);}
-.stat-label{font-size:11px;color:var(--text2);margin-top:3px;}
-
-/* DATA TABLE */
-.dataTable{width:100%;border-collapse:collapse;background:var(--bg2);border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.02);}
-.dataTable th{text-align:left;padding:11px 14px;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text3);background:var(--bg3);border-bottom:1px solid var(--border);}
-.dataTable td{padding:12px 14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
-.dataTable tr:last-child td{border-bottom:none;}
-.dataTable tr:hover td{background:var(--bg3);}
-
-/* REQUIREMENTS */
-.req-item{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);gap:12px;background:var(--bg2);}
-.req-item:first-child{border-radius:10px 10px 0 0;}
-.req-item:last-child{border-bottom:none;border-radius:0 0 10px 10px;}
-.req-container{border:1px solid var(--border);border-radius:10px;overflow:hidden;}
-.priority-select{font-size:11px;border:1px solid var(--border2);border-radius:5px;padding:3px 6px;background:var(--bg);font-family:var(--font);cursor:pointer;}
-
-/* MODALS */
-.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .2s;}
-.modal-ov.open{opacity:1;pointer-events:all;}
-.modal{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:26px;width:440px;max-width:93vw;transform:translateY(10px);transition:transform .2s;box-shadow:0 10px 30px rgba(0,0,0,0.08);}
-.modal-ov.open .modal{transform:translateY(0);}
-.modal h3{font-size:16px;font-weight:700;margin-bottom:4px;}
-.modal-sub{font-size:13px;color:var(--text2);margin-bottom:18px;}
-.mlabel{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;}
-.minput{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:7px;padding:9px 13px;font-size:14px;font-family:var(--font);margin-bottom:14px;color:var(--text);outline:none;}
-.minput:focus{border-color:var(--accent);}
-.modal-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:4px;}
-
-/* SELL MODAL */
-.sell-preview{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:14px 18px;margin-bottom:16px;}
-.sell-preview-model{font-size:16px;font-weight:700;margin-bottom:4px;}
-.sell-preview-meta{font-size:13px;color:var(--text2);}
-
-/* TOAST */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--bg);padding:11px 20px;border-radius:30px;font-size:13px;font-weight:500;opacity:0;transition:all .25s;z-index:9999;box-shadow:0 8px 20px rgba(0,0,0,0.12);white-space:nowrap;}
-.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
-.toast.error{background:var(--red);color:#fff;}
-.toast.success{background:var(--green);color:#fff;}
-
-/* MOBILE */
-.mobile-ai-toggle{display:none;position:fixed;bottom:20px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--accent);color:var(--accent-text);font-size:22px;border:none;z-index:1000;box-shadow:0 8px 20px rgba(0,0,0,0.15);cursor:pointer;}
-@media (max-width:1100px){
-  .layout{grid-template-columns:200px 1fr;}
-  .rightbar{position:fixed;top:56px;right:-360px;width:340px;height:calc(100vh - 56px);z-index:900;box-shadow:-8px 0 24px rgba(0,0,0,0.08);transition:right .3s ease;}
-  .rightbar.open{right:0;}
-  .mobile-ai-toggle{display:flex;align-items:center;justify-content:center;}
-  .stats-bar{grid-template-columns:repeat(2,1fr);}
+/* MOBILE RESPONSIVE */
+.mobile-ai-toggle { display: none; position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px; border-radius: 50%; background: var(--accent); color: var(--bg); font-size: 24px; border: none; z-index: 1000; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+@media (max-width: 1024px) {
+  .layout { grid-template-columns: 200px 1fr; }
+  .rightbar { position: fixed; top: 56px; right: -360px; width: 340px; height: calc(100vh - 56px); z-index: 900; box-shadow: -10px 0 30px rgba(0,0,0,0.1); transition: right .3s ease; }
+  .rightbar.open { right: 0; }
+  .mobile-ai-toggle { display: flex; align-items: center; justify-content: center; }
 }
-@media (max-width:700px){
-  .layout{grid-template-columns:1fr;}
-  .sidebar{display:none;}
-  .rightbar{top:56px;height:calc(100vh - 56px);width:100%;right:-100%;}
-  .page-head{flex-direction:column;align-items:flex-start;}
-  .bulk-row{flex-direction:column;}
-  .stats-bar{grid-template-columns:repeat(2,1fr);}
+@media (max-width: 768px) {
+  .layout { display: flex; flex-direction: column; }
+  .sidebar { flex-direction: row; overflow-x: auto; padding: 0; border-right: none; border-bottom: 1px solid var(--border); height: auto; flex-shrink: 0; }
+  .nav-btn { padding: 14px 16px; white-space: nowrap; width: auto; border-bottom: 2px solid transparent; }
+  .nav-btn.active { background: transparent; border-bottom: 2px solid var(--accent); }
+  .nav-btn.active::before { display: none; }
+  .nav-label, .nav-sep { display: none; }
+  .rightbar { top: 110px; height: calc(100vh - 110px); width: 100%; right: -100%; }
 }
 </style>
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
 <div id="login-screen">
   <div class="login-box">
     <h1><div class="logo-icon">⬡</div>GlassGodown</h1>
-    <p>Your AI-powered tempered glass warehouse.<br>Sign in to access your cloud inventory.</p>
-    <button class="btn-google" onclick="signInWithGoogle()" id="google-btn">
-      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-      Sign in with Google
-    </button>
-    <div class="login-error" id="login-error"></div>
+    <p>Sign in to your Cloud Workspace.</p>
+    <button class="btn-google" onclick="signInWithGoogle()">Sign in with Google</button>
   </div>
 </div>
 
 <button class="mobile-ai-toggle" onclick="toggleAI()">🤖</button>
 
-<!-- MAIN LAYOUT -->
 <div class="layout" id="main-layout">
-
   <div class="topbar">
     <div class="logo"><div class="logo-icon">⬡</div>GlassGodown</div>
-    <span style="font-size:11px;color:var(--text3);font-family:var(--mono)">v4.1</span>
     <div class="topbar-right">
       <div class="user-badge" id="user-badge"></div>
-      <button class="btn ghost" onclick="exportData()" style="font-size:11px;padding:4px 10px;">↓ Backup</button>
-      <button class="btn ghost" onclick="logOut()" style="font-size:11px;padding:4px 10px;">Logout</button>
+      <button class="btn ghost" onclick="logOut()" style="padding: 4px 10px; font-size: 11px;">Logout</button>
     </div>
   </div>
 
-  <!-- LEFT SIDEBAR -->
   <nav class="sidebar">
     <div class="nav-label">Workspace</div>
     <button class="nav-btn active" onclick="showSection('finder')" id="nav-finder"><span class="nav-icon">🔍</span>Glass Finder</button>
@@ -264,220 +186,113 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);height:100vh
     <button class="nav-btn" onclick="showSection('sales')" id="nav-sales"><span class="nav-icon">💰</span>Sales Log</button>
     <div class="nav-sep"></div>
     <div class="nav-label">Management</div>
-    <button class="nav-btn" onclick="showSection('requirements')" id="nav-requirements"><span class="nav-icon">📋</span>Requirements<span class="nav-badge" id="req-badge" style="display:none">0</span></button>
+    <button class="nav-btn" onclick="showSection('requirements')" id="nav-requirements"><span class="nav-icon">📋</span>Requirements</button>
     <button class="nav-btn" onclick="showSection('settings')" id="nav-settings"><span class="nav-icon">⚙</span>Settings</button>
   </nav>
 
-  <!-- CENTER WORKSPACE -->
   <main class="main">
-
-    <!-- GLASS FINDER -->
     <div class="section active" id="section-finder">
-      <div class="page-head">
-        <div class="page-head-left">
-          <h1>🔍 Glass Finder</h1>
-          <p>Search any model. AI handles typos and finds compatible alternatives automatically.</p>
-        </div>
-      </div>
+      <div class="page-head"><h1>🔍 Glass Finder</h1><p>Search for a model. AI handles typos and spaces automatically.</p></div>
       <div class="page-content">
         <div class="search-box">
-          <input type="text" class="finder-input" id="finder-input" placeholder="e.g. vivot4x, Samsung A55, redminote13..." onkeydown="if(event.key==='Enter')runFinder()">
-          <button class="finder-btn" onclick="runFinder()" id="fbtn">Search</button>
+          <input type="text" class="finder-input" id="finder-input" placeholder="e.g., vivot4 x, Samsung A55..." onkeydown="if(event.key==='Enter')runFinder()">
+          <button class="finder-btn" onclick="runFinder()" id="fbtn">Find</button>
         </div>
         <div class="result-card" id="finder-result"></div>
       </div>
     </div>
 
-    <!-- BULK ADD -->
     <div class="section" id="section-addmodels">
-      <div class="page-head">
-        <div class="page-head-left">
-          <h1>⚡ Bulk Add Models</h1>
-          <p>Add multiple models to a box at once.</p>
-        </div>
-      </div>
-      <div class="page-content" style="max-width:760px;">
-        <div class="bulk-tip">
-          💡 <strong>Tip:</strong> Comma-separate models to link them as one entry (same glass fits multiple phones).<br>
-          Example: <code>Vivo T4x, iQOO Z10x</code> → stored as <strong>Vivo T4x / iQOO Z10x</strong> in one slot.
-        </div>
+      <div class="page-head"><h1>⚡ Bulk Add Models</h1><p>Instant processing. Separate models with commas to link them.</p></div>
+      <div class="page-content" style="max-width: 800px;">
         <div class="bulk-row">
           <div class="bulk-input-col" style="flex:2">
-            <label class="bulk-label">Models (comma separated)</label>
-            <input type="text" class="finder-input" id="bulk-models" placeholder="e.g. Vivo T4x, iQOO Z10x" onkeydown="if(event.key==='Enter')runBulkAdd()">
+            <label class="bulk-label">Models (Comma separated)</label>
+            <input type="text" class="finder-input" id="bulk-models" placeholder="e.g., Vivo T4x, iQOO Z10x" onkeydown="if(event.key==='Enter')runInstantBulkAdd()">
           </div>
-          <div class="bulk-input-col" style="flex:0 0 90px;">
-            <label class="bulk-label">Qty</label>
-            <input type="number" class="finder-input" id="bulk-qty" placeholder="10" value="1" min="1" onkeydown="if(event.key==='Enter')runBulkAdd()">
+          <div class="bulk-input-col" style="flex:0.5; min-width: 100px;">
+            <label class="bulk-label">Quantity</label>
+            <input type="number" class="finder-input" id="bulk-qty" placeholder="10" value="1" min="1" onkeydown="if(event.key==='Enter')runInstantBulkAdd()">
           </div>
-          <div class="bulk-input-col" style="flex:0 0 90px;">
+          <div class="bulk-input-col" style="flex:0.5; min-width: 100px;">
             <label class="bulk-label">Box No.</label>
-            <input type="text" class="finder-input" id="bulk-box" placeholder="1" onkeydown="if(event.key==='Enter')runBulkAdd()">
+            <input type="text" class="finder-input" id="bulk-box" placeholder="1" onkeydown="if(event.key==='Enter')runInstantBulkAdd()">
           </div>
         </div>
-        <button class="btn primary" style="padding:12px 24px;font-size:14px;" onclick="runBulkAdd()" id="bbtn">⚡ Add to Inventory</button>
-        <div id="bulk-feedback" style="margin-top:14px;font-size:13px;"></div>
+        <button class="btn primary" style="padding: 14px 24px; font-size: 15px;" onclick="runInstantBulkAdd()" id="bbtn">⚡ Instantly Add to Inventory</button>
+        <div id="bulk-status" style="margin-top:14px;font-size:13px;color:var(--text2);"></div>
       </div>
     </div>
 
-    <!-- WAREHOUSE -->
     <div class="section" id="section-warehouse">
       <div class="page-head">
-        <div class="page-head-left"><h1>📦 Warehouse</h1><p>Live cloud inventory</p></div>
+        <div><h1>📦 Warehouse Overview</h1><p>Live cloud inventory</p></div>
         <button class="btn primary" onclick="addBoxPrompt()">+ New Box</button>
       </div>
       <div class="page-content">
-        <div class="stats-bar" id="wh-stats"></div>
-        <div class="wh-toolbar">
-          <input class="wh-search" id="wh-search" type="text" placeholder="Search model..." oninput="renderWarehouse()">
-          <select class="wh-filter" id="wh-box-filter" onchange="renderWarehouse()"><option value="">All Boxes</option></select>
-          <select class="wh-filter" id="wh-sort" onchange="renderWarehouse()">
-            <option value="name">Sort: A–Z</option>
-            <option value="qty-low">Sort: Low stock first</option>
-            <option value="qty-high">Sort: High stock first</option>
-          </select>
-        </div>
-        <div class="boxes-grid" id="boxes-grid"></div>
+        <div id="boxes-grid" class="boxes-grid"></div>
       </div>
     </div>
 
-    <!-- SALES LOG -->
     <div class="section" id="section-sales">
-      <div class="page-head">
-        <div class="page-head-left"><h1>💰 Sales Log</h1><p>All recorded transactions</p></div>
-        <div style="display:flex;gap:8px">
-          <button class="btn ghost" onclick="exportSales()">↓ Export CSV</button>
-          <button class="btn danger" onclick="clearSalesConfirm()">Clear Log</button>
-        </div>
-      </div>
-      <div class="page-content">
-        <div class="stats-bar" id="sales-stats"></div>
-        <div class="wh-toolbar" style="margin-bottom:14px">
-          <input class="wh-search" id="sales-search" type="text" placeholder="Search sales..." oninput="renderSales()">
-          <select class="wh-filter" id="sales-filter" onchange="renderSales()">
-            <option value="">All time</option>
-            <option value="today">Today</option>
-            <option value="week">This week</option>
-          </select>
-        </div>
-        <div id="sales-container"></div>
-      </div>
+      <div class="page-head"><h1>💰 Sales Log</h1><p>Recent transactions</p></div>
+      <div class="page-content" id="sales-container"></div>
     </div>
 
-    <!-- REQUIREMENTS -->
     <div class="section" id="section-requirements">
-      <div class="page-head">
-        <div class="page-head-left"><h1>📋 Requirements</h1><p>Out-of-stock items to order</p></div>
-        <div style="display:flex;gap:8px">
-          <button class="btn ghost" onclick="exportReqs()">↓ Export</button>
-          <button class="btn danger" onclick="clearReqsConfirm()">Clear All</button>
-        </div>
-      </div>
+      <div class="page-head"><h1>📋 Requirements</h1><p>Items out of stock</p></div>
       <div class="page-content" id="req-container"></div>
     </div>
 
-    <!-- SETTINGS -->
     <div class="section" id="section-settings">
-      <div class="page-head"><div class="page-head-left"><h1>⚙ Settings</h1><p>API keys, backup, preferences</p></div></div>
+      <div class="page-head"><h1>⚙ Settings & Backup</h1><p>Configuration and Data Management</p></div>
       <div class="page-content">
-        <div style="max-width:520px;display:flex;flex-direction:column;gap:16px;">
-
-          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:22px;">
-            <div style="font-weight:700;margin-bottom:8px;">🤖 Gemini API Key</div>
-            <p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.6">Get a free key from <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--blue)">aistudio.google.com</a> — completely free, no card needed.</p>
-            <input class="finder-input" id="settings-apikey" type="password" placeholder="AIzaSy..." style="width:100%;margin-bottom:10px;">
-            <button class="btn primary" onclick="saveApiKey()">Save Key</button>
-          </div>
-
-          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:22px;">
-            <div style="font-weight:700;margin-bottom:8px;">⚠️ Low Stock Threshold</div>
-            <p style="font-size:13px;color:var(--text2);margin-bottom:14px;">Highlight items in red when stock falls below this number.</p>
-            <div style="display:flex;align-items:center;gap:10px;">
-              <input class="finder-input" id="threshold-input" type="number" min="1" max="50" style="width:90px;margin:0;" value="5">
-              <span style="font-size:13px;color:var(--text2)">pieces</span>
-              <button class="btn primary" onclick="saveThreshold()">Save</button>
-            </div>
-          </div>
-
-          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:22px;">
-            <div style="font-weight:700;margin-bottom:8px;">💾 Data Backup</div>
-            <p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.6">Data is saved to Firebase cloud. Export a local backup copy anytime.</p>
-            <div style="display:flex;gap:8px;">
-              <button class="btn ghost" onclick="exportData()">↓ Export JSON</button>
-              <button class="btn ghost" onclick="document.getElementById('import-file').click()">↑ Import JSON</button>
-            </div>
-            <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
-          </div>
-
-          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:22px;">
-            <div style="font-weight:700;margin-bottom:10px;">💬 How to talk to Raju</div>
-            <div style="font-size:13px;color:var(--text2);line-height:2.1;">
-              <b style="color:var(--text)">Sell via chat:</b> "2 Samsung A35 bech do" or "sell 1 Realme C67 Box 2"<br>
-              <b style="color:var(--text)">Find stock:</b> "Vivo T4x kitna bacha hai?" or "Box 3 mein kya hai?"<br>
-              <b style="color:var(--text)">Requirements:</b> "Oppo A78 requirement mein daal do"<br>
-              <b style="color:var(--text)">Remove expired:</b> "Box 1 se 5 Redmi Note 12 hata do — damaged"<br>
-              <b style="color:var(--text)">Today's summary:</b> "Aaj kitna bika? Kya low hai?"
-            </div>
-          </div>
-
+        
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:24px;max-width:500px;">
+          <div style="font-weight:700;margin-bottom:10px;">Gemini API Key</div>
+          <p style="font-size:13px;color:var(--text2);margin-bottom:16px;">Required for AI Glass Finder. Saved locally.</p>
+          <input class="finder-input" id="settings-apikey" type="password" placeholder="AIzaSy..." style="width:100%;margin-bottom:12px;padding:10px;">
+          <button class="btn primary" onclick="saveApiKey()">Save Key</button>
         </div>
+
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:24px;max-width:500px;margin-top:16px;">
+          <div style="font-weight:700;margin-bottom:10px;">💾 Data Backup & Import</div>
+          <p style="font-size:13px;color:var(--text2);margin-bottom:16px;">Export your data to a file to keep a safe backup or move to another account.</p>
+          <div style="display:flex;gap:8px">
+            <button class="btn ghost" onclick="exportData()">↓ Export Data</button>
+            <button class="btn ghost" onclick="document.getElementById('import-file').click()">↑ Import Data</button>
+          </div>
+          <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+        </div>
+
       </div>
     </div>
-
   </main>
 
-  <!-- RIGHT SIDEBAR — RAJU AI -->
   <aside class="rightbar" id="raju-sidebar">
     <div class="chat-head">
       <div class="av">🤖</div>
-      <div>
-        <div style="font-size:13px;font-weight:700;">Raju — AI Manager</div>
-        <div style="font-size:11px;color:var(--text2);">Hindi / English / Hinglish</div>
-      </div>
-      <button class="btn ghost" style="margin-left:auto;padding:3px 8px;font-size:11px;" onclick="clearChat()">Clear</button>
+      <div><div style="font-size:14px;font-weight:700">Raju Assistant</div><div style="font-size:11px;color:var(--text2)">Online</div></div>
     </div>
     <div class="chat-msgs" id="chat-msgs"></div>
     <div class="chat-foot">
-      <div class="quick-chips">
-        <button class="qc" onclick="qsend('Aaj kitna bika?')">Today sales?</button>
-        <button class="qc" onclick="qsend('Low stock kya hai?')">Low stock?</button>
-        <button class="qc" onclick="qsend('Pura inventory batao')">Full stock</button>
-      </div>
-      <textarea class="cinput" id="cinput" placeholder="Poochho Raju se — 'sell 2 Samsung A35' ya 'Box 2 mein kya hai?'" rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"></textarea>
-      <button class="sbtn" onclick="sendChat()" id="cbtn">Send to Raju ↑</button>
+      <textarea class="cinput" id="cinput" placeholder="Ask or tell Raju to sell/remove..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"></textarea>
+      <button class="sbtn" onclick="sendChat()" id="cbtn">Send to Raju</button>
     </div>
   </aside>
 
 </div>
 
-<!-- MODALS -->
 <div class="modal-ov" id="edit-modal">
   <div class="modal">
-    <h3>✎ Edit Item</h3>
-    <div class="modal-sub">Update quantity or delete from this box</div>
-    <div class="mlabel">Model</div><input class="minput" id="edit-model" readonly style="opacity:.6;cursor:default;">
-    <div class="mlabel">Box</div><input class="minput" id="edit-box" readonly style="opacity:.6;cursor:default;">
-    <div class="mlabel">New Quantity (set 0 to delete)</div><input class="minput" id="edit-qty" type="number" min="0">
+    <h3 id="edit-title">✎ Edit / Remove Item</h3>
+    <div class="mlabel">Model</div><input class="minput" id="edit-model" readonly style="opacity:.6">
+    <div class="mlabel">Box</div><input class="minput" id="edit-box" readonly style="opacity:.6">
+    <div class="mlabel">New Quantity (Set to 0 to delete)</div><input class="minput" id="edit-qty" type="number" min="0">
     <div class="modal-acts">
-      <button class="btn danger" onclick="deleteItem()">Delete</button>
+      <button class="btn danger" onclick="deleteItem()">Delete Completely</button>
       <button class="btn ghost" onclick="closeModal('edit-modal')">Cancel</button>
       <button class="btn primary" onclick="saveEdit()">Save</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-ov" id="sell-modal">
-  <div class="modal">
-    <h3>💰 Record Sale</h3>
-    <div class="modal-sub">This will reduce inventory and log the sale</div>
-    <div class="sell-preview" id="sell-preview-content"></div>
-    <div class="mlabel">Quantity Sold</div>
-    <input class="minput" id="sell-modal-qty" type="number" min="1" value="1">
-    <div class="mlabel">Note (optional)</div>
-    <input class="minput" id="sell-modal-note" placeholder="e.g. walk-in customer">
-    <div class="modal-acts">
-      <button class="btn ghost" onclick="closeModal('sell-modal')">Cancel</button>
-      <button class="btn sell" onclick="confirmModalSell()">✓ Confirm Sale</button>
     </div>
   </div>
 </div>
@@ -486,7 +301,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);height:100vh
 
 <script>
 // ============================================================
-// FIREBASE INIT
+// FIREBASE CONFIGURATION
 // ============================================================
 const firebaseConfig = {
   apiKey: "AIzaSyAW9dCjmcy5TYFvb1GNxuTqd1lNlE8rtOY",
@@ -494,64 +309,61 @@ const firebaseConfig = {
   projectId: "glass-godown",
   storageBucket: "glass-godown.firebasestorage.app",
   messagingSenderId: "189726881200",
-  appId: "1:189726881200:web:dc049d1873a8ed82739275"
+  appId: "1:189726881200:web:dc049d1873a8ed82739275",
+  measurementId: "G-FS29VXCKJS"
 };
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-const googleProvider = new firebase.auth.GoogleAuthProvider();
+const provider = new firebase.auth.GoogleAuthProvider();
 
-// ============================================================
-// STATE
-// ============================================================
 let currentUser = null;
-let inventory = {};   // { "Brand Model": { "Box 1": qty, "Box 2": qty } }
-let boxes = ["Box 1", "Box 2", "Box 3"];
-let requirements = []; // [{ model, qty, priority, added }]
-let salesLog = [];     // [{ model, box, qty, note, date, time, timestamp }]
+let inventory = {};   
+let boxes = ["Box 1", "Box 2"];
+let requirements = [];
+let salesLog = [];
 let apiKey = '';
-let lowThreshold = 5;
-let pendingSale = null;   // for finder sell button
-let sellModalItem = null; // for warehouse sell modal
+let pendingSale = null; 
 let editingItem = null;
 
-// Chat history for Raju — keeps last N turns for context
-let chatHistory = [];
-const MAX_CHAT_HISTORY = 16;
-
 // ============================================================
-// AUTH
+// DATA COMPRESSION (Token Saver)
 // ============================================================
-function signInWithGoogle() {
-  document.getElementById('google-btn').textContent = 'Signing in...';
-  auth.signInWithPopup(googleProvider).catch(e => {
-    document.getElementById('google-btn').textContent = 'Sign in with Google';
-    document.getElementById('login-error').textContent = e.message;
-    document.getElementById('login-error').style.display = 'block';
-  });
+function compressInventory() {
+  let miniStr = "";
+  for (let model in inventory) {
+    let boxesStr = "";
+    for (let box in inventory[model]) {
+      if (inventory[model][box] > 0) {
+        let bNum = box.replace('Box ', 'B'); 
+        boxesStr += `${bNum}:${inventory[model][box]},`;
+      }
+    }
+    if (boxesStr) miniStr += `${model}[${boxesStr}]|`;
+  }
+  return miniStr; 
 }
 
-function logOut() { if(confirm('Logout?')) auth.signOut(); }
+// ============================================================
+// AUTH & SYNC
+// ============================================================
+function signInWithGoogle() { auth.signInWithPopup(provider).catch(e => alert(e.message)); }
+function logOut() { auth.signOut(); }
 
 auth.onAuthStateChanged(async (user) => {
   if (user) {
     currentUser = user;
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('main-layout').style.display = 'grid';
-    const name = user.displayName ? user.displayName.split(' ')[0] : 'User';
-    document.getElementById('user-badge').innerHTML = user.photoURL
-      ? `<img src="${user.photoURL}" alt=""> ${name}`
-      : name;
-    apiKey = localStorage.getItem('gg4_gemini_key') || '';
-    lowThreshold = parseInt(localStorage.getItem('gg4_threshold') || '5');
-    const settingsKey = document.getElementById('settings-apikey');
-    if(settingsKey) settingsKey.value = apiKey;
-    const thresholdInput = document.getElementById('threshold-input');
-    if(thresholdInput) thresholdInput.value = lowThreshold;
+    document.getElementById('user-badge').innerHTML = `<img src="${user.photoURL}" alt=""> ${user.displayName.split(' ')[0]}`;
+    
+    apiKey = localStorage.getItem('gg3_gemini_key') || '';
+    if(document.getElementById('settings-apikey')) document.getElementById('settings-apikey').value = apiKey;
+    
     await loadFromCloud();
     renderAll();
-    injectWelcome();
+    addAiMsg("Namaste! System is completely online. All bugs fixed, strict data parsing activated.");
   } else {
     currentUser = null;
     document.getElementById('login-screen').style.display = 'flex';
@@ -559,832 +371,110 @@ auth.onAuthStateChanged(async (user) => {
   }
 });
 
-// ============================================================
-// CLOUD SYNC
-// ============================================================
 async function loadFromCloud() {
   try {
-    const doc = await db.collection('users').doc(currentUser.uid).get();
+    const doc = await db.collection("users").doc(currentUser.uid).get();
     if (doc.exists) {
       const d = doc.data();
-      inventory = d.inventory || {};
-      boxes = d.boxes || ['Box 1', 'Box 2', 'Box 3'];
-      requirements = d.requirements || [];
-      salesLog = d.salesLog || [];
+      inventory = d.inventory || {}; boxes = d.boxes || ["Box 1"]; requirements = d.requirements || []; salesLog = d.salesLog || [];
     }
-  } catch(e) { toast('Cloud load error — working offline', 'error'); }
-}
-
-async function saveToCloud() {
-  if (!currentUser) return;
-  try {
-    await db.collection('users').doc(currentUser.uid).set(
-      { inventory, boxes, requirements, salesLog },
-      { merge: true }
-    );
-  } catch(e) { toast('Sync failed', 'error'); }
+  } catch(e) { toast('Cloud load error', 'error'); }
 }
 
 async function save() {
-  await saveToCloud();
-  renderAll();
+  if (!currentUser) return;
+  try { await db.collection("users").doc(currentUser.uid).set({ inventory, boxes, requirements, salesLog }, { merge: true }); renderAll(); } 
+  catch(e) { toast('Sync failed', 'error'); }
 }
 
 // ============================================================
-// RENDER ALL
+// UI & FORMATTERS
 // ============================================================
-function renderAll() {
-  renderWarehouse();
-  renderSales();
-  renderRequirements();
-  updateReqBadge();
+function formatBoxName(str) {
+  if(!str) return "Box 1";
+  let clean = str.toString().trim();
+  if(/^\d+$/.test(clean)) return "Box " + clean;
+  if(clean.toLowerCase().startsWith("box")) {
+    let num = clean.replace(/box/i, '').trim();
+    return "Box " + num;
+  }
+  return "Box " + clean;
 }
 
-// ============================================================
-// NAVIGATION
-// ============================================================
 function showSection(name) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('section-' + name).classList.add('active');
-  document.getElementById('nav-' + name).classList.add('active');
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('section-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
   document.getElementById('raju-sidebar').classList.remove('open');
-  if(name === 'warehouse') renderWarehouse();
-  if(name === 'sales') renderSales();
-  if(name === 'requirements') renderRequirements();
 }
 
 function toggleAI() { document.getElementById('raju-sidebar').classList.toggle('open'); }
 
-// ============================================================
-// WAREHOUSE RENDER
-// ============================================================
-function renderWarehouse() {
-  const search = (document.getElementById('wh-search') || {}).value?.toLowerCase() || '';
-  const boxFilter = (document.getElementById('wh-box-filter') || {}).value || '';
-  const sort = (document.getElementById('wh-sort') || {}).value || 'name';
-
-  // Stats
-  const totalModels = Object.keys(inventory).length;
-  const totalPcs = Object.values(inventory).reduce((a, b) => a + Object.values(b).reduce((x, y) => x + y, 0), 0);
-  const lowCount = Object.entries(inventory).filter(([, locs]) => Object.values(locs).reduce((a,b)=>a+b,0) <= lowThreshold).length;
-  const todaySales = getSalesToday();
-  const statsEl = document.getElementById('wh-stats');
-  if(statsEl) statsEl.innerHTML = `
-    <div class="stat"><div class="stat-num">${totalModels}</div><div class="stat-label">Models</div></div>
-    <div class="stat"><div class="stat-num">${totalPcs}</div><div class="stat-label">Total Pieces</div></div>
-    <div class="stat"><div class="stat-num ${lowCount > 0 ? 'r' : 'g'}">${lowCount}</div><div class="stat-label">Low Stock</div></div>
-    <div class="stat"><div class="stat-num a">${todaySales.pcs}</div><div class="stat-label">Sold Today</div></div>`;
-
-  // Box filter dropdown
-  const bsel = document.getElementById('wh-box-filter');
-  if(bsel) {
-    const cur = bsel.value;
-    bsel.innerHTML = '<option value="">All Boxes</option>';
-    boxes.forEach(b => { const o=document.createElement('option');o.value=b;o.textContent=b;if(b===cur)o.selected=true;bsel.appendChild(o); });
-  }
-
-  const showBoxes = boxFilter ? [boxFilter] : boxes;
-  let html = '';
-
-  showBoxes.forEach(box => {
-    let items = Object.entries(inventory)
-      .filter(([, locs]) => locs[box] !== undefined)
-      .filter(([model]) => !search || model.toLowerCase().includes(search));
-
-    if(sort === 'qty-low') items.sort((a,b) => a[1][box] - b[1][box]);
-    else if(sort === 'qty-high') items.sort((a,b) => b[1][box] - a[1][box]);
-    else items.sort((a,b) => a[0].localeCompare(b[0]));
-
-    if(search && !items.length) return; // hide empty boxes when searching
-
-    const total = items.reduce((a, [, l]) => a + (l[box] || 0), 0);
-    html += `<div class="box-card">
-      <div class="box-hdr">
-        <div class="box-hdr-name">📦 ${box}</div>
-        <div class="box-hdr-right">
-          <span style="font-size:11px;color:var(--text3);font-family:var(--mono);">${total} pcs</span>
-          <button class="ib del" title="Delete box" onclick="deleteBox('${box}')">✕</button>
-        </div>
-      </div>`;
-    if(!items.length) {
-      html += `<div class="box-empty">Empty</div>`;
-    } else {
-      items.forEach(([model, locs]) => {
-        const q = locs[box] || 0;
-        const qClass = q <= 3 ? 'low' : q <= lowThreshold ? 'mid' : 'ok';
-        html += `<div class="bitem">
-          <span class="bitem-name" title="${model}">${model}</span>
-          <span class="bitem-qty ${qClass}">${q}p</span>
-          <div class="bitem-acts">
-            <button class="ib sell" title="Sell" onclick="openSellModal('${model}','${box}',${q})">💰</button>
-            <button class="ib" title="Edit" onclick="openEditModal('${model}','${box}',${q})">✎</button>
-            <button class="ib del" title="Remove" onclick="quickDelete('${model}','${box}')">✕</button>
-          </div>
-        </div>`;
-      });
-    }
-    html += `</div>`;
+function renderAll() {
+  let wHtml = '';
+  boxes.forEach(b => {
+    let items = Object.entries(inventory).filter(([,locs])=>locs[b]);
+    wHtml += `<div class="box-card"><div class="box-hdr"><span>📦 ${b}</span>
+      <div><span style="font-size:11px;margin-right:10px;color:var(--text3)">${items.reduce((a,[,l])=>a+l[b],0)} pcs</span>
+      <button style="border:none;background:none;color:var(--red);cursor:pointer;font-size:14px;" title="Delete entire box" onclick="deleteBox('${b}')">✕</button></div></div>`;
+    items.forEach(([m,locs]) => wHtml += `<div class="bitem"><span><b>${m}</b></span><div style="display:flex;align-items:center;gap:10px;"><span style="font-family:var(--mono)">${locs[b]}p</span><button style="border:none;background:none;cursor:pointer;color:var(--text3)" onclick="openEditModal('${m}','${b}',${locs[b]})">✎</button></div></div>`);
+    wHtml += `</div>`;
   });
+  document.getElementById('boxes-grid').innerHTML = wHtml;
 
-  html += `<div class="add-box-tile" onclick="addBoxPrompt()">+ Add New Box</div>`;
-  const grid = document.getElementById('boxes-grid');
-  if(grid) grid.innerHTML = html;
+  let sHtml = `<table class="dataTable"><tr><th>Model</th><th>Box</th><th>Qty</th><th>Date</th></tr>`;
+  [...salesLog].reverse().slice(0,50).forEach(s => sHtml+=`<tr><td><b>${s.model}</b></td><td>${s.box}</td><td style="color:var(--green)"><b>${s.qty}</b></td><td>${s.date}</td></tr>`);
+  document.getElementById('sales-container').innerHTML = sHtml + `</table>`;
+
+  let rHtml = `<table class="dataTable"><tr><th>Needed Model</th><th></th></tr>`;
+  requirements.forEach((r,i) => rHtml+=`<tr><td><b>${r}</b></td><td style="text-align:right"><button class="btn ghost" onclick="requirements.splice(${i},1); save(); renderAll();">Remove</button></td></tr>`);
+  document.getElementById('req-container').innerHTML = rHtml + `</table>`;
 }
 
-// ============================================================
 // BOX MANAGEMENT
-// ============================================================
-function formatBoxName(str) {
-  if(!str) return 'Box 1';
-  const clean = str.toString().trim();
-  if(/^\d+$/.test(clean)) return 'Box ' + clean;
-  if(/^box\s*\d+$/i.test(clean)) {
-    const num = clean.replace(/box\s*/i, '');
-    return 'Box ' + num;
-  }
-  // e.g. "Shelf A" or "Counter" — keep as-is with capital
-  return clean.charAt(0).toUpperCase() + clean.slice(1);
-}
-
-function addBoxPrompt() {
-  const n = prompt('New Box name or number (e.g. type "6" for Box 6, or "Shelf A"):');
-  if(!n || !n.trim()) return;
-  const formatted = formatBoxName(n.trim());
-  if(boxes.includes(formatted)) { toast('Box already exists!', 'error'); return; }
-  boxes.push(formatted);
-  save();
-  toast(formatted + ' added!', 'success');
+function addBoxPrompt() { 
+  let n = prompt("New Box Name/Number (e.g. type '1' for Box 1):"); 
+  if(n) { n = formatBoxName(n); if(!boxes.includes(n)) { boxes.push(n); save(); } } 
 }
 
 function deleteBox(boxName) {
-  if(!confirm(`Delete "${boxName}" and ALL items inside it? Cannot be undone.`)) return;
+  if(!confirm(`Delete ${boxName} and ALL items inside it? This cannot be undone.`)) return;
   boxes = boxes.filter(b => b !== boxName);
   Object.keys(inventory).forEach(m => {
     if(inventory[m][boxName] !== undefined) {
       delete inventory[m][boxName];
-      if(!Object.keys(inventory[m]).length) delete inventory[m];
+      if(Object.keys(inventory[m]).length === 0) delete inventory[m];
     }
   });
-  save();
-  toast('Box deleted');
+  save(); toast('Box deleted');
 }
 
-// ============================================================
-// ITEM EDIT / DELETE
-// ============================================================
-function openEditModal(model, box, qty) {
-  editingItem = {model, box};
-  document.getElementById('edit-model').value = model;
-  document.getElementById('edit-box').value = box;
-  document.getElementById('edit-qty').value = qty;
-  openModal('edit-modal');
+// ITEM EDITING
+function openEditModal(m, b, q) {
+  editingItem = {m,b}; document.getElementById('edit-model').value=m; document.getElementById('edit-box').value=b; document.getElementById('edit-qty').value=q; openModal('edit-modal');
 }
-
 function saveEdit() {
-  if(!editingItem) return;
-  const qty = parseInt(document.getElementById('edit-qty').value);
-  const {model, box} = editingItem;
-  if(isNaN(qty) || qty < 0) { toast('Invalid quantity', 'error'); return; }
-  if(!inventory[model]) inventory[model] = {};
-  if(qty <= 0) {
-    delete inventory[model][box];
-    if(!Object.keys(inventory[model]).length) delete inventory[model];
-  } else {
-    inventory[model][box] = qty;
-  }
-  save(); closeModal('edit-modal'); toast('Updated!', 'success');
+  const q = parseInt(document.getElementById('edit-qty').value);
+  if(q<=0) { delete inventory[editingItem.m][editingItem.b]; if(Object.keys(inventory[editingItem.m]).length===0) delete inventory[editingItem.m]; }
+  else inventory[editingItem.m][editingItem.b] = q;
+  save(); closeModal('edit-modal'); toast('Updated');
 }
-
-function deleteItem() {
-  if(!editingItem) return;
-  if(!confirm('Delete this item?')) return;
-  const {model, box} = editingItem;
-  delete inventory[model][box];
-  if(!Object.keys(inventory[model]).length) delete inventory[model];
-  save(); closeModal('edit-modal'); toast('Deleted');
-}
-
-function quickDelete(model, box) {
-  if(!confirm(`Remove ${model} from ${box}?`)) return;
-  delete inventory[model][box];
-  if(!Object.keys(inventory[model]).length) delete inventory[model];
-  save(); toast('Removed');
+function deleteItem() { 
+  delete inventory[editingItem.m][editingItem.b]; if(Object.keys(inventory[editingItem.m]).length===0) delete inventory[editingItem.m];
+  save(); closeModal('edit-modal'); toast('Removed from inventory');
 }
 
 // ============================================================
-// SELL MODAL (from warehouse)
-// ============================================================
-function openSellModal(model, box, currentQty) {
-  sellModalItem = {model, box, currentQty};
-  document.getElementById('sell-preview-content').innerHTML = `
-    <div class="sell-preview-model">${model}</div>
-    <div class="sell-preview-meta">${box} &nbsp;·&nbsp; Currently in stock: <strong>${currentQty} pcs</strong></div>`;
-  document.getElementById('sell-modal-qty').value = 1;
-  document.getElementById('sell-modal-qty').max = currentQty;
-  document.getElementById('sell-modal-note').value = '';
-  openModal('sell-modal');
-}
-
-function confirmModalSell() {
-  if(!sellModalItem) return;
-  const {model, box, currentQty} = sellModalItem;
-  const qty = parseInt(document.getElementById('sell-modal-qty').value);
-  const note = document.getElementById('sell-modal-note').value.trim();
-  if(isNaN(qty) || qty < 1) { toast('Invalid quantity', 'error'); return; }
-  if(qty > currentQty) { toast(`Only ${currentQty} in stock!`, 'error'); return; }
-  recordSale(model, box, qty, note || 'Manual sale');
-}
-
-// ============================================================
-// SELL HELPER
-// ============================================================
-function recordSale(model, box, qty, note = '') {
-  if(!inventory[model] || !inventory[model][box]) { toast('Item not in inventory', 'error'); return; }
-  inventory[model][box] -= qty;
-  if(inventory[model][box] <= 0) {
-    delete inventory[model][box];
-    if(!Object.keys(inventory[model]).length) delete inventory[model];
-  }
-  salesLog.push({
-    model, box, qty, note,
-    date: new Date().toLocaleDateString('en-IN'),
-    time: new Date().toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'}),
-    timestamp: Date.now()
-  });
-  save();
-  closeModal('sell-modal');
-  toast(`✓ Sold ${qty}x ${model}!`, 'success');
-  const remaining = inventory[model]?.[box] ?? 0;
-  if(remaining <= lowThreshold && remaining > 0) {
-    setTimeout(() => toast(`⚠️ Low stock: ${model} — ${remaining} pcs left`), 2000);
-  }
-}
-
-// ============================================================
-// BULK ADD
-// ============================================================
-function runBulkAdd() {
-  const btn = document.getElementById('bbtn');
-  if(btn.disabled) return;
-  try {
-    const modelsStr = document.getElementById('bulk-models').value.trim();
-    const boxRaw = document.getElementById('bulk-box').value.trim();
-    const qtyRaw = parseInt(document.getElementById('bulk-qty').value);
-    const qty = (isNaN(qtyRaw) || qtyRaw < 1) ? 1 : qtyRaw;
-
-    if(!modelsStr) { toast('Please enter model names', 'error'); return; }
-    if(!boxRaw) { toast('Please enter box number', 'error'); return; }
-
-    const finalBox = formatBoxName(boxRaw);
-
-    // Smart capitalization: preserves existing caps (iQOO, OnePlus) but caps first char
-    const modelsArr = modelsStr.split(',')
-      .map(s => s.trim())
-      .filter(s => s !== '')
-      .map(s => {
-        // Only capitalize words that are all lowercase (don't touch mixed-case brands)
-        return s.split(/\s+/).map(w => {
-          if(w === w.toLowerCase()) return w.charAt(0).toUpperCase() + w.slice(1);
-          return w; // keep as-is if already has caps
-        }).join(' ');
-      });
-
-    if(!modelsArr.length) { toast('No valid models found', 'error'); return; }
-
-    const combinedName = modelsArr.join(' / ');
-
-    btn.disabled = true;
-    btn.textContent = 'Adding...';
-
-    if(!boxes.includes(finalBox)) boxes.push(finalBox);
-    if(!inventory[combinedName]) inventory[combinedName] = {};
-    inventory[combinedName][finalBox] = (inventory[combinedName][finalBox] || 0) + qty;
-
-    save().then(() => {
-      document.getElementById('bulk-models').value = '';
-      document.getElementById('bulk-box').value = '';
-      document.getElementById('bulk-qty').value = '1';
-      document.getElementById('bulk-models').focus();
-      const fb = document.getElementById('bulk-feedback');
-      if(fb) { fb.innerHTML = `<span style="color:var(--green);font-weight:600;">✓ Added ${qty}x ${combinedName} → ${finalBox}</span>`; setTimeout(()=>fb.innerHTML='', 3000); }
-      toast(`Added ${qty}x ${combinedName}`, 'success');
-      btn.disabled = false;
-      btn.textContent = '⚡ Add to Inventory';
-    });
-  } catch(e) {
-    console.error(e);
-    toast('Error adding models', 'error');
-    const btn = document.getElementById('bbtn');
-    btn.disabled = false; btn.textContent = '⚡ Add to Inventory';
-  }
-}
-
-// ============================================================
-// GLASS FINDER (Gemini AI)
-// ============================================================
-async function runFinder() {
-  const input = document.getElementById('finder-input').value.trim();
-  const btn = document.getElementById('fbtn');
-  const rc = document.getElementById('finder-result');
-  if(!input) return;
-  if(!apiKey) { toast('Please set your Gemini API key in Settings', 'error'); showSection('settings'); return; }
-
-  btn.textContent = 'Searching...'; btn.disabled = true;
-  rc.classList.remove('show');
-
-  // Send compact inventory — Box name preserved exactly as-is
-  const invLines = [];
-  for(const model in inventory) {
-    for(const box in inventory[model]) {
-      if(inventory[model][box] > 0) invLines.push(`${model}|${box}|${inventory[model][box]}`);
-    }
-  }
-  const invData = invLines.join('\n') || 'EMPTY';
-
-  const sys = `You are a tempered glass inventory assistant for an Indian mobile shop.
-
-INVENTORY (format: Model|Box|Qty):
-${invData}
-
-User searched for: "${input}"
-
-TASK:
-1. Normalize the search query (fix typos, missing spaces — "vivot4x" = "Vivo T4x", "samsungA55" = "Samsung A55").
-2. Check if the exact model or a compatible model is in inventory.
-3. Compatibility rules you know:
-   - Same screen size (inch) + same aspect ratio = usually same tempered glass
-   - Redmi Note 13 / Note 12 (both 6.67") — compatible
-   - Samsung A35 / A55 (both 6.6") — compatible
-   - Vivo T4x / T3x / Y200 (6.67") — compatible
-   - Realme C67 / C55 (6.72") — compatible
-   - Poco X6 / X6 Pro (6.67") — compatible
-   - Oppo A78 / A77 (6.56") — compatible
-4. Return ONLY a raw JSON object (no markdown, no backticks, no explanation):
-
-{"status":"found","type":"exact","model":"Exact Model Name","box":"Box 1","qty":10,"reason":""}
-OR
-{"status":"found","type":"compat","model":"Compatible Model Name","box":"Box 2","qty":5,"reason":"Same 6.67 inch screen as Vivo T4x"}
-OR
-{"status":"notfound","type":"","model":"${input}","box":"","qty":0,"reason":""}`;
-
-  try {
-    const raw = await callGemini(sys, input, true);
-    // Bulletproof JSON extraction
-    const start = raw.indexOf('{');
-    const end = raw.lastIndexOf('}');
-    if(start === -1 || end === -1) throw new Error('No JSON in response');
-    const data = JSON.parse(raw.substring(start, end + 1));
-
-    if(data.status === 'notfound') {
-      rc.innerHTML = `
-        <div class="rc-header">
-          <div class="rc-icon none">✕</div>
-          <div>
-            <div class="rc-title">Out of Stock</div>
-            <div class="rc-subtitle">No exact or compatible glass found for <strong>${input}</strong>.</div>
-          </div>
-        </div>
-        <div class="rc-acts">
-          <button class="btn primary" onclick="addToReq('${data.model || input}')">📋 Add to Requirements</button>
-          <button class="btn ghost" onclick="rc.classList.remove('show')">Dismiss</button>
-        </div>`;
-    } else {
-      // Set pending sale for quick sell
-      pendingSale = {model: data.model, box: data.box, qty: data.qty};
-      const isExact = data.type === 'exact';
-      rc.innerHTML = `
-        <div class="rc-header">
-          <div class="rc-icon ${isExact ? 'exact' : 'compat'}">${isExact ? '✓' : '💡'}</div>
-          <div>
-            <div class="rc-title">${data.model}</div>
-            <div class="rc-subtitle">${isExact ? '✅ Exact match in stock' : '💡 Compatible glass: ' + (data.reason || 'Similar dimensions')}</div>
-          </div>
-        </div>
-        <div class="rc-stock-box">
-          <div><div style="font-size:12px;color:var(--text2);">Location</div><div style="font-weight:600;margin-top:2px;">${data.box}</div></div>
-          <div style="text-align:right"><div style="font-size:12px;color:var(--text2);">In Stock</div><div class="rc-qty">${data.qty}</div></div>
-        </div>
-        <div class="sell-qty-row">
-          <label>Sell qty:</label>
-          <input type="number" class="sell-qty-input" id="finder-sell-qty" min="1" max="${data.qty}" value="1">
-          <span style="font-size:12px;color:var(--text3);">max ${data.qty}</span>
-        </div>
-        <div class="rc-acts">
-          <button class="btn sell" style="flex:1;padding:11px;" onclick="executeSale()">💰 Mark as Sold</button>
-          <button class="btn ghost" onclick="document.getElementById('finder-result').classList.remove('show')">Cancel</button>
-        </div>`;
-    }
-    rc.classList.add('show');
-  } catch(e) {
-    toast('Finder error: ' + e.message, 'error');
-    console.error('Finder error:', e);
-  }
-  btn.textContent = 'Search'; btn.disabled = false;
-}
-
-function executeSale() {
-  if(!pendingSale) return;
-  const {model, box} = pendingSale;
-  const qtyInput = document.getElementById('finder-sell-qty');
-  const qty = parseInt(qtyInput ? qtyInput.value : 1) || 1;
-  const currentQty = inventory[model]?.[box] || 0;
-  if(qty > currentQty) { toast(`Only ${currentQty} in stock!`, 'error'); return; }
-  recordSale(model, box, qty, 'Sold via Glass Finder');
-  document.getElementById('finder-result').classList.remove('show');
-  document.getElementById('finder-input').value = '';
-  pendingSale = null;
-}
-
-function addToReq(model) {
-  const clean = model.trim();
-  if(!clean) return;
-  if(!requirements.find(r => r.model === clean)) {
-    requirements.push({ model: clean, qty: 1, priority: 'medium', added: new Date().toLocaleDateString('en-IN') });
-    save();
-    updateReqBadge();
-    toast('Added to requirements', 'success');
-  } else {
-    toast('Already in requirements');
-  }
-  document.getElementById('finder-result').classList.remove('show');
-}
-
-// ============================================================
-// SALES LOG
-// ============================================================
-function getSalesToday() {
-  const today = new Date().toLocaleDateString('en-IN');
-  const todayLog = salesLog.filter(s => s.date === today);
-  return { count: todayLog.length, pcs: todayLog.reduce((a, s) => a + s.qty, 0) };
-}
-
-function renderSales() {
-  const search = (document.getElementById('sales-search') || {}).value?.toLowerCase() || '';
-  const filter = (document.getElementById('sales-filter') || {}).value || '';
-  const now = Date.now();
-  const today = new Date().toLocaleDateString('en-IN');
-
-  let filtered = [...salesLog].reverse();
-  if(search) filtered = filtered.filter(s => s.model.toLowerCase().includes(search) || (s.note||'').toLowerCase().includes(search));
-  if(filter === 'today') filtered = filtered.filter(s => s.date === today);
-  else if(filter === 'week') filtered = filtered.filter(s => now - s.timestamp < 7*24*3600*1000);
-
-  const todaySales = getSalesToday();
-  const totalPcs = salesLog.reduce((a, s) => a + s.qty, 0);
-  const ssEl = document.getElementById('sales-stats');
-  if(ssEl) ssEl.innerHTML = `
-    <div class="stat"><div class="stat-num a">${salesLog.length}</div><div class="stat-label">Total Transactions</div></div>
-    <div class="stat"><div class="stat-num g">${totalPcs}</div><div class="stat-label">Total Sold Pcs</div></div>
-    <div class="stat"><div class="stat-num">${todaySales.count}</div><div class="stat-label">Today Sales</div></div>
-    <div class="stat"><div class="stat-num">${todaySales.pcs}</div><div class="stat-label">Today Pcs</div></div>`;
-
-  const cont = document.getElementById('sales-container');
-  if(!cont) return;
-  if(!filtered.length) { cont.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text3);">No sales recorded yet</div>`; return; }
-  let html = `<table class="dataTable">
-    <tr><th>Model</th><th>Box</th><th>Qty</th><th>Note</th><th>Date</th><th>Time</th></tr>`;
-  filtered.slice(0, 100).forEach(s => {
-    html += `<tr>
-      <td><strong>${s.model}</strong></td>
-      <td style="font-size:12px;color:var(--text2)">${s.box}</td>
-      <td style="color:var(--green);font-family:var(--mono);font-weight:600">${s.qty}</td>
-      <td style="font-size:12px;color:var(--text2)">${s.note || '—'}</td>
-      <td style="font-size:12px;color:var(--text2)">${s.date}</td>
-      <td style="font-size:12px;color:var(--text2)">${s.time || ''}</td>
-    </tr>`;
-  });
-  cont.innerHTML = html + `</table>`;
-}
-
-function clearSalesConfirm() {
-  if(!salesLog.length) return;
-  if(!confirm('Clear entire sales log? Cannot be undone.')) return;
-  salesLog = []; save(); toast('Sales log cleared');
-}
-
-function exportSales() {
-  if(!salesLog.length) { toast('No sales to export', 'error'); return; }
-  let csv = 'Model,Box,Qty,Note,Date,Time\n';
-  salesLog.forEach(s => { csv += `"${s.model}","${s.box}",${s.qty},"${s.note||''}","${s.date}","${s.time||''}"\n`; });
-  download(csv, `sales-${Date.now()}.csv`, 'text/csv');
-  toast('Exported!', 'success');
-}
-
-// ============================================================
-// REQUIREMENTS
-// ============================================================
-function renderRequirements() {
-  updateReqBadge();
-  const cont = document.getElementById('req-container');
-  if(!cont) return;
-  if(!requirements.length) {
-    cont.innerHTML = `<div style="text-align:center;padding:50px;color:var(--text3);">No requirements yet. Add via Glass Finder when stock is missing.</div>`;
-    return;
-  }
-  const sorted = [...requirements].sort((a,b) => ({high:0,medium:1,low:2}[a.priority||'medium'] - {high:0,medium:1,low:2}[b.priority||'medium']));
-  let html = `<div class="req-container">`;
-  sorted.forEach((r, i) => {
-    const idx = requirements.indexOf(r);
-    html += `<div class="req-item">
-      <div style="flex:1;min-width:0">
-        <div style="font-weight:600;font-size:14px;">${r.model}</div>
-        <div style="font-size:12px;color:var(--text2);margin-top:2px;">Added ${r.added}</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:6px;font-family:var(--mono);">
-        <button class="btn ghost" style="padding:2px 8px;font-size:13px;" onclick="changeReqQty(${idx},-1)">−</button>
-        <span style="font-weight:600;min-width:28px;text-align:center;">${r.qty}</span>
-        <button class="btn ghost" style="padding:2px 8px;font-size:13px;" onclick="changeReqQty(${idx},1)">+</button>
-      </div>
-      <select class="priority-select" onchange="setReqPriority(${idx},this.value)">
-        <option value="high" ${r.priority==='high'?'selected':''}>🔴 High</option>
-        <option value="medium" ${r.priority==='medium'?'selected':''}>🟡 Medium</option>
-        <option value="low" ${r.priority==='low'?'selected':''}>🔵 Low</option>
-      </select>
-      <button class="btn danger" style="padding:4px 10px;font-size:12px;" onclick="removeReq(${idx})">Remove</button>
-    </div>`;
-  });
-  cont.innerHTML = html + `</div>`;
-}
-
-function changeReqQty(i, d) { requirements[i].qty = Math.max(1, (requirements[i].qty || 1) + d); save(); renderRequirements(); }
-function setReqPriority(i, v) { requirements[i].priority = v; save(); }
-function removeReq(i) { requirements.splice(i, 1); save(); renderRequirements(); updateReqBadge(); }
-function clearReqsConfirm() { if(!requirements.length) return; if(!confirm('Clear all requirements?')) return; requirements = []; save(); renderRequirements(); updateReqBadge(); }
-function updateReqBadge() { const b = document.getElementById('req-badge'); if(b) { b.textContent = requirements.length; b.style.display = requirements.length ? 'inline' : 'none'; } }
-
-function exportReqs() {
-  if(!requirements.length) { toast('No requirements', 'error'); return; }
-  let txt = `TEMPERED GLASS ORDER LIST\nDate: ${new Date().toLocaleDateString('en-IN')}\n\n`;
-  ['high','medium','low'].forEach(p => {
-    const items = requirements.filter(r => (r.priority||'medium') === p);
-    if(!items.length) return;
-    txt += `${p.toUpperCase()} PRIORITY:\n`;
-    items.forEach((r, i) => txt += `  ${i+1}. ${r.model} — ${r.qty} pcs\n`);
-    txt += '\n';
-  });
-  download(txt, `requirements-${Date.now()}.txt`, 'text/plain');
-  toast('Exported!', 'success');
-}
-
-// ============================================================
-// RAJU CHAT — Gemini with conversation history
-// ============================================================
-function injectWelcome() {
-  const models = Object.keys(inventory).length;
-  const pcs = Object.values(inventory).reduce((a,b) => a + Object.values(b).reduce((x,y)=>x+y,0), 0);
-  const todaySales = getSalesToday();
-  addAiMsg(
-    `Namaste! 🙏 Main Raju hoon — aapka warehouse manager.\n\n` +
-    `📦 **${models}** models, **${pcs}** pieces, **${boxes.length}** boxes.\n` +
-    (todaySales.pcs > 0 ? `💰 Aaj **${todaySales.pcs}** pieces biki.\n\n` : '\n') +
-    `Bolo kya karna hai!`
-  );
-}
-
-function clearChat() {
-  document.getElementById('chat-msgs').innerHTML = '';
-  chatHistory = [];
-  injectWelcome();
-}
-
-function qsend(text) {
-  document.getElementById('cinput').value = text;
-  sendChat();
-}
-
-function addAiMsg(text) {
-  const c = document.getElementById('chat-msgs');
-  const div = document.createElement('div');
-  div.className = 'msg ai';
-  div.innerHTML = `<div class="msg-av">🤖</div><div class="bubble">${formatBubble(text)}</div>`;
-  c.appendChild(div);
-  c.scrollTop = c.scrollHeight;
-}
-
-function formatBubble(text) {
-  return text
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-    .replace(/\n/g,'<br>');
-}
-
-async function sendChat() {
-  const input = document.getElementById('cinput');
-  const text = input.value.trim();
-  if(!text || !currentUser) return;
-  if(!apiKey) { toast('Please set your Gemini API key in Settings', 'error'); showSection('settings'); return; }
-
-  input.value = '';
-  document.getElementById('cbtn').disabled = true;
-
-  const c = document.getElementById('chat-msgs');
-  const userDiv = document.createElement('div');
-  userDiv.className = 'msg user';
-  userDiv.innerHTML = `<div class="msg-av">👤</div><div class="bubble">${text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`;
-  c.appendChild(userDiv);
-
-  const typingDiv = document.createElement('div');
-  typingDiv.className = 'msg ai'; typingDiv.id = 'typing-msg';
-  typingDiv.innerHTML = `<div class="msg-av">🤖</div><div class="typing"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;
-  c.appendChild(typingDiv);
-  c.scrollTop = c.scrollHeight;
-
-  // Build live inventory summary for Raju
-  const invLines = [];
-  for(const model in inventory) {
-    const locations = [];
-    for(const box in inventory[model]) {
-      if(inventory[model][box] > 0) locations.push(`${box}:${inventory[model][box]}`);
-    }
-    if(locations.length) invLines.push(`${model} [${locations.join('|')}]`);
-  }
-  const invStr = invLines.join('\n') || 'EMPTY';
-  const todaySales = getSalesToday();
-  const lowModels = Object.entries(inventory)
-    .map(([m, locs]) => ({m, total: Object.values(locs).reduce((a,b)=>a+b,0)}))
-    .filter(x => x.total <= lowThreshold)
-    .map(x => `${x.m}:${x.total}pcs`).join(', ') || 'none';
-
-  const sys = `You are Raju, warehouse manager for a tempered glass shop in India. You speak Hindi, English, Hinglish naturally.
-
-LIVE INVENTORY (Model [Box:Qty|Box2:Qty]):
-${invStr}
-
-Low stock (≤${lowThreshold} pcs): ${lowModels}
-Today sold: ${todaySales.count} sales, ${todaySales.pcs} pieces
-Boxes: ${boxes.join(', ')}
-
-IMPORTANT — BOX NAMES: Always use exact box names from inventory (e.g. "Box 1" not "B1").
-
-SELL ACTIONS — use when user says "sell", "bech do", "bika":
-[ACTION:SELL|model:Exact Model Name|box:Exact Box Name|qty:2]
-
-REMOVE ACTIONS — use when user says "remove", "damaged", "hata do":
-[ACTION:REMOVE|model:Exact Model Name|box:Exact Box Name|qty:1]
-
-REQUIREMENTS — use when user asks to add to requirements/order list:
-[ACTION:REQADD|model:Model Name|qty:10|priority:high]
-
-Rules:
-- Model name in ACTION must exactly match the inventory name (copy-paste from inventory list)
-- Box name must exactly match (e.g. "Box 1", not "box1" or "B1")
-- If multiple boxes have the model, use the one with most stock
-- If model not found, say so and offer to add to requirements
-- Keep responses short and conversational
-- Use **bold** for model names and numbers`;
-
-  // Build conversation history for context
-  const messages = [];
-  chatHistory.slice(-MAX_CHAT_HISTORY).forEach(m => messages.push(m));
-  messages.push({ role: 'user', parts: [{ text }] });
-
-  try {
-    const resp = await callGeminiWithHistory(sys, messages);
-    document.getElementById('typing-msg')?.remove();
-
-    // Parse and execute actions
-    const actionRegex = /\[ACTION:([^\]]+)\]/g;
-    let match;
-    let changed = false;
-    while((match = actionRegex.exec(resp)) !== null) {
-      const parts = match[1].split('|');
-      const type = parts[0];
-      const params = {};
-      parts.slice(1).forEach(p => { const [k, ...v] = p.split(':'); params[k] = v.join(':'); });
-
-      const model = params.model?.trim();
-      const box = params.box?.trim();
-      const qty = parseInt(params.qty || '1');
-
-      if((type === 'SELL' || type === 'REMOVE') && model && box) {
-        // Find best matching inventory entry (case-insensitive fallback)
-        let actualModel = model;
-        let actualBox = box;
-
-        // Try exact match first
-        if(!inventory[model] || !inventory[model][box]) {
-          // Fuzzy match on model name
-          const modelKeys = Object.keys(inventory);
-          const fuzzyModel = modelKeys.find(k => k.toLowerCase() === model.toLowerCase());
-          if(fuzzyModel) actualModel = fuzzyModel;
-          // Fuzzy match on box
-          const fuzzyBox = boxes.find(b => b.toLowerCase() === box.toLowerCase());
-          if(fuzzyBox) actualBox = fuzzyBox;
-        }
-
-        if(inventory[actualModel] && inventory[actualModel][actualBox] && inventory[actualModel][actualBox] >= qty) {
-          inventory[actualModel][actualBox] -= qty;
-          if(inventory[actualModel][actualBox] <= 0) {
-            delete inventory[actualModel][actualBox];
-            if(!Object.keys(inventory[actualModel]).length) delete inventory[actualModel];
-          }
-          if(type === 'SELL') {
-            salesLog.push({ model: actualModel, box: actualBox, qty, note: 'Sold via Raju', date: new Date().toLocaleDateString('en-IN'), time: new Date().toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'}), timestamp: Date.now() });
-          }
-          changed = true;
-        }
-      } else if(type === 'REQADD' && model) {
-        if(!requirements.find(r => r.model === model)) {
-          requirements.push({ model, qty: qty || 1, priority: params.priority || 'medium', added: new Date().toLocaleDateString('en-IN') });
-          changed = true;
-        }
-      }
-    }
-
-    if(changed) save();
-
-    // Clean response and show
-    const cleanResp = resp.replace(/\[ACTION:[^\]]+\]/g, '').trim();
-    addAiMsg(cleanResp);
-
-    // Update history
-    chatHistory.push({ role: 'user', parts: [{ text }] });
-    chatHistory.push({ role: 'model', parts: [{ text: cleanResp }] });
-    if(chatHistory.length > MAX_CHAT_HISTORY) chatHistory = chatHistory.slice(-MAX_CHAT_HISTORY);
-
-  } catch(e) {
-    document.getElementById('typing-msg')?.remove();
-    addAiMsg(`❌ Error: ${e.message}`);
-  }
-
-  document.getElementById('cbtn').disabled = false;
-  c.scrollTop = c.scrollHeight;
-}
-
-// ============================================================
-// GEMINI API CALLS
-// ============================================================
-function saveApiKey() {
-  const k = (document.getElementById('settings-apikey') || {}).value?.trim();
-  if(!k) { toast('Please enter a key', 'error'); return; }
-  apiKey = k;
-  localStorage.setItem('gg4_gemini_key', k);
-  toast('API Key saved!', 'success');
-}
-
-function saveThreshold() {
-  const v = parseInt((document.getElementById('threshold-input') || {}).value || '5');
-  if(isNaN(v) || v < 1) return;
-  lowThreshold = v;
-  localStorage.setItem('gg4_threshold', v);
-  toast('Threshold saved!', 'success');
-  renderWarehouse();
-}
-
-async function callGemini(systemText, userText, isJson = false, retries = 2) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-  const genConfig = { maxOutputTokens: 400 };
-  if(isJson) genConfig.responseMimeType = 'application/json';
-
-  const body = {
-    systemInstruction: { parts: [{ text: systemText }] },
-    contents: [{ role: 'user', parts: [{ text: userText }] }],
-    generationConfig: genConfig
-  };
-
-  for(let i = 0; i <= retries; i++) {
-    try {
-      const r = await fetch(url, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body) });
-      if(!r.ok) { const e = await r.json(); throw new Error(e.error?.message || `HTTP ${r.status}`); }
-      const d = await r.json();
-      return d.candidates[0].content.parts[0].text;
-    } catch(e) {
-      if(i === retries) throw e;
-      await new Promise(res => setTimeout(res, 1200));
-    }
-  }
-}
-
-async function callGeminiWithHistory(systemText, messages, retries = 2) {
-  // Uses multi-turn conversation API — this is the KEY FIX for Raju having memory
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-  const body = {
-    systemInstruction: { parts: [{ text: systemText }] },
-    contents: messages,  // full conversation history
-    generationConfig: { maxOutputTokens: 500 }
-  };
-
-  for(let i = 0; i <= retries; i++) {
-    try {
-      const r = await fetch(url, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body) });
-      if(!r.ok) { const e = await r.json(); throw new Error(e.error?.message || `HTTP ${r.status}`); }
-      const d = await r.json();
-      return d.candidates[0].content.parts[0].text;
-    } catch(e) {
-      if(i === retries) throw e;
-      await new Promise(res => setTimeout(res, 1200));
-    }
-  }
-}
-
-// ============================================================
-// BACKUP / IMPORT
+// BACKUP: EXPORT & IMPORT
 // ============================================================
 function exportData() {
-  const data = { inventory, boxes, requirements, salesLog, exportedAt: new Date().toISOString(), version: '4.1' };
-  download(JSON.stringify(data, null, 2), `GlassGodown_Backup_${new Date().toLocaleDateString('en-IN').replace(/\//g,'-')}.json`, 'application/json');
-  toast('Backup downloaded!', 'success');
+  const data = { inventory, boxes, requirements, salesLog };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `GlassGodown_Backup_${new Date().toLocaleDateString().replace(/\//g,'-')}.json`;
+  a.click(); toast('Data Exported', 'success');
 }
 
 function importData(event) {
@@ -1394,45 +484,265 @@ function importData(event) {
   reader.onload = async (e) => {
     try {
       const data = JSON.parse(e.target.result);
-      if(!data.inventory || !data.boxes) throw new Error('Invalid backup file');
-      if(!confirm('Replace ALL current data with this backup?')) return;
-      inventory = data.inventory;
-      boxes = data.boxes;
-      requirements = data.requirements || [];
-      salesLog = data.salesLog || [];
-      await save();
-      toast('Data imported!', 'success');
-    } catch(err) { toast('Import failed: ' + err.message, 'error'); }
+      if(!data.inventory || !data.boxes) throw new Error("Invalid backup format");
+      if(confirm("This will REPLACE all your current data. Continue?")) {
+        inventory = data.inventory; boxes = data.boxes; requirements = data.requirements || []; salesLog = data.salesLog || [];
+        await save(); toast('Data Imported Successfully!', 'success');
+      }
+    } catch(err) { toast('Error importing file', 'error'); }
     event.target.value = '';
   };
   reader.readAsText(file);
 }
 
 // ============================================================
-// UTILS
+// GEMINI API
 // ============================================================
-function download(content, filename, type) {
-  const blob = new Blob([content], {type});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  a.click();
+function saveApiKey() { apiKey = document.getElementById('settings-apikey').value.trim(); localStorage.setItem('gg3_gemini_key', apiKey); toast('API Key Saved'); }
+
+// FIX 2: Rewrote callGemini to NOT use responseMimeType (unreliable on 2.5-flash).
+// Instead we always ask the model to return plain JSON in the prompt, and do robust extraction.
+async function callGemini(sys, userText, retries = 2) {
+  if(!apiKey) throw new Error("Missing API Key. Please save your Gemini Key in Settings.");
+
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: sys }] },
+          contents: [{ role: 'user', parts: [{ text: userText }] }],
+          generationConfig: { maxOutputTokens: 400 }
+        })
+      });
+
+      if (!r.ok) {
+        const errData = await r.json();
+        throw new Error(errData.error?.message || "API connection failed.");
+      }
+
+      const d = await r.json();
+      return d.candidates[0].content.parts[0].text;
+
+    } catch (e) {
+      if (i === retries) throw e;
+      await new Promise(res => setTimeout(res, 1500));
+    }
+  }
 }
 
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-ov').forEach(m => {
-  m.addEventListener('click', e => { if(e.target === m) m.classList.remove('open'); });
-});
-
-let toastTimer;
-function toast(msg, type = '') {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = `toast ${type} show`;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+// Robust JSON extractor — handles markdown fences, leading text, trailing text
+function extractJSON(text) {
+  // Strip markdown code fences
+  let clean = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+  // Find the outermost { } block
+  const start = clean.indexOf('{');
+  const end = clean.lastIndexOf('}');
+  if (start === -1 || end === -1 || end <= start) throw new Error("No JSON object found in response");
+  return JSON.parse(clean.substring(start, end + 1));
 }
+
+// ============================================================
+// FIX 1: INSTANT BULK ADD — made the function async and awaits save()
+// Also added button loading state so user gets clear feedback
+// ============================================================
+async function runInstantBulkAdd() {
+  const btn = document.getElementById('bbtn');
+  const statusEl = document.getElementById('bulk-status');
+
+  try {
+    const modelsStr = document.getElementById('bulk-models').value.trim();
+    const boxRaw = document.getElementById('bulk-box').value.trim();
+    const qtyRaw = parseInt(document.getElementById('bulk-qty').value);
+    const qty = (isNaN(qtyRaw) || qtyRaw < 1) ? 1 : qtyRaw;
+
+    if (!modelsStr || !boxRaw) {
+      toast('Please fill in Models and Box number', 'error');
+      return;
+    }
+
+    // Disable button while saving
+    btn.disabled = true;
+    btn.textContent = '⏳ Saving...';
+    statusEl.textContent = '';
+
+    const finalBox = formatBoxName(boxRaw);
+
+    // Capitalizes first letter of each word without destroying casing (e.g. iQOO stays iQOO)
+    const modelsArr = modelsStr.split(',')
+      .map(s => s.trim())
+      .filter(s => s !== '')
+      .map(s => s.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '));
+
+    if (modelsArr.length === 0) {
+      toast('Please enter valid model names', 'error');
+      btn.disabled = false;
+      btn.textContent = '⚡ Instantly Add to Inventory';
+      return;
+    }
+
+    const combinedName = modelsArr.join(' / ');
+
+    // Ensure box exists in boxes array
+    if (!boxes.includes(finalBox)) boxes.push(finalBox);
+
+    // Ensure model key exists
+    if (!inventory[combinedName]) inventory[combinedName] = {};
+
+    // Add quantity
+    inventory[combinedName][finalBox] = (inventory[combinedName][finalBox] || 0) + qty;
+
+    // Await the save so we know it completed
+    await save();
+
+    // Clear inputs and refocus
+    document.getElementById('bulk-models').value = '';
+    document.getElementById('bulk-box').value = '';
+    document.getElementById('bulk-qty').value = '1';
+    document.getElementById('bulk-models').focus();
+
+    statusEl.innerHTML = `<span style="color:var(--green)">✅ Added <b>${qty}x ${combinedName}</b> → ${finalBox}</span>`;
+    toast(`✅ Added ${qty}x ${combinedName} to ${finalBox}`, 'success');
+
+  } catch (e) {
+    console.error(e);
+    toast('Error adding models. Check inputs.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⚡ Instantly Add to Inventory';
+  }
+}
+
+// ============================================================
+// FIX 2: GLASS FINDER — improved system prompt for reliable JSON output
+// Uses extractJSON() instead of fragile inline parsing
+// ============================================================
+async function runFinder() {
+  const input = document.getElementById('finder-input').value.trim();
+  const btn = document.getElementById('fbtn');
+  const rc = document.getElementById('finder-result');
+  if (!input) return;
+
+  btn.innerText = "Searching..."; btn.disabled = true; rc.classList.remove('show');
+
+  const invData = compressInventory();
+
+  // Cleaner, more directive prompt that forces JSON-only output reliably
+  const sys = `You are an inventory lookup assistant for a mobile phone glass/screen protector godown.
+Inventory data (Format: ModelName[B1:qty,B2:qty] where B1=Box 1): ${invData || 'EMPTY'}
+
+Rules:
+- Handle spelling mistakes and spacing errors in model names (e.g. "vivot4x" = "Vivo T4x").
+- If an exact match exists, prefer it. If not, suggest the most compatible alternative.
+- If inventory is EMPTY or nothing matches at all, return status "notfound".
+- You MUST return ONLY a raw JSON object. No explanation. No markdown. No extra text.
+- JSON structure MUST be exactly:
+{"status":"found","type":"exact","model":"Exact Model Name","box":"Box 1","qty":5,"reason":""}
+OR
+{"status":"found","type":"compat","model":"Compatible Model Name","box":"Box 1","qty":3,"reason":"Short reason"}
+OR
+{"status":"notfound","type":"","model":"","box":"","qty":0,"reason":""}`;
+
+  try {
+    const resp = await callGemini(sys, input, 2);
+    const data = extractJSON(resp);
+
+    if (data.status === 'notfound') {
+      rc.innerHTML = `<div class="rc-header"><div class="rc-icon none">✕</div><div><div class="rc-title">Out of Stock</div><div class="rc-subtitle">Nothing compatible for "${input}".</div></div></div>
+        <div class="rc-acts"><button class="btn primary" onclick="addToReq('${input.replace(/'/g,"\\'")}')">Add to Requirements</button></div>`;
+    } else if (data.status === 'found') {
+      pendingSale = { model: data.model, box: data.box };
+      const isExact = data.type === 'exact';
+      rc.innerHTML = `<div class="rc-header"><div class="rc-icon ${isExact ? 'exact' : 'compat'}">${isExact ? '✓' : '💡'}</div>
+          <div><div class="rc-title">${data.model}</div><div class="rc-subtitle">${isExact ? 'Exact Match' : 'Alternative: ' + (data.reason || '')}</div></div></div>
+        <div class="rc-stock-box"><div><div style="font-size:12px;color:var(--text2)">Location</div><div style="font-weight:600">${data.box}</div></div>
+          <div style="text-align:right"><div style="font-size:12px;color:var(--text2)">Stock</div><div class="rc-qty">${data.qty}</div></div></div>
+        <div class="rc-acts"><button class="btn sell" style="flex:1;padding:12px;font-size:15px;" onclick="executeSale()">💰 Mark 1 as Sold</button>
+          <button class="btn ghost" onclick="document.getElementById('finder-result').classList.remove('show')">Cancel</button></div>`;
+    } else {
+      // Unexpected status — treat as not found
+      rc.innerHTML = `<div class="rc-header"><div class="rc-icon none">✕</div><div><div class="rc-title">Out of Stock</div><div class="rc-subtitle">Nothing found for "${input}".</div></div></div>
+        <div class="rc-acts"><button class="btn primary" onclick="addToReq('${input.replace(/'/g,"\\'")}')">Add to Requirements</button></div>`;
+    }
+    rc.classList.add('show');
+
+  } catch (e) {
+    toast('Finder Error: Could not parse AI response. Try again.', 'error');
+    console.error("Finder Error:", e);
+  }
+
+  btn.innerText = "Find"; btn.disabled = false;
+}
+
+function executeSale() {
+  if (!pendingSale) return; const { model, box } = pendingSale;
+  if (inventory[model] && inventory[model][box] > 0) {
+    inventory[model][box] -= 1;
+    if (inventory[model][box] <= 0) { delete inventory[model][box]; if (Object.keys(inventory[model]).length === 0) delete inventory[model]; }
+    salesLog.push({ model, box, qty: 1, date: new Date().toLocaleString() });
+    save(); document.getElementById('finder-result').classList.remove('show'); document.getElementById('finder-input').value = ''; toast(`1x ${model} Sold!`, 'success');
+  }
+}
+
+function addToReq(model) { if (!requirements.includes(model)) requirements.push(model); save(); renderAll(); document.getElementById('finder-result').classList.remove('show'); toast('Added!', 'success'); }
+
+// ============================================================
+// RAJU CHAT
+// ============================================================
+function addAiMsg(text) {
+  const c = document.getElementById('chat-msgs');
+  c.innerHTML += `<div class="msg ai"><div class="msg-av">🤖</div><div class="bubble">${text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}</div></div>`;
+  c.scrollTop = c.scrollHeight;
+}
+
+async function sendChat() {
+  const input = document.getElementById('cinput'); const text = input.value.trim(); if(!text) return;
+  input.value = ''; const c = document.getElementById('chat-msgs');
+  c.innerHTML += `<div class="msg user"><div class="msg-av">👤</div><div class="bubble">${text}</div></div><div class="msg ai" id="typing"><div class="msg-av">🤖</div><div class="typing"><div class="td"></div><div class="td"></div><div class="td"></div></div></div>`;
+  c.scrollTop = c.scrollHeight;
+
+  const invData = compressInventory();
+
+  const sys = `You are Raju. Inventory: ${invData || 'Empty'}. (Format: Model[B1:Qty|... where B1=Box 1). 
+  Handle space typos naturally.
+  If user wants to SELL: Output [ACTION:SELL|model:Name|box:Box|qty:1].
+  If user wants to REMOVE expired items: Output [ACTION:REMOVE|model:Name|box:Box|qty:1].
+  Otherwise, chat briefly.`;
+
+  try {
+    const resp = await callGemini(sys, text, 2);
+    document.getElementById('typing').remove();
+    
+    let changed = false;
+    const regex=/\[ACTION:([^\]]+)\]/g; let m;
+    while((m=regex.exec(resp))!==null){
+      const p = {}; m[1].split('|').slice(1).forEach(x=>{const [k,...v]=x.split(':'); p[k]=v.join(':');});
+      const type = m[1].split('|')[0];
+      
+      const fullBoxName = p.box.startsWith('B') && !p.box.startsWith('Box') ? p.box.replace('B', 'Box ') : p.box;
+      
+      if(type==='SELL' && inventory[p.model] && inventory[p.model][fullBoxName]){
+        inventory[p.model][fullBoxName] -= parseInt(p.qty||1);
+        salesLog.push({model:p.model, box:fullBoxName, qty:parseInt(p.qty||1), date:new Date().toLocaleDateString()});
+        changed=true;
+      }
+      else if(type==='REMOVE' && inventory[p.model] && inventory[p.model][fullBoxName]){
+        inventory[p.model][fullBoxName] -= parseInt(p.qty||1);
+        changed=true;
+      }
+      
+      if(changed && inventory[p.model][fullBoxName] <= 0) { delete inventory[p.model][fullBoxName]; if(Object.keys(inventory[p.model]).length===0) delete inventory[p.model]; }
+    }
+    
+    if(changed) save();
+    addAiMsg(resp.replace(/\[ACTION:[^\]]+\]/g,'').trim());
+  } catch(e) { document.getElementById('typing').remove(); addAiMsg("❌ Error: " + (e.message || "Failed.")); }
+}
+
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+let toastTimer; function toast(msg,type=''){ const el=document.getElementById('toast'); el.textContent=msg; el.className=`toast ${type} show`; clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),2800); }
 </script>
 </body>
 </html>
