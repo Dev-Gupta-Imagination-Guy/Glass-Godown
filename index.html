@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GlassGodown v3.4 — Fast Cloud IDE</title>
+<title>GlassGodown v3.5 — Fast Cloud IDE</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
@@ -60,7 +60,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);height:100vh
 .nav-btn.active::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;background:var(--accent);border-radius:0 2px 2px 0}
 .nav-icon{font-size:15px;width:18px;text-align:center}
 
-/* CENTER WORKSPACE (SCROLL FIXES) */
+/* CENTER WORKSPACE */
 .main{background:var(--bg);display:flex;flex-direction:column;position:relative;flex:1;min-height:0;height:100%;}
 .section{display:none;flex-direction:column;flex:1;min-height:0;height:100%;}
 .section.active{display:flex}
@@ -69,7 +69,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);height:100vh
 .page-head p{font-size:13px;color:var(--text2);margin-top:4px}
 .page-content{padding:24px 30px;flex:1;overflow-y:auto;min-height:0;}
 
-/* RIGHT SIDEBAR (RAJU AI) - SCROLL FIXES */
+/* RIGHT SIDEBAR (RAJU AI) */
 .rightbar{background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;height:100%;min-height:0;}
 .chat-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--bg2);flex-shrink:0;}
 .av{width:36px;height:36px;border-radius:9px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;}
@@ -125,7 +125,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);height:100vh
 .dataTable th{text-align:left;padding:12px 16px;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text3);background:var(--bg3);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
 .dataTable td{padding:14px 16px;border-bottom:1px solid var(--border);font-size:14px;}
 
-/* MODALS */
+/* MODALS & TOASTS */
 .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .2s}
 .modal-ov.open{opacity:1;pointer-events:all}
 .modal{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:26px;width:440px;max-width:92vw;transform:translateY(10px);transition:transform .2s;box-shadow:0 10px 25px rgba(0,0,0,0.1)}
@@ -134,8 +134,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);height:100vh
 .mlabel{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px}
 .minput{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:7px;padding:10px 14px;font-size:14px;font-family:var(--font);margin-bottom:16px}
 .modal-acts{display:flex;gap:8px;justify-content:flex-end}
-
-/* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--bg);padding:12px 20px;border-radius:30px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:9999;box-shadow:0 10px 20px rgba(0,0,0,0.15)}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 .toast.error{background:var(--red);color:#fff}
@@ -348,7 +346,7 @@ auth.onAuthStateChanged(async (user) => {
     
     await loadFromCloud();
     renderAll();
-    addAiMsg("Namaste! Scroll issues fixed, and Bulk Add is now Instant. Try typing '1' for Box 1.");
+    addAiMsg("Namaste! Cloud sync complete. Glass Finder logic is fully upgraded and bulletproof.");
   } else {
     currentUser = null;
     document.getElementById('login-screen').style.display = 'flex';
@@ -378,9 +376,7 @@ async function save() {
 function formatBoxName(str) {
   if(!str) return "Box 1";
   let clean = str.toString().trim();
-  // If only digits, add "Box "
   if(/^\d+$/.test(clean)) return "Box " + clean;
-  // If it starts with "box" (case insensitive), ensure correct formatting
   if(clean.toLowerCase().startsWith("box")) {
     let num = clean.replace(/box/i, '').trim();
     return "Box " + num;
@@ -422,10 +418,7 @@ function renderAll() {
 // BOX MANAGEMENT
 function addBoxPrompt() { 
   let n = prompt("New Box Name/Number (e.g. type '1' for Box 1):"); 
-  if(n) { 
-    n = formatBoxName(n);
-    if(!boxes.includes(n)) { boxes.push(n); save(); } 
-  } 
+  if(n) { n = formatBoxName(n); if(!boxes.includes(n)) { boxes.push(n); save(); } } 
 }
 
 function deleteBox(boxName) {
@@ -464,8 +457,7 @@ function exportData() {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = `GlassGodown_Backup_${new Date().toLocaleDateString().replace(/\//g,'-')}.json`;
-  a.click();
-  toast('Data Exported', 'success');
+  a.click(); toast('Data Exported', 'success');
 }
 
 function importData(event) {
@@ -478,23 +470,21 @@ function importData(event) {
       if(!data.inventory || !data.boxes) throw new Error("Invalid backup format");
       if(confirm("This will REPLACE all your current data. Continue?")) {
         inventory = data.inventory; boxes = data.boxes; requirements = data.requirements || []; salesLog = data.salesLog || [];
-        await save();
-        toast('Data Imported Successfully!', 'success');
+        await save(); toast('Data Imported Successfully!', 'success');
       }
     } catch(err) { toast('Error importing file', 'error'); }
-    event.target.value = ''; // Reset input
+    event.target.value = '';
   };
   reader.readAsText(file);
 }
 
 // ============================================================
-// GEMINI API (Search & Chat)
+// GEMINI API
 // ============================================================
 function saveApiKey() { apiKey = document.getElementById('settings-apikey').value.trim(); localStorage.setItem('gg3_gemini_key', apiKey); toast('API Key Saved'); }
 
 async function callGemini(sys, userText) {
   if(!apiKey) throw new Error("Missing API Key. Please save your Gemini Key in Settings.");
-  if(apiKey.startsWith('sk-ant')) throw new Error("You are using a Claude key! Please get a Google Gemini key (starts with AIzaSy) and save it in Settings.");
 
   const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{
     method:'POST', headers:{'Content-Type':'application/json'},
@@ -512,34 +502,26 @@ async function callGemini(sys, userText) {
 }
 
 // ============================================================
-// INSTANT BULK ADD (No AI Required - Instant Speed)
+// INSTANT BULK ADD
 // ============================================================
 function runInstantBulkAdd() {
   const modelsStr = document.getElementById('bulk-models').value.trim();
   const boxRaw = document.getElementById('bulk-box').value.trim();
   const qty = parseInt(document.getElementById('bulk-qty').value) || 1;
   
-  if(!modelsStr || !boxRaw) {
-    toast('Please fill in Models and Box number', 'error'); return;
-  }
+  if(!modelsStr || !boxRaw) { toast('Please fill in Models and Box number', 'error'); return; }
   
-  // Format the Box Name (e.g. "1" -> "Box 1")
   const finalBox = formatBoxName(boxRaw);
-  
-  // Format Models (Title Case and split by comma)
   const modelsArr = modelsStr.split(',').map(s => {
     return s.trim().split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
   });
   const combinedName = modelsArr.join(' / ');
   
-  // Add to internal state
   if(!boxes.includes(finalBox)) boxes.push(finalBox);
   if(!inventory[combinedName]) inventory[combinedName] = {};
   inventory[combinedName][finalBox] = (inventory[combinedName][finalBox] || 0) + qty;
   
   save();
-  
-  // Clear inputs
   document.getElementById('bulk-models').value = '';
   document.getElementById('bulk-box').value = '';
   document.getElementById('bulk-qty').value = '1';
@@ -548,7 +530,7 @@ function runInstantBulkAdd() {
 }
 
 // ============================================================
-// GLASS FINDER (Space Typos Handled)
+// BULLETPROOF GLASS FINDER
 // ============================================================
 async function runFinder() {
   const input = document.getElementById('finder-input').value.trim();
@@ -558,31 +540,44 @@ async function runFinder() {
 
   btn.innerText = "Searching..."; btn.disabled = true; rc.classList.remove('show');
   
-  // Explicitly telling Gemini to handle spacing typos
-  const sys = `Inventory: ${JSON.stringify(inventory)}. User wants: "${input}". 
-  CRITICAL: Handle spelling and space typos gracefully (e.g. if user searches "vivot4 x" or "vivo t 4x", match it with "Vivo T4x" in inventory).
-  Check exact or compatible screen sizes. Output ONLY: [FOUND|exact|Model|Box|Qty] OR [FOUND|compat|Model|Box|Qty|Reason] OR [NOTFOUND]`;
+  // Stricter prompt explicitly asking for pure JSON structure
+  const sys = `Inventory: ${JSON.stringify(inventory)}. 
+  User input: "${input}". 
+  Ignore words like "find" or "search". Just extract the phone model.
+  CRITICAL: Handle spelling and space typos gracefully (e.g. "vivot4 x" or "igoo z10x" matches "Vivo T4x / iQOO Z10x" in inventory).
+  
+  Output ONLY a valid JSON object. No markdown, no backticks.
+  If found exact: {"status": "found", "type": "exact", "model": "Matched Name", "box": "Box Name", "qty": 10, "reason": ""}
+  If found compatible: {"status": "found", "type": "compat", "model": "Compatible Name", "box": "Box Name", "qty": 5, "reason": "Shares 6.67 inch screen"}
+  If not found: {"status": "notfound"}`;
 
   try {
     const resp = await callGemini(sys, input);
-    if(resp.includes('[NOTFOUND]')) {
+    
+    // Failsafe parser: Extracts the JSON bracket even if the AI wraps it in markdown text
+    const jsonMatch = resp.match(/\{[\s\S]*\}/);
+    if(!jsonMatch) throw new Error("Unexpected AI Response format.");
+    
+    const data = JSON.parse(jsonMatch[0]);
+
+    if(data.status === 'notfound') {
       rc.innerHTML = `<div class="rc-header"><div class="rc-icon none">✕</div><div><div class="rc-title">Out of Stock</div><div class="rc-subtitle">Nothing compatible for ${input}.</div></div></div>
         <div class="rc-acts"><button class="btn primary" onclick="addToReq('${input}')">Add to Requirements</button></div>`;
-    } else {
-      const match = resp.match(/\[FOUND\|([^\|]+)\|([^\|]+)\|([^\|]+)\|([^\|]+)(?:\|([^\]]+))?\]/);
-      if(match) {
-        pendingSale = {model: match[2], box: match[3]};
-        const isExact = match[1] === 'exact';
-        rc.innerHTML = `<div class="rc-header"><div class="rc-icon ${isExact ? 'exact' : 'compat'}">${isExact ? '✓' : '💡'}</div>
-            <div><div class="rc-title">${match[2]}</div><div class="rc-subtitle">${isExact ? 'Exact Match' : 'Alternative: '+match[5]}</div></div></div>
-          <div class="rc-stock-box"><div><div style="font-size:12px;color:var(--text2)">Location</div><div style="font-weight:600">${match[3]}</div></div>
-            <div style="text-align:right"><div style="font-size:12px;color:var(--text2)">Stock</div><div class="rc-qty">${match[4]}</div></div></div>
-          <div class="rc-acts"><button class="btn sell" style="flex:1;padding:12px;font-size:15px;" onclick="executeSale()">💰 Mark 1 as Sold</button>
-            <button class="btn ghost" onclick="document.getElementById('finder-result').classList.remove('show')">Cancel</button></div>`;
-      }
+    } else if (data.status === 'found') {
+      pendingSale = {model: data.model, box: data.box};
+      const isExact = data.type === 'exact';
+      rc.innerHTML = `<div class="rc-header"><div class="rc-icon ${isExact ? 'exact' : 'compat'}">${isExact ? '✓' : '💡'}</div>
+          <div><div class="rc-title">${data.model}</div><div class="rc-subtitle">${isExact ? 'Exact Match' : 'Alternative: '+(data.reason || '')}</div></div></div>
+        <div class="rc-stock-box"><div><div style="font-size:12px;color:var(--text2)">Location</div><div style="font-weight:600">${data.box}</div></div>
+          <div style="text-align:right"><div style="font-size:12px;color:var(--text2)">Stock</div><div class="rc-qty">${data.qty}</div></div></div>
+        <div class="rc-acts"><button class="btn sell" style="flex:1;padding:12px;font-size:15px;" onclick="executeSale()">💰 Mark 1 as Sold</button>
+          <button class="btn ghost" onclick="document.getElementById('finder-result').classList.remove('show')">Cancel</button></div>`;
     }
     rc.classList.add('show');
-  } catch(e) { toast(e.message, 'error'); }
+  } catch(e) { 
+    toast('Finder AI Error. Please try again.', 'error');
+    console.error("Finder Error:", e);
+  }
   btn.innerText = "Find"; btn.disabled = false;
 }
 
