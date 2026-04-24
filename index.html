@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GlassGodown v3.3 — Fast Cloud IDE</title>
+<title>GlassGodown v3.4 — Fast Cloud IDE</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
@@ -21,7 +21,7 @@
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);height:100vh;overflow:hidden;}
 
 /* LOGIN SCREEN */
 #login-screen { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
@@ -60,21 +60,21 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .nav-btn.active::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;background:var(--accent);border-radius:0 2px 2px 0}
 .nav-icon{font-size:15px;width:18px;text-align:center}
 
-/* CENTER WORKSPACE */
-.main{background:var(--bg);overflow-y:auto;display:flex;flex-direction:column;position:relative;}
-.section{display:none;flex:1;flex-direction:column}
+/* CENTER WORKSPACE (SCROLL FIXES) */
+.main{background:var(--bg);display:flex;flex-direction:column;position:relative;flex:1;min-height:0;height:100%;}
+.section{display:none;flex-direction:column;flex:1;min-height:0;height:100%;}
 .section.active{display:flex}
 .page-head{padding:24px 30px 16px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0}
 .page-head h1{font-size:20px;font-weight:700}
 .page-head p{font-size:13px;color:var(--text2);margin-top:4px}
-.page-content{padding:24px 30px;flex:1;overflow-y:auto}
+.page-content{padding:24px 30px;flex:1;overflow-y:auto;min-height:0;}
 
-/* RIGHT SIDEBAR (RAJU AI) */
-.rightbar{background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;height:100%;}
-.chat-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--bg2)}
+/* RIGHT SIDEBAR (RAJU AI) - SCROLL FIXES */
+.rightbar{background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;height:100%;min-height:0;}
+.chat-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--bg2);flex-shrink:0;}
 .av{width:36px;height:36px;border-radius:9px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;}
-.chat-msgs{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:16px}
-.msg{display:flex;gap:10px;max-width:92%;animation:fu .2s ease}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:16px;min-height:0;}
+.msg{display:flex;gap:10px;max-width:92%;animation:fu .2s ease;flex-shrink:0;}
 @keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .msg.user{align-self:flex-end;flex-direction:row-reverse}
 .msg-av{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:2px}
@@ -84,11 +84,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .msg.user .bubble{background:var(--accent);color:var(--accent-text);border-bottom-right-radius:3px}
 .msg.ai .bubble{background:var(--bg);border:1px solid var(--border);border-bottom-left-radius:3px}
 .bubble strong{color:inherit;font-weight:600}
-.typing{display:flex;gap:4px;padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:11px;border-bottom-left-radius:3px;width:fit-content}
+.typing{display:flex;gap:4px;padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:11px;border-bottom-left-radius:3px;width:fit-content;flex-shrink:0;}
 .td{width:5px;height:5px;border-radius:50%;background:var(--text3);animation:tb 1s infinite}
 .td:nth-child(2){animation-delay:.2s}.td:nth-child(3){animation-delay:.4s}
 @keyframes tb{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px);background:var(--text)}}
-.chat-foot{padding:14px 20px 18px;border-top:1px solid var(--border);background:var(--bg2)}
+.chat-foot{padding:14px 20px 18px;border-top:1px solid var(--border);background:var(--bg2);flex-shrink:0;}
 .cinput{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:9px;padding:10px 14px;font-size:13px;font-family:var(--font);color:var(--text);resize:none;min-height:44px;outline:none;transition:border-color .15s;margin-bottom:8px;}
 .cinput:focus{border-color:var(--accent)}
 .sbtn{background:var(--accent);color:var(--accent-text);border:none;border-radius:7px;width:100%;padding:10px;font-weight:600;font-size:13px;cursor:pointer;display:flex;justify-content:center;gap:6px;}
@@ -98,7 +98,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .finder-input{flex:1;background:var(--bg2);border:2px solid var(--border2);border-radius:11px;padding:14px 18px;font-size:16px;font-family:var(--font);outline:none;transition:border-color .2s}
 .finder-input:focus{border-color:var(--blue)}
 .finder-btn{background:var(--blue);color:#fff;border:none;border-radius:11px;padding:0 24px;font-weight:600;font-size:15px;cursor:pointer;}
-.result-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px;box-shadow:0 4px 15px rgba(0,0,0,0.03);display:none;animation:fu .3s ease;}
+.result-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px;box-shadow:0 4px 15px rgba(0,0,0,0.03);display:none;animation:fu .3s ease;flex-shrink:0;}
 .result-card.show{display:block;}
 .rc-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
 .rc-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
@@ -112,8 +112,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .rc-acts{display:flex;gap:10px;}
 
 /* BULK ADD UI */
-.bulk-area{width:100%;background:var(--bg2);border:2px solid var(--border2);border-radius:11px;padding:16px;font-size:15px;font-family:var(--font);line-height:1.6;resize:vertical;min-height:120px;outline:none;margin-bottom:14px;}
-.bulk-area:focus{border-color:var(--accent)}
+.bulk-row { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.bulk-input-col { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 6px; }
+.bulk-label { font-size: 12px; font-weight: 600; color: var(--text2); }
 
 /* UTILS & TABLES */
 .boxes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
@@ -121,7 +122,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .box-hdr{padding:14px 16px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-weight:600;}
 .bitem{display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);font-size:14px;align-items:center;}
 .dataTable{width:100%;border-collapse:collapse;background:var(--bg2);border-radius:11px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.02)}
-.dataTable th{text-align:left;padding:12px 16px;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text3);background:var(--bg3);border-bottom:1px solid var(--border)}
+.dataTable th{text-align:left;padding:12px 16px;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text3);background:var(--bg3);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
 .dataTable td{padding:14px 16px;border-bottom:1px solid var(--border);font-size:14px;}
 
 /* MODALS */
@@ -193,10 +194,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 
   <main class="main">
     <div class="section active" id="section-finder">
-      <div class="page-head"><h1>🔍 Glass Finder</h1><p>Search for a model. AI will find exact or compatible sizes.</p></div>
+      <div class="page-head"><h1>🔍 Glass Finder</h1><p>Search for a model. AI handles typos and spaces automatically.</p></div>
       <div class="page-content">
         <div class="search-box">
-          <input type="text" class="finder-input" id="finder-input" placeholder="e.g., Vivo T4x, Samsung A55..." onkeydown="if(event.key==='Enter')runFinder()">
+          <input type="text" class="finder-input" id="finder-input" placeholder="e.g., vivot4 x, Samsung A55..." onkeydown="if(event.key==='Enter')runFinder()">
           <button class="finder-btn" onclick="runFinder()" id="fbtn">Find</button>
         </div>
         <div class="result-card" id="finder-result"></div>
@@ -204,10 +205,23 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
     </div>
 
     <div class="section" id="section-addmodels">
-      <div class="page-head"><h1>⚡ Bulk Add Models</h1><p>Type naturally. Use commas for models that share the same glass.</p></div>
+      <div class="page-head"><h1>⚡ Bulk Add Models</h1><p>Instant processing. Separate models with commas to link them.</p></div>
       <div class="page-content" style="max-width: 800px;">
-        <textarea class="bulk-area" id="bulk-input" placeholder="Example: Add 10pcs vivo t4x, iqoo z10x, vivo t3x in box 1"></textarea>
-        <button class="btn primary" style="padding: 14px 24px; font-size: 15px;" onclick="runBulkAdd()" id="bbtn">Process & Add to Inventory</button>
+        <div class="bulk-row">
+          <div class="bulk-input-col" style="flex:2">
+            <label class="bulk-label">Models (Comma separated)</label>
+            <input type="text" class="finder-input" id="bulk-models" placeholder="e.g., Vivo T4x, iQOO Z10x">
+          </div>
+          <div class="bulk-input-col" style="flex:0.5; min-width: 100px;">
+            <label class="bulk-label">Quantity</label>
+            <input type="number" class="finder-input" id="bulk-qty" placeholder="10" value="1" min="1">
+          </div>
+          <div class="bulk-input-col" style="flex:0.5; min-width: 100px;">
+            <label class="bulk-label">Box No.</label>
+            <input type="text" class="finder-input" id="bulk-box" placeholder="1">
+          </div>
+        </div>
+        <button class="btn primary" style="padding: 14px 24px; font-size: 15px;" onclick="runInstantBulkAdd()" id="bbtn">⚡ Instantly Add to Inventory</button>
       </div>
     </div>
 
@@ -216,7 +230,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
         <div><h1>📦 Warehouse Overview</h1><p>Live cloud inventory</p></div>
         <button class="btn primary" onclick="addBoxPrompt()">+ New Box</button>
       </div>
-      <div class="page-content" id="boxes-grid" class="boxes-grid" style="display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));"></div>
+      <div class="page-content">
+        <div id="boxes-grid" class="boxes-grid"></div>
+      </div>
     </div>
 
     <div class="section" id="section-sales">
@@ -230,14 +246,26 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
     </div>
 
     <div class="section" id="section-settings">
-      <div class="page-head"><h1>⚙ Settings</h1><p>Configure Gemini API</p></div>
+      <div class="page-head"><h1>⚙ Settings & Backup</h1><p>Configuration and Data Management</p></div>
       <div class="page-content">
+        
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:24px;max-width:500px;">
           <div style="font-weight:700;margin-bottom:10px;">Gemini API Key</div>
-          <p style="font-size:13px;color:var(--text2);margin-bottom:16px;">Required for AI Glass Finder & Bulk Add. Saved locally.</p>
+          <p style="font-size:13px;color:var(--text2);margin-bottom:16px;">Required for AI Glass Finder. Saved locally.</p>
           <input class="finder-input" id="settings-apikey" type="password" placeholder="AIzaSy..." style="width:100%;margin-bottom:12px;padding:10px;">
           <button class="btn primary" onclick="saveApiKey()">Save Key</button>
         </div>
+
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:24px;max-width:500px;margin-top:16px;">
+          <div style="font-weight:700;margin-bottom:10px;">💾 Data Backup & Import</div>
+          <p style="font-size:13px;color:var(--text2);margin-bottom:16px;">Export your data to a file to keep a safe backup or move to another account.</p>
+          <div style="display:flex;gap:8px">
+            <button class="btn ghost" onclick="exportData()">↓ Export Data</button>
+            <button class="btn ghost" onclick="document.getElementById('import-file').click()">↑ Import Data</button>
+          </div>
+          <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+        </div>
+
       </div>
     </div>
   </main>
@@ -245,7 +273,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   <aside class="rightbar" id="raju-sidebar">
     <div class="chat-head">
       <div class="av">🤖</div>
-      <div><div style="font-size:14px;font-weight:700">Raju Assistant</div><div style="font-size:11px;color:var(--text2)">Online (Gemini 2.5)</div></div>
+      <div><div style="font-size:14px;font-weight:700">Raju Assistant</div><div style="font-size:11px;color:var(--text2)">Online</div></div>
     </div>
     <div class="chat-msgs" id="chat-msgs"></div>
     <div class="chat-foot">
@@ -320,7 +348,7 @@ auth.onAuthStateChanged(async (user) => {
     
     await loadFromCloud();
     renderAll();
-    addAiMsg("Namaste! Cloud sync complete. Running on the latest Gemini 2.5 Flash model.");
+    addAiMsg("Namaste! Scroll issues fixed, and Bulk Add is now Instant. Try typing '1' for Box 1.");
   } else {
     currentUser = null;
     document.getElementById('login-screen').style.display = 'flex';
@@ -345,8 +373,21 @@ async function save() {
 }
 
 // ============================================================
-// UI & WAREHOUSE
+// UI & FORMATTERS
 // ============================================================
+function formatBoxName(str) {
+  if(!str) return "Box 1";
+  let clean = str.toString().trim();
+  // If only digits, add "Box "
+  if(/^\d+$/.test(clean)) return "Box " + clean;
+  // If it starts with "box" (case insensitive), ensure correct formatting
+  if(clean.toLowerCase().startsWith("box")) {
+    let num = clean.replace(/box/i, '').trim();
+    return "Box " + num;
+  }
+  return "Box " + clean;
+}
+
 function showSection(name) {
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
@@ -378,7 +419,14 @@ function renderAll() {
   document.getElementById('req-container').innerHTML = rHtml + `</table>`;
 }
 
-function addBoxPrompt() { const n = prompt("New Box Name:"); if(n && !boxes.includes(n)) { boxes.push(n); save(); } }
+// BOX MANAGEMENT
+function addBoxPrompt() { 
+  let n = prompt("New Box Name/Number (e.g. type '1' for Box 1):"); 
+  if(n) { 
+    n = formatBoxName(n);
+    if(!boxes.includes(n)) { boxes.push(n); save(); } 
+  } 
+}
 
 function deleteBox(boxName) {
   if(!confirm(`Delete ${boxName} and ALL items inside it? This cannot be undone.`)) return;
@@ -389,10 +437,10 @@ function deleteBox(boxName) {
       if(Object.keys(inventory[m]).length === 0) delete inventory[m];
     }
   });
-  save();
-  toast('Box deleted');
+  save(); toast('Box deleted');
 }
 
+// ITEM EDITING
 function openEditModal(m, b, q) {
   editingItem = {m,b}; document.getElementById('edit-model').value=m; document.getElementById('edit-box').value=b; document.getElementById('edit-qty').value=q; openModal('edit-modal');
 }
@@ -408,7 +456,39 @@ function deleteItem() {
 }
 
 // ============================================================
-// GEMINI API (Fixed Model to gemini-2.5-flash)
+// BACKUP: EXPORT & IMPORT
+// ============================================================
+function exportData() {
+  const data = { inventory, boxes, requirements, salesLog };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `GlassGodown_Backup_${new Date().toLocaleDateString().replace(/\//g,'-')}.json`;
+  a.click();
+  toast('Data Exported', 'success');
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if(!data.inventory || !data.boxes) throw new Error("Invalid backup format");
+      if(confirm("This will REPLACE all your current data. Continue?")) {
+        inventory = data.inventory; boxes = data.boxes; requirements = data.requirements || []; salesLog = data.salesLog || [];
+        await save();
+        toast('Data Imported Successfully!', 'success');
+      }
+    } catch(err) { toast('Error importing file', 'error'); }
+    event.target.value = ''; // Reset input
+  };
+  reader.readAsText(file);
+}
+
+// ============================================================
+// GEMINI API (Search & Chat)
 // ============================================================
 function saveApiKey() { apiKey = document.getElementById('settings-apikey').value.trim(); localStorage.setItem('gg3_gemini_key', apiKey); toast('API Key Saved'); }
 
@@ -416,7 +496,6 @@ async function callGemini(sys, userText) {
   if(!apiKey) throw new Error("Missing API Key. Please save your Gemini Key in Settings.");
   if(apiKey.startsWith('sk-ant')) throw new Error("You are using a Claude key! Please get a Google Gemini key (starts with AIzaSy) and save it in Settings.");
 
-  // UPDATED to the officially supported gemini-2.5-flash
   const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{
     method:'POST', headers:{'Content-Type':'application/json'},
     body:JSON.stringify({ 
@@ -427,15 +506,49 @@ async function callGemini(sys, userText) {
   });
   
   if(!r.ok) {
-    const errData = await r.json();
-    throw new Error(errData.error?.message || "API connection failed. Check your API key.");
+    const errData = await r.json(); throw new Error(errData.error?.message || "API connection failed.");
   }
-  
   const d = await r.json(); return d.candidates[0].content.parts[0].text;
 }
 
 // ============================================================
-// GLASS FINDER
+// INSTANT BULK ADD (No AI Required - Instant Speed)
+// ============================================================
+function runInstantBulkAdd() {
+  const modelsStr = document.getElementById('bulk-models').value.trim();
+  const boxRaw = document.getElementById('bulk-box').value.trim();
+  const qty = parseInt(document.getElementById('bulk-qty').value) || 1;
+  
+  if(!modelsStr || !boxRaw) {
+    toast('Please fill in Models and Box number', 'error'); return;
+  }
+  
+  // Format the Box Name (e.g. "1" -> "Box 1")
+  const finalBox = formatBoxName(boxRaw);
+  
+  // Format Models (Title Case and split by comma)
+  const modelsArr = modelsStr.split(',').map(s => {
+    return s.trim().split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+  });
+  const combinedName = modelsArr.join(' / ');
+  
+  // Add to internal state
+  if(!boxes.includes(finalBox)) boxes.push(finalBox);
+  if(!inventory[combinedName]) inventory[combinedName] = {};
+  inventory[combinedName][finalBox] = (inventory[combinedName][finalBox] || 0) + qty;
+  
+  save();
+  
+  // Clear inputs
+  document.getElementById('bulk-models').value = '';
+  document.getElementById('bulk-box').value = '';
+  document.getElementById('bulk-qty').value = '1';
+  
+  toast(`✅ Added ${qty}x ${combinedName} to ${finalBox}`, 'success');
+}
+
+// ============================================================
+// GLASS FINDER (Space Typos Handled)
 // ============================================================
 async function runFinder() {
   const input = document.getElementById('finder-input').value.trim();
@@ -444,13 +557,17 @@ async function runFinder() {
   if(!input) return;
 
   btn.innerText = "Searching..."; btn.disabled = true; rc.classList.remove('show');
-  const sys = `Inventory: ${JSON.stringify(inventory)}. User wants: "${input}". Check exact or compatible screen sizes. Output ONLY: [FOUND|exact|Model|Box|Qty] OR [FOUND|compat|Model|Box|Qty|Reason] OR [NOTFOUND]`;
+  
+  // Explicitly telling Gemini to handle spacing typos
+  const sys = `Inventory: ${JSON.stringify(inventory)}. User wants: "${input}". 
+  CRITICAL: Handle spelling and space typos gracefully (e.g. if user searches "vivot4 x" or "vivo t 4x", match it with "Vivo T4x" in inventory).
+  Check exact or compatible screen sizes. Output ONLY: [FOUND|exact|Model|Box|Qty] OR [FOUND|compat|Model|Box|Qty|Reason] OR [NOTFOUND]`;
 
   try {
     const resp = await callGemini(sys, input);
     if(resp.includes('[NOTFOUND]')) {
       rc.innerHTML = `<div class="rc-header"><div class="rc-icon none">✕</div><div><div class="rc-title">Out of Stock</div><div class="rc-subtitle">Nothing compatible for ${input}.</div></div></div>
-        <div class="rc-acts"><button class="btn primary" onclick="addToReq('${input}')">Add to Requirements List</button></div>`;
+        <div class="rc-acts"><button class="btn primary" onclick="addToReq('${input}')">Add to Requirements</button></div>`;
     } else {
       const match = resp.match(/\[FOUND\|([^\|]+)\|([^\|]+)\|([^\|]+)\|([^\|]+)(?:\|([^\]]+))?\]/);
       if(match) {
@@ -478,27 +595,7 @@ function executeSale() {
     save(); document.getElementById('finder-result').classList.remove('show'); document.getElementById('finder-input').value = ''; toast(`1x ${model} Sold!`, 'success');
   }
 }
-function addToReq(model) { if(!requirements.includes(model)) requirements.push(model); save(); document.getElementById('finder-result').classList.remove('show'); toast('Added to reqs!', 'success'); }
-
-// ============================================================
-// BULK ADD
-// ============================================================
-async function runBulkAdd() {
-  const input = document.getElementById('bulk-input').value.trim(); const btn = document.getElementById('bbtn'); if(!input) return;
-  btn.innerText = "Processing..."; btn.disabled = true;
-
-  const sys = `Add items. If models separated by commas, combine them with slashes (e.g., "A / B"). Output ONLY JSON array: [{"combined_model_name": "Name", "box": "Box 1", "qty": 10}]`;
-  try {
-    const resp = await callGemini(sys, input);
-    const actions = JSON.parse(resp.replace(/```json/g,'').replace(/```/g,'').trim());
-    actions.forEach(a => {
-      if(!inventory[a.combined_model_name]) inventory[a.combined_model_name] = {};
-      inventory[a.combined_model_name][a.box] = (inventory[a.combined_model_name][a.box] || 0) + a.qty;
-    });
-    save(); document.getElementById('bulk-input').value = ''; toast('Models Bulk Added!', 'success');
-  } catch(e) { toast('Error: ' + e.message, 'error'); }
-  btn.innerText = "Process & Add to Inventory"; btn.disabled = false;
-}
+function addToReq(model) { if(!requirements.includes(model)) requirements.push(model); save(); document.getElementById('finder-result').classList.remove('show'); toast('Added!', 'success'); }
 
 // ============================================================
 // RAJU CHAT
@@ -516,15 +613,15 @@ async function sendChat() {
   c.scrollTop = c.scrollHeight;
 
   const sys = `You are Raju. Inventory: ${JSON.stringify(inventory)}. 
+  Handle space typos naturally.
   If user wants to SELL: Output [ACTION:SELL|model:Name|box:Box|qty:1].
-  If user wants to REMOVE/TRASH expired/damaged items: Output [ACTION:REMOVE|model:Name|box:Box|qty:1].
-  Otherwise, just chat briefly.`;
+  If user wants to REMOVE expired items: Output [ACTION:REMOVE|model:Name|box:Box|qty:1].
+  Otherwise, chat briefly.`;
 
   try {
     const resp = await callGemini(sys, text);
     document.getElementById('typing').remove();
     
-    // Process Actions
     let changed = false;
     const regex=/\[ACTION:([^\]]+)\]/g; let m;
     while((m=regex.exec(resp))!==null){
@@ -546,10 +643,7 @@ async function sendChat() {
     
     if(changed) save();
     addAiMsg(resp.replace(/\[ACTION:[^\]]+\]/g,'').trim());
-  } catch(e) { 
-    document.getElementById('typing').remove(); 
-    addAiMsg("❌ Error: " + (e.message || "Something went wrong.")); 
-  }
+  } catch(e) { document.getElementById('typing').remove(); addAiMsg("❌ Error: " + (e.message || "Failed.")); }
 }
 
 function openModal(id){document.getElementById(id).classList.add('open');}
