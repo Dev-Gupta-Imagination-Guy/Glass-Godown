@@ -593,7 +593,8 @@ async function runFinder() {
     }
     rc.classList.add('show');
   } catch(e) { 
-    toast('Finder AI Error. Please try again.', 'error');
+    // Now it will tell you if it's Google's server issue instead of a generic error
+    toast(e.message || 'Finder Error. Please try again.', 'error');
     console.error("Finder Error:", e);
   }
   btn.innerText = "Find"; btn.disabled = false;
