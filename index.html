@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GlassGodown v3.5 — Fast Cloud IDE</title>
+<title>GlassGodown v3.6 — Fast Cloud IDE</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
@@ -329,6 +329,24 @@ let pendingSale = null;
 let editingItem = null;
 
 // ============================================================
+// DATA COMPRESSION (Token Saver)
+// ============================================================
+function compressInventory() {
+  let miniStr = "";
+  for (let model in inventory) {
+    let boxesStr = "";
+    for (let box in inventory[model]) {
+      if (inventory[model][box] > 0) {
+        let bNum = box.replace('Box ', 'B'); 
+        boxesStr += `${bNum}:${inventory[model][box]},`;
+      }
+    }
+    if (boxesStr) miniStr += `${model}[${boxesStr}]|`;
+  }
+  return miniStr; 
+}
+
+// ============================================================
 // AUTH & SYNC
 // ============================================================
 function signInWithGoogle() { auth.signInWithPopup(provider).catch(e => alert(e.message)); }
@@ -346,7 +364,7 @@ auth.onAuthStateChanged(async (user) => {
     
     await loadFromCloud();
     renderAll();
-    addAiMsg("Namaste! Cloud sync complete. Glass Finder logic is fully upgraded and bulletproof.");
+    addAiMsg("Namaste! System is online. High-efficiency data compression is active to save your API tokens!");
   } else {
     currentUser = null;
     document.getElementById('login-screen').style.display = 'flex';
@@ -479,19 +497,13 @@ function importData(event) {
 }
 
 // ============================================================
-// GEMINI API
-// ============================================================
-function saveApiKey() { apiKey = document.getElementById('settings-apikey').value.trim(); localStorage.setItem('gg3_gemini_key', apiKey); toast('API Key Saved'); }
-
-// ============================================================
-// GEMINI API (With Auto-Retry for High Demand)
+// GEMINI API (With Auto-Retry)
 // ============================================================
 function saveApiKey() { apiKey = document.getElementById('settings-apikey').value.trim(); localStorage.setItem('gg3_gemini_key', apiKey); toast('API Key Saved'); }
 
 async function callGemini(sys, userText, retries = 2) {
   if(!apiKey) throw new Error("Missing API Key. Please save your Gemini Key in Settings.");
 
-  // Auto-Retry Loop
   for (let i = 0; i <= retries; i++) {
     try {
       const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{
@@ -504,21 +516,19 @@ async function callGemini(sys, userText, retries = 2) {
       });
       
       if(!r.ok) {
-        const errData = await r.json(); 
-        throw new Error(errData.error?.message || "API connection failed.");
+        const errData = await r.json(); throw new Error(errData.error?.message || "API connection failed.");
       }
       
       const d = await r.json(); 
       return d.candidates[0].content.parts[0].text;
       
     } catch (e) {
-      // If we are on the last retry, throw the error to the user screen
       if (i === retries) throw e;
-      // Otherwise, wait 1.5 seconds and silently try again
-      await new Promise(res => setTimeout(res, 1500));
+      await new Promise(res => setTimeout(res, 1500)); // Silent auto-retry
     }
   }
 }
+
 // ============================================================
 // INSTANT BULK ADD
 // ============================================================
@@ -558,7 +568,7 @@ async function runFinder() {
 
   btn.innerText = "Searching..."; btn.disabled = true; rc.classList.remove('show');
   
-  const sys = `Inventory: ${JSON.stringify(inventory)}. 
+  const sys = `Inventory: ${compressInventory()}. (Format: ModelName[B1:Qty,B2:Qty|... where B1 is Box 1).
   User input: "${input}". 
   Ignore words like "find" or "search". Just extract the phone model.
   CRITICAL: Handle spelling and space typos gracefully.
@@ -604,7 +614,6 @@ async function runFinder() {
   btn.innerText = "Find"; btn.disabled = false;
 }
 
-  
 function executeSale() {
   if(!pendingSale) return; const {model, box} = pendingSale;
   if(inventory[model] && inventory[model][box] > 0) {
@@ -631,7 +640,7 @@ async function sendChat() {
   c.innerHTML += `<div class="msg user"><div class="msg-av">👤</div><div class="bubble">${text}</div></div><div class="msg ai" id="typing"><div class="msg-av">🤖</div><div class="typing"><div class="td"></div><div class="td"></div><div class="td"></div></div></div>`;
   c.scrollTop = c.scrollHeight;
 
-  const sys = `You are Raju. Inventory: ${JSON.stringify(inventory)}. 
+  const sys = `You are Raju. Inventory: ${compressInventory()}. (Format: Model[B1:Qty|... where B1=Box 1). 
   Handle space typos naturally.
   If user wants to SELL: Output [ACTION:SELL|model:Name|box:Box|qty:1].
   If user wants to REMOVE expired items: Output [ACTION:REMOVE|model:Name|box:Box|qty:1].
@@ -647,17 +656,20 @@ async function sendChat() {
       const p = {}; m[1].split('|').slice(1).forEach(x=>{const [k,...v]=x.split(':'); p[k]=v.join(':');});
       const type = m[1].split('|')[0];
       
-      if(type==='SELL' && inventory[p.model] && inventory[p.model][p.box]){
-        inventory[p.model][p.box] -= parseInt(p.qty||1);
-        salesLog.push({model:p.model, box:p.box, qty:parseInt(p.qty||1), date:new Date().toLocaleDateString()});
+      // Expand 'B1' back to 'Box 1' if AI output compressed box name
+      const fullBoxName = p.box.startsWith('B') && !p.box.startsWith('Box') ? p.box.replace('B', 'Box ') : p.box;
+      
+      if(type==='SELL' && inventory[p.model] && inventory[p.model][fullBoxName]){
+        inventory[p.model][fullBoxName] -= parseInt(p.qty||1);
+        salesLog.push({model:p.model, box:fullBoxName, qty:parseInt(p.qty||1), date:new Date().toLocaleDateString()});
         changed=true;
       }
-      else if(type==='REMOVE' && inventory[p.model] && inventory[p.model][p.box]){
-        inventory[p.model][p.box] -= parseInt(p.qty||1);
+      else if(type==='REMOVE' && inventory[p.model] && inventory[p.model][fullBoxName]){
+        inventory[p.model][fullBoxName] -= parseInt(p.qty||1);
         changed=true;
       }
       
-      if(changed && inventory[p.model][p.box] <= 0) { delete inventory[p.model][p.box]; if(Object.keys(inventory[p.model]).length===0) delete inventory[p.model]; }
+      if(changed && inventory[p.model][fullBoxName] <= 0) { delete inventory[p.model][fullBoxName]; if(Object.keys(inventory[p.model]).length===0) delete inventory[p.model]; }
     }
     
     if(changed) save();
