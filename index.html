@@ -499,10 +499,17 @@ function importData(event) {
 // ============================================================
 // GEMINI API (With Auto-Retry)
 // ============================================================
+// ============================================================
+// GEMINI API (With Auto-Retry & Native JSON Mode)
+// ============================================================
 function saveApiKey() { apiKey = document.getElementById('settings-apikey').value.trim(); localStorage.setItem('gg3_gemini_key', apiKey); toast('API Key Saved'); }
 
-async function callGemini(sys, userText, retries = 2) {
+async function callGemini(sys, userText, retries = 2, isJson = false) {
   if(!apiKey) throw new Error("Missing API Key. Please save your Gemini Key in Settings.");
+
+  // If isJson is true, we physically lock the AI into JSON mode
+  const genConfig = { maxOutputTokens: 250 };
+  if (isJson) genConfig.responseMimeType = "application/json";
 
   for (let i = 0; i <= retries; i++) {
     try {
@@ -511,7 +518,7 @@ async function callGemini(sys, userText, retries = 2) {
         body:JSON.stringify({ 
           systemInstruction: {parts:[{text:sys}]}, 
           contents: [{role:'user', parts:[{text:userText}]}], 
-          generationConfig: {maxOutputTokens: 250} 
+          generationConfig: genConfig
         })
       });
       
@@ -530,35 +537,7 @@ async function callGemini(sys, userText, retries = 2) {
 }
 
 // ============================================================
-// INSTANT BULK ADD
-// ============================================================
-function runInstantBulkAdd() {
-  const modelsStr = document.getElementById('bulk-models').value.trim();
-  const boxRaw = document.getElementById('bulk-box').value.trim();
-  const qty = parseInt(document.getElementById('bulk-qty').value) || 1;
-  
-  if(!modelsStr || !boxRaw) { toast('Please fill in Models and Box number', 'error'); return; }
-  
-  const finalBox = formatBoxName(boxRaw);
-  const modelsArr = modelsStr.split(',').map(s => {
-    return s.trim().split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
-  });
-  const combinedName = modelsArr.join(' / ');
-  
-  if(!boxes.includes(finalBox)) boxes.push(finalBox);
-  if(!inventory[combinedName]) inventory[combinedName] = {};
-  inventory[combinedName][finalBox] = (inventory[combinedName][finalBox] || 0) + qty;
-  
-  save();
-  document.getElementById('bulk-models').value = '';
-  document.getElementById('bulk-box').value = '';
-  document.getElementById('bulk-qty').value = '1';
-  
-  toast(`✅ Added ${qty}x ${combinedName} to ${finalBox}`, 'success');
-}
-
-// ============================================================
-// BULLETPROOF GLASS FINDER
+// BULLETPROOF GLASS FINDER (Native JSON Forced)
 // ============================================================
 async function runFinder() {
   const input = document.getElementById('finder-input').value.trim();
@@ -568,30 +547,27 @@ async function runFinder() {
 
   btn.innerText = "Searching..."; btn.disabled = true; rc.classList.remove('show');
   
-  const sys = `Inventory: ${compressInventory()}. (Format: ModelName[B1:Qty,B2:Qty|... where B1 is Box 1).
+  // We provide the strict schema the AI MUST follow
+  const sys = `Inventory: ${compressInventory()}. (Format: ModelName[B1:Qty]).
   User input: "${input}". 
-  Ignore words like "find" or "search". Just extract the phone model.
-  CRITICAL: Handle spelling and space typos gracefully.
+  Match exact or compatible screen sizes. Handle typos.
   
-  Output ONLY a valid JSON object. No markdown, no conversational text.
-  If found exact: {"status": "found", "type": "exact", "model": "Matched Name", "box": "Box Name", "qty": 10, "reason": ""}
-  If found compatible: {"status": "found", "type": "compat", "model": "Compatible Name", "box": "Box Name", "qty": 5, "reason": "Shares 6.67 inch screen"}
-  If not found: {"status": "notfound"}`;
+  You MUST return a JSON object with this exact structure:
+  {
+    "status": "found" or "notfound",
+    "type": "exact" or "compat" or "",
+    "model": "Matched Model Name",
+    "box": "Box Name",
+    "qty": 10,
+    "reason": "Why it fits (if compat)"
+  }`;
 
   try {
-    const resp = await callGemini(sys, input);
+    // Notice the "true" at the end! This turns on Native JSON Mode.
+    const resp = await callGemini(sys, input, 2, true);
     
-    // SUPER EXTRACTOR: Ignores conversational text and finds the JSON
-    let cleanText = resp.replace(/```json/gi, '').replace(/```/g, '').trim();
-    const startIdx = cleanText.indexOf('{');
-    const endIdx = cleanText.lastIndexOf('}');
-    
-    if(startIdx === -1 || endIdx === -1) {
-      throw new Error("AI did not return data format.");
-    }
-    
-    const jsonStr = cleanText.substring(startIdx, endIdx + 1);
-    const data = JSON.parse(jsonStr);
+    // Because of Native JSON mode, we don't need any extractors. It's guaranteed to be clean.
+    const data = JSON.parse(resp);
 
     if(data.status === 'notfound') {
       rc.innerHTML = `<div class="rc-header"><div class="rc-icon none">✕</div><div><div class="rc-title">Out of Stock</div><div class="rc-subtitle">Nothing compatible for ${input}.</div></div></div>
@@ -613,7 +589,7 @@ async function runFinder() {
   }
   btn.innerText = "Find"; btn.disabled = false;
 }
-
+  
 function executeSale() {
   if(!pendingSale) return; const {model, box} = pendingSale;
   if(inventory[model] && inventory[model][box] > 0) {
