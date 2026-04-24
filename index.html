@@ -558,13 +558,12 @@ async function runFinder() {
 
   btn.innerText = "Searching..."; btn.disabled = true; rc.classList.remove('show');
   
-  // Stricter prompt explicitly asking for pure JSON structure
   const sys = `Inventory: ${JSON.stringify(inventory)}. 
   User input: "${input}". 
   Ignore words like "find" or "search". Just extract the phone model.
-  CRITICAL: Handle spelling and space typos gracefully (e.g. "vivot4 x" or "igoo z10x" matches "Vivo T4x / iQOO Z10x" in inventory).
+  CRITICAL: Handle spelling and space typos gracefully.
   
-  Output ONLY a valid JSON object. No markdown, no backticks.
+  Output ONLY a valid JSON object. No markdown, no conversational text.
   If found exact: {"status": "found", "type": "exact", "model": "Matched Name", "box": "Box Name", "qty": 10, "reason": ""}
   If found compatible: {"status": "found", "type": "compat", "model": "Compatible Name", "box": "Box Name", "qty": 5, "reason": "Shares 6.67 inch screen"}
   If not found: {"status": "notfound"}`;
@@ -572,11 +571,17 @@ async function runFinder() {
   try {
     const resp = await callGemini(sys, input);
     
-    // Failsafe parser: Extracts the JSON bracket even if the AI wraps it in markdown text
-    const jsonMatch = resp.match(/\{[\s\S]*\}/);
-    if(!jsonMatch) throw new Error("Unexpected AI Response format.");
+    // SUPER EXTRACTOR: Ignores conversational text and finds the JSON
+    let cleanText = resp.replace(/```json/gi, '').replace(/```/g, '').trim();
+    const startIdx = cleanText.indexOf('{');
+    const endIdx = cleanText.lastIndexOf('}');
     
-    const data = JSON.parse(jsonMatch[0]);
+    if(startIdx === -1 || endIdx === -1) {
+      throw new Error("AI did not return data format.");
+    }
+    
+    const jsonStr = cleanText.substring(startIdx, endIdx + 1);
+    const data = JSON.parse(jsonStr);
 
     if(data.status === 'notfound') {
       rc.innerHTML = `<div class="rc-header"><div class="rc-icon none">✕</div><div><div class="rc-title">Out of Stock</div><div class="rc-subtitle">Nothing compatible for ${input}.</div></div></div>
@@ -593,13 +598,13 @@ async function runFinder() {
     }
     rc.classList.add('show');
   } catch(e) { 
-    // Now it will tell you if it's Google's server issue instead of a generic error
-    toast(e.message || 'Finder Error. Please try again.', 'error');
+    toast('Finder Error: ' + e.message, 'error');
     console.error("Finder Error:", e);
   }
   btn.innerText = "Find"; btn.disabled = false;
 }
 
+  
 function executeSale() {
   if(!pendingSale) return; const {model, box} = pendingSale;
   if(inventory[model] && inventory[model][box] > 0) {
