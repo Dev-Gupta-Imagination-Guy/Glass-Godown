@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GlassGodown v3.6 — Fast Cloud IDE</title>
+<title>GlassGodown v3.7 — Ultimate Cloud IDE</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
@@ -364,7 +364,7 @@ auth.onAuthStateChanged(async (user) => {
     
     await loadFromCloud();
     renderAll();
-    addAiMsg("Namaste! System is online. High-efficiency data compression is active to save your API tokens!");
+    addAiMsg("Namaste! System is online. High-efficiency data compression is active, and Native JSON logic is locked in.");
   } else {
     currentUser = null;
     document.getElementById('login-screen').style.display = 'flex';
@@ -497,9 +497,6 @@ function importData(event) {
 }
 
 // ============================================================
-// GEMINI API (With Auto-Retry)
-// ============================================================
-// ============================================================
 // GEMINI API (With Auto-Retry & Native JSON Mode)
 // ============================================================
 function saveApiKey() { apiKey = document.getElementById('settings-apikey').value.trim(); localStorage.setItem('gg3_gemini_key', apiKey); toast('API Key Saved'); }
@@ -507,7 +504,6 @@ function saveApiKey() { apiKey = document.getElementById('settings-apikey').valu
 async function callGemini(sys, userText, retries = 2, isJson = false) {
   if(!apiKey) throw new Error("Missing API Key. Please save your Gemini Key in Settings.");
 
-  // If isJson is true, we physically lock the AI into JSON mode
   const genConfig = { maxOutputTokens: 250 };
   if (isJson) genConfig.responseMimeType = "application/json";
 
@@ -537,6 +533,53 @@ async function callGemini(sys, userText, retries = 2, isJson = false) {
 }
 
 // ============================================================
+// INSTANT BULK ADD (Bulletproof Javascript)
+// ============================================================
+function runInstantBulkAdd() {
+  try {
+    const modelsStr = document.getElementById('bulk-models').value.trim();
+    const boxRaw = document.getElementById('bulk-box').value.trim();
+    const qtyRaw = parseInt(document.getElementById('bulk-qty').value);
+    const qty = (isNaN(qtyRaw) || qtyRaw < 1) ? 1 : qtyRaw;
+    
+    if(!modelsStr || !boxRaw) { 
+      toast('Please fill in Models and Box number', 'error'); 
+      return; 
+    }
+    
+    const finalBox = formatBoxName(boxRaw);
+    
+    // Bulletproof string splitting and title-casing
+    const modelsArr = modelsStr.split(',')
+      .map(s => s.trim())
+      .filter(s => s !== '')
+      .map(s => s.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' '));
+      
+    if(modelsArr.length === 0) {
+      toast('Please enter valid model names', 'error');
+      return;
+    }
+      
+    const combinedName = modelsArr.join(' / ');
+    
+    if(!boxes.includes(finalBox)) boxes.push(finalBox);
+    if(!inventory[combinedName]) inventory[combinedName] = {};
+    inventory[combinedName][finalBox] = (inventory[combinedName][finalBox] || 0) + qty;
+    
+    save();
+    
+    document.getElementById('bulk-models').value = '';
+    document.getElementById('bulk-box').value = '';
+    document.getElementById('bulk-qty').value = '1';
+    
+    toast(`✅ Added ${qty}x ${combinedName} to ${finalBox}`, 'success');
+  } catch(e) {
+    console.error(e);
+    toast('Error adding models. Check inputs.', 'error');
+  }
+}
+
+// ============================================================
 // BULLETPROOF GLASS FINDER (Native JSON Forced)
 // ============================================================
 async function runFinder() {
@@ -547,7 +590,6 @@ async function runFinder() {
 
   btn.innerText = "Searching..."; btn.disabled = true; rc.classList.remove('show');
   
-  // We provide the strict schema the AI MUST follow
   const sys = `Inventory: ${compressInventory()}. (Format: ModelName[B1:Qty]).
   User input: "${input}". 
   Match exact or compatible screen sizes. Handle typos.
@@ -563,10 +605,8 @@ async function runFinder() {
   }`;
 
   try {
-    // Notice the "true" at the end! This turns on Native JSON Mode.
+    // isJson flag = true
     const resp = await callGemini(sys, input, 2, true);
-    
-    // Because of Native JSON mode, we don't need any extractors. It's guaranteed to be clean.
     const data = JSON.parse(resp);
 
     if(data.status === 'notfound') {
@@ -589,7 +629,7 @@ async function runFinder() {
   }
   btn.innerText = "Find"; btn.disabled = false;
 }
-  
+
 function executeSale() {
   if(!pendingSale) return; const {model, box} = pendingSale;
   if(inventory[model] && inventory[model][box] > 0) {
@@ -623,7 +663,7 @@ async function sendChat() {
   Otherwise, chat briefly.`;
 
   try {
-    const resp = await callGemini(sys, text);
+    const resp = await callGemini(sys, text, 2, false);
     document.getElementById('typing').remove();
     
     let changed = false;
@@ -632,7 +672,6 @@ async function sendChat() {
       const p = {}; m[1].split('|').slice(1).forEach(x=>{const [k,...v]=x.split(':'); p[k]=v.join(':');});
       const type = m[1].split('|')[0];
       
-      // Expand 'B1' back to 'Box 1' if AI output compressed box name
       const fullBoxName = p.box.startsWith('B') && !p.box.startsWith('Box') ? p.box.replace('B', 'Box ') : p.box;
       
       if(type==='SELL' && inventory[p.model] && inventory[p.model][fullBoxName]){
