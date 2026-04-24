@@ -483,24 +483,42 @@ function importData(event) {
 // ============================================================
 function saveApiKey() { apiKey = document.getElementById('settings-apikey').value.trim(); localStorage.setItem('gg3_gemini_key', apiKey); toast('API Key Saved'); }
 
-async function callGemini(sys, userText) {
+// ============================================================
+// GEMINI API (With Auto-Retry for High Demand)
+// ============================================================
+function saveApiKey() { apiKey = document.getElementById('settings-apikey').value.trim(); localStorage.setItem('gg3_gemini_key', apiKey); toast('API Key Saved'); }
+
+async function callGemini(sys, userText, retries = 2) {
   if(!apiKey) throw new Error("Missing API Key. Please save your Gemini Key in Settings.");
 
-  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({ 
-      systemInstruction: {parts:[{text:sys}]}, 
-      contents: [{role:'user', parts:[{text:userText}]}], 
-      generationConfig: {maxOutputTokens: 250} 
-    })
-  });
-  
-  if(!r.ok) {
-    const errData = await r.json(); throw new Error(errData.error?.message || "API connection failed.");
+  // Auto-Retry Loop
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({ 
+          systemInstruction: {parts:[{text:sys}]}, 
+          contents: [{role:'user', parts:[{text:userText}]}], 
+          generationConfig: {maxOutputTokens: 250} 
+        })
+      });
+      
+      if(!r.ok) {
+        const errData = await r.json(); 
+        throw new Error(errData.error?.message || "API connection failed.");
+      }
+      
+      const d = await r.json(); 
+      return d.candidates[0].content.parts[0].text;
+      
+    } catch (e) {
+      // If we are on the last retry, throw the error to the user screen
+      if (i === retries) throw e;
+      // Otherwise, wait 1.5 seconds and silently try again
+      await new Promise(res => setTimeout(res, 1500));
+    }
   }
-  const d = await r.json(); return d.candidates[0].content.parts[0].text;
 }
-
 // ============================================================
 // INSTANT BULK ADD
 // ============================================================
