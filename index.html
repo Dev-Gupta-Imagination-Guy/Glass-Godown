@@ -6,7 +6,6 @@
 <title>GlassGodown v5.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-<!-- Firebase v9 compat — stable, widely supported -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -324,7 +323,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 </head>
 <body>
 
-<!-- ════════════════ LOGIN SCREEN ════════════════ -->
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo">
@@ -334,7 +332,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     <p class="login-sub">Cloud inventory for your glass godown.<br>Sign in to continue.</p>
 
     <button class="btn-google" id="google-btn" onclick="signInWithGoogle()">
-      <!-- Google "G" icon -->
       <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
       Sign in with Google
     </button>
@@ -343,13 +340,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- ════════════════ MOBILE AI TOGGLE ════════════════ -->
 <button class="mobile-ai-toggle" id="ai-fab" onclick="toggleAI()">🤖</button>
 
-<!-- ════════════════ MAIN APP ════════════════ -->
 <div id="main-layout">
 
-  <!-- Topbar -->
   <div class="topbar">
     <div class="logo"><div class="logo-icon">⬡</div>GlassGodown</div>
     <div class="topbar-right">
@@ -358,7 +352,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     </div>
   </div>
 
-  <!-- Left Sidebar / Bottom Nav -->
   <nav class="sidebar">
     <div class="nav-label">Workspace</div>
     <button class="nav-btn active" onclick="showSection('finder')"      id="nav-finder">     <span class="nav-icon">🔍</span>Finder</button>
@@ -371,10 +364,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     <button class="nav-btn"        onclick="showSection('settings')"    id="nav-settings">   <span class="nav-icon">⚙</span>Settings</button>
   </nav>
 
-  <!-- Main Content -->
   <main class="main">
 
-    <!-- GLASS FINDER -->
     <div class="section active" id="section-finder">
       <div class="page-head">
         <div class="page-head-text"><h1>🔍 Glass Finder</h1><p>AI handles typos and space errors automatically.</p></div>
@@ -388,7 +379,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
       </div>
     </div>
 
-    <!-- BULK ADD -->
     <div class="section" id="section-addmodels">
       <div class="page-head">
         <div class="page-head-text"><h1>⚡ Bulk Add Models</h1><p>Separate models with commas to link them.</p></div>
@@ -413,7 +403,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
       </div>
     </div>
 
-    <!-- WAREHOUSE -->
     <div class="section" id="section-warehouse">
       <div class="page-head">
         <div class="page-head-text"><h1>📦 Warehouse</h1><p>Live cloud inventory</p></div>
@@ -424,7 +413,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
       </div>
     </div>
 
-    <!-- SALES LOG -->
     <div class="section" id="section-sales">
       <div class="page-head">
         <div class="page-head-text"><h1>💰 Sales Log</h1><p>Recent transactions</p></div>
@@ -432,7 +420,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
       <div class="page-content" id="sales-container"></div>
     </div>
 
-    <!-- REQUIREMENTS -->
     <div class="section" id="section-requirements">
       <div class="page-head">
         <div class="page-head-text"><h1>📋 Requirements</h1><p>Items out of stock or needed</p></div>
@@ -440,7 +427,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
       <div class="page-content" id="req-container"></div>
     </div>
 
-    <!-- SETTINGS -->
     <div class="section" id="section-settings">
       <div class="page-head">
         <div class="page-head-text"><h1>⚙ Settings & Backup</h1><p>API key and data management</p></div>
@@ -466,7 +452,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 
   </main>
 
-  <!-- Raju AI Sidebar -->
   <aside class="rightbar" id="raju-sidebar">
     <div class="chat-head">
       <div class="av">🤖</div>
@@ -484,10 +469,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     </div>
   </aside>
 
-</div><!-- /#main-layout -->
-
-<!-- Edit Modal -->
-<div class="modal-ov" id="edit-modal">
+</div><div class="modal-ov" id="edit-modal">
   <div class="modal">
     <h3>✎ Edit / Remove Item</h3>
     <div class="mlabel">Model</div><input class="minput" id="edit-model" readonly style="opacity:.6;">
@@ -501,7 +483,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- AI Backdrop (mobile) -->
 <div id="ai-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:900;" onclick="toggleAI()"></div>
 
 <div class="toast" id="toast"></div>
@@ -880,8 +861,7 @@ function importData(event) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// GEMINI API  — gemini-2.5-flash-lite (most cost-efficient)
-// Handles thinking-model multi-part responses correctly
+// GEMINI API  — gemini-2.5-flash-lite
 // ═══════════════════════════════════════════════════════════════
 function saveApiKey() {
   apiKey = document.getElementById('settings-apikey').value.trim();
@@ -889,8 +869,11 @@ function saveApiKey() {
   toast('API Key saved.');
 }
 
-async function callGemini(systemPrompt, userText, retries = 2) {
+async function callGemini(systemPrompt, userText, isJson = false, retries = 2) {
   if (!apiKey) throw new Error('No API Key set. Go to Settings and save your Gemini key.');
+
+  let generationConfig = { maxOutputTokens: 600 };
+  if (isJson) generationConfig.responseMimeType = "application/json";
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
@@ -902,10 +885,7 @@ async function callGemini(systemPrompt, userText, retries = 2) {
           body:    JSON.stringify({
             systemInstruction: { parts: [{ text: systemPrompt }] },
             contents: [{ role: 'user', parts: [{ text: userText }] }],
-            generationConfig: {
-              maxOutputTokens: 600,
-              thinkingConfig:  { thinkingBudget: 0 } // disable thinking to save tokens
-            }
+            generationConfig: generationConfig
           })
         }
       );
@@ -918,9 +898,8 @@ async function callGemini(systemPrompt, userText, retries = 2) {
       const json  = await resp.json();
       const parts = json.candidates?.[0]?.content?.parts || [];
 
-      // Collect only real text parts (skip "thought" parts from thinking models)
       const text = parts
-        .filter(p => p.text !== undefined && p.thought !== true)
+        .filter(p => p.text !== undefined)
         .map(p => p.text)
         .join('');
 
@@ -936,11 +915,15 @@ async function callGemini(systemPrompt, userText, retries = 2) {
 
 // Extract first valid JSON object from any text
 function extractJSON(raw) {
-  const clean = raw.replace(/```json/gi, '').replace(/```/g, '').trim();
-  const start = clean.indexOf('{');
-  const end   = clean.lastIndexOf('}');
-  if (start === -1 || end <= start) throw new Error('No JSON in response');
-  return JSON.parse(clean.substring(start, end + 1));
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    const clean = raw.replace(/```json/gi, '').replace(/```/g, '').trim();
+    const start = clean.indexOf('{');
+    const end   = clean.lastIndexOf('}');
+    if (start === -1 || end <= start) throw new Error('No JSON in response');
+    return JSON.parse(clean.substring(start, end + 1));
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1015,19 +998,18 @@ async function runFinder() {
 Inventory (ModelName[B1:qty] format, B1=Box 1): ${invData}
 
 Task: Find the best match for the user's query.
-- Fix typos and spacing (e.g. "vivot4x"="Vivo T4x", "samsnga a55"="Samsung A55").
+- Fix typos and spacing (e.g. "vivot4x"="Vivo T4x").
 - Prefer exact match; if none, suggest best compatible alternative.
+- IMPORTANT: For the "model" field, you MUST use the EXACT ModelName key as it appears in the Inventory data (including slashes if models are grouped).
 - If EMPTY or no match at all, return notfound.
 
 Return ONLY a raw JSON object, no markdown, no explanation:
 {"status":"found","type":"exact","model":"ModelName","box":"Box 1","qty":5,"reason":""}
 or
-{"status":"found","type":"compat","model":"ModelName","box":"Box 1","qty":3,"reason":"why compatible"}
-or
 {"status":"notfound","type":"","model":"","box":"","qty":0,"reason":""}`;
 
   try {
-    const resp = await callGemini(sys, input, 2);
+    const resp = await callGemini(sys, input, true, 2);
     const data = extractJSON(resp);
 
     if (data.status === 'notfound') {
@@ -1077,6 +1059,7 @@ or
 function executeSale() {
   if (!pendingSale) return;
   const { model, box } = pendingSale;
+  
   if (inventory[model]?.[box] > 0) {
     inventory[model][box]--;
     if (inventory[model][box] <= 0) {
@@ -1088,6 +1071,8 @@ function executeSale() {
     document.getElementById('finder-result').classList.remove('show');
     document.getElementById('finder-input').value = '';
     toast(`1× ${model} sold!`, 'success');
+    
+    pendingSale = null; 
   } else {
     toast('Item no longer in stock!', 'error');
   }
@@ -1127,14 +1112,16 @@ async function sendChat() {
   c.scrollTop = c.scrollHeight;
 
   const sys = `You are Raju, inventory assistant for a glass godown.
-Inventory: ${compressInventory()} (format: Model[B1:qty] where B1=Box 1).
+Inventory: ${compressInventory()} (format: ModelName[B1:qty] where B1=Box 1).
 Handle typos naturally.
 If SELL: reply with [ACTION:SELL|model:ExactName|box:Box N|qty:1].
 If REMOVE: reply with [ACTION:REMOVE|model:ExactName|box:Box N|qty:1].
-Otherwise reply briefly in a friendly way.`;
+Otherwise reply briefly in a friendly way.
+IMPORTANT: For model names in ACTION commands, you MUST use the EXACT ModelName key from the Inventory data (including slashes if grouped).`;
 
   try {
-    const resp = await callGemini(sys, text, 2);
+    const resp = await callGemini(sys, text, false, 2);
+    
     const typingEl = document.getElementById('typing-indicator');
     if (typingEl) typingEl.remove();
 
