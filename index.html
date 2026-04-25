@@ -542,7 +542,6 @@ async function signInWithGoogle() {
   try {
     // Try popup first
     await auth.signInWithPopup(provider);
-    // onAuthStateChanged will handle the rest
   } catch (e) {
     console.error('Popup error:', e.code, e.message);
 
@@ -551,11 +550,9 @@ async function signInWithGoogle() {
       e.code === 'auth/popup-closed-by-user' ||
       e.code === 'auth/cancelled-popup-request'
     ) {
-      // Popup blocked — fall back to redirect (full-page flow)
       document.getElementById('login-status').textContent = 'Popup blocked. Redirecting…';
       try {
         await auth.signInWithRedirect(provider);
-        // Page will reload after redirect, getRedirectResult handles it below
       } catch (re) {
         showLoginError('Redirect sign-in failed: ' + re.message);
         resetLoginBtn();
@@ -586,7 +583,6 @@ function logOut() {
 // Handle redirect result FIRST on every page load
 auth.getRedirectResult().then(result => {
   if (result && result.user) {
-    // Already handled by onAuthStateChanged below
     console.log('Redirect sign-in success');
   }
 }).catch(e => {
@@ -595,25 +591,22 @@ auth.getRedirectResult().then(result => {
   }
 });
 
-// Auth state listener — single source of truth for showing/hiding app
+// Auth state listener
 auth.onAuthStateChanged(async (user) => {
   if (user) {
     currentUser = user;
 
-    // Show app, hide login
     document.getElementById('login-screen').classList.add('hidden');
     setTimeout(() => { document.getElementById('login-screen').style.display = 'none'; }, 300);
 
     const layout = document.getElementById('main-layout');
     layout.style.display = window.innerWidth <= 768 ? 'flex' : 'grid';
 
-    // User badge
     const photoHTML = user.photoURL
       ? `<img src="${user.photoURL}" alt="" onerror="this.style.display='none'">`
       : '👤';
     document.getElementById('user-badge').innerHTML = `${photoHTML} ${(user.displayName || user.email || 'User').split(' ')[0]}`;
 
-    // Load API key
     apiKey = localStorage.getItem('gg_gemini_key') || '';
     const keyEl = document.getElementById('settings-apikey');
     if (keyEl) keyEl.value = apiKey;
@@ -623,7 +616,6 @@ auth.onAuthStateChanged(async (user) => {
     addAiMsg('Namaste! I\'m Raju. Inventory loaded. How can I help?');
 
   } else {
-    // Logged out
     currentUser = null;
     document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('login-screen').classList.remove('hidden');
@@ -680,14 +672,14 @@ function formatBoxName(str) {
   return 'Box ' + clean;
 }
 
-// Compress inventory to short token-efficient string for AI
+// Compress inventory. Removed "B" formatting to stop hallucination. Uses literal Box names.
 function compressInventory() {
   let out = '';
   for (let model in inventory) {
     let locs = '';
     for (let box in inventory[model]) {
       if (inventory[model][box] > 0) {
-        locs += box.replace('Box ', 'B') + ':' + inventory[model][box] + ',';
+        locs += box + ':' + inventory[model][box] + ',';
       }
     }
     if (locs) out += model + '[' + locs + ']|';
@@ -703,7 +695,6 @@ function showSection(name) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('section-' + name).classList.add('active');
   document.getElementById('nav-' + name).classList.add('active');
-  // Close AI panel if open
   document.getElementById('raju-sidebar').classList.remove('open');
   document.getElementById('ai-overlay').style.display = 'none';
 }
@@ -719,7 +710,6 @@ function toggleAI() {
 // RENDER
 // ═══════════════════════════════════════════════════════════════
 function renderAll() {
-  // Warehouse
   let wHtml = '';
   boxes.forEach(b => {
     const items = Object.entries(inventory).filter(([, locs]) => locs[b] > 0);
@@ -751,7 +741,6 @@ function renderAll() {
   });
   document.getElementById('boxes-grid').innerHTML = wHtml || '<p style="color:var(--text3);font-size:14px;">No boxes yet. Click + New Box.</p>';
 
-  // Sales log
   let sHtml = `<div style="overflow-x:auto;"><table class="dataTable">
     <tr><th>Model</th><th>Box</th><th>Qty</th><th>Date</th></tr>`;
   const recent = [...salesLog].reverse().slice(0, 60);
@@ -761,7 +750,6 @@ function renderAll() {
   });
   document.getElementById('sales-container').innerHTML = sHtml + `</table></div>`;
 
-  // Requirements
   let rHtml = `<div style="overflow-x:auto;"><table class="dataTable">
     <tr><th>Needed Model</th><th></th></tr>`;
   if (requirements.length === 0) rHtml += `<tr><td colspan="2" style="color:var(--text3);">No requirements added.</td></tr>`;
@@ -948,7 +936,6 @@ async function runInstantBulkAdd() {
   try {
     const finalBox = formatBoxName(boxRaw);
 
-    // Capitalise first letter of each word (preserves iQOO, etc.)
     const modelsArr = modelsStr.split(',')
       .map(s => s.trim()).filter(Boolean)
       .map(s => s.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '));
@@ -981,7 +968,7 @@ async function runInstantBulkAdd() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// GLASS FINDER
+// GLASS FINDER (SUPERCHARGED EXPERT MODE)
 // ═══════════════════════════════════════════════════════════════
 async function runFinder() {
   const input = document.getElementById('finder-input').value.trim();
@@ -994,17 +981,26 @@ async function runFinder() {
 
   const invData = compressInventory();
 
-  const sys = `You are an inventory assistant for a mobile phone screen-glass godown.
-Inventory (ModelName[B1:qty] format, B1=Box 1): ${invData}
+  // SUPERCHARGED SYSTEM PROMPT
+  const sys = `You are a MASTER MOBILE HARDWARE TECHNICIAN and AI inventory expert for a tempered glass shop. 
+You have deep, extensive knowledge of phone screen sizes, dimensions, and cross-brand compatibilities (e.g., knowing specific Vivo, iQOO, Oppo, OnePlus, Xiaomi, and Poco models that share the exact same screen glass).
 
-Task: Find the best match for the user's query.
-- Fix typos and spacing (e.g. "vivot4x"="Vivo T4x").
-- Prefer exact match; if none, suggest best compatible alternative.
-- IMPORTANT: For the "model" field, you MUST use the EXACT ModelName key as it appears in the Inventory data (including slashes if models are grouped).
-- If EMPTY or no match at all, return notfound.
+Inventory Data: ${invData}
 
-Return ONLY a raw JSON object, no markdown, no explanation:
-{"status":"found","type":"exact","model":"ModelName","box":"Box 1","qty":5,"reason":""}
+Task: Find the best match for the user's query from the IN STOCK inventory.
+1. EXACT MATCH ("type":"exact"): The user query perfectly matches a model listed in the inventory key.
+2. COMPATIBLE MATCH ("type":"compat"): The user query is NOT in stock, BUT you know another phone model that shares the EXACT SAME screen size/glass, AND that compatible model IS in stock. (e.g., If user wants iQOO Z10x and it's missing, but Vivo T4x is in stock, return Vivo T4x as a compat match). Provide a short reason explaining the physical compatibility.
+3. NOT FOUND: If no exact or compatible match exists in the current stock.
+
+Rules:
+- Fix typos and spacing automatically.
+- "model" MUST be the exact matching string from the Inventory Data.
+- "box" MUST be exactly as it appears in the Inventory Data (e.g., "Box 1", "Box 5", "Spare"). Do NOT change or abbreviate the box name.
+
+Return ONLY a raw JSON object, no markdown:
+{"status":"found","type":"exact","model":"ModelName","box":"Box 5","qty":5,"reason":""}
+or
+{"status":"found","type":"compat","model":"ModelName","box":"Box 1","qty":3,"reason":"Shares exact same 6.72-inch screen as requested model"}
 or
 {"status":"notfound","type":"","model":"","box":"","qty":0,"reason":""}`;
 
@@ -1024,7 +1020,11 @@ or
           <button class="btn primary" onclick="addToReq('${safe}')">+ Add to Requirements</button>
         </div>`;
     } else if (data.status === 'found') {
-      pendingSale   = { model: data.model, box: data.box };
+      // Safety catch in case AI tries to hallucinate "B1" anyway
+      let safeBox = data.box;
+      if (/^B\d+$/.test(safeBox)) safeBox = safeBox.replace('B', 'Box ');
+
+      pendingSale   = { model: data.model, box: safeBox };
       const isExact = data.type === 'exact';
       rc.innerHTML  = `
         <div class="rc-header">
@@ -1035,7 +1035,7 @@ or
           </div>
         </div>
         <div class="rc-stock-box">
-          <div><div style="font-size:12px;color:var(--text2);">Location</div><div style="font-weight:700;">${data.box}</div></div>
+          <div><div style="font-size:12px;color:var(--text2);">Location</div><div style="font-weight:700;">${safeBox}</div></div>
           <div style="text-align:right;"><div style="font-size:12px;color:var(--text2);">Stock</div><div class="rc-qty">${data.qty}</div></div>
         </div>
         <div class="rc-acts">
@@ -1112,12 +1112,12 @@ async function sendChat() {
   c.scrollTop = c.scrollHeight;
 
   const sys = `You are Raju, inventory assistant for a glass godown.
-Inventory: ${compressInventory()} (format: ModelName[B1:qty] where B1=Box 1).
+Inventory: ${compressInventory()} (format: ModelName[Box 1:qty]).
 Handle typos naturally.
-If SELL: reply with [ACTION:SELL|model:ExactName|box:Box N|qty:1].
-If REMOVE: reply with [ACTION:REMOVE|model:ExactName|box:Box N|qty:1].
+If SELL: reply with [ACTION:SELL|model:ExactName|box:ExactBox|qty:1].
+If REMOVE: reply with [ACTION:REMOVE|model:ExactName|box:ExactBox|qty:1].
 Otherwise reply briefly in a friendly way.
-IMPORTANT: For model names in ACTION commands, you MUST use the EXACT ModelName key from the Inventory data (including slashes if grouped).`;
+IMPORTANT: For model names and box names in ACTION commands, you MUST use the EXACT keys from the Inventory data.`;
 
   try {
     const resp = await callGemini(sys, text, false, 2);
@@ -1137,10 +1137,7 @@ IMPORTANT: For model names in ACTION commands, you MUST use the EXACT ModelName 
         params[x.slice(0, idx)] = x.slice(idx + 1);
       });
 
-      const box = params.box?.startsWith('B') && !params.box?.startsWith('Box')
-        ? params.box.replace('B', 'Box ')
-        : params.box;
-
+      const box = params.box;
       const qty = parseInt(params.qty) || 1;
 
       if (type === 'SELL' && inventory[params.model]?.[box] > 0) {
